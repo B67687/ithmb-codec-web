@@ -99,7 +99,7 @@ export function renderCardInfo(cardId: string): void {
     <div><span class="info-label">${t("card.fileSize")}</span> <span class="info-value">${formatSize(fileSize)}</span></div>
     <div class="actions" style="display:flex;align-items:center;gap:4px">
       <button class="btn btn-primary btn-small" data-save>${t("card.save", { fmt: formatLabels[S.cardFormats[cardId] || S.downloadFormat] || "JPEG" })}</button>
-      <select class="fmt-select card-format-select" data-card="${cardId}" style="height:28px;font-size:0.75rem;padding:2px 4px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text)">
+      <select class="fmt-select card-format-select" data-card="${cardId}" aria-label="${t("card.formatAria")}" style="height:28px;font-size:0.75rem;padding:2px 4px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text)">
         <option value="image/jpeg">JPEG</option>
         <option value="image/png">PNG</option>
         <option value="image/bmp">BMP</option>
@@ -143,7 +143,8 @@ export function renderCardInfo(cardId: string): void {
       (blob) => {
         if (!blob) return;
         link.href = URL.createObjectURL(blob);
-        link.download = (entry.fileName || "image").replace(/\.ithmb$/i, "") + ext;
+        link.download =
+          (entry.fileName || "image").replace(/\.ithmb$/i, "") + ext;
         link.click();
         URL.revokeObjectURL(link.href);
       },

@@ -76,14 +76,14 @@ Ithmb-Codec-Web/
 
 ## SE Lifecycle Artifacts
 
-| Artifact | Path | Purpose |
-----------|------|---------|
-| FEATURES.md | `docs/FEATURES.md` | Feature inventory (F-001..F-029), behavior contracts, test anchoring |
-| SPECIFICATION.md | `SPECIFICATION.md` | AS-BUILT spec (MACRO/MESO/MICRO layers) |
-| ARCHITECTURE.md | `ARCHITECTURE.md` | C4 Level 1 diagram, module map, fitness functions, CI split |
-| TECH_DEBT_AUDIT.md | `TECH_DEBT_AUDIT.md` | Debt inventory with severity × effort triage |
-| ADRs | `docs/adr/` | Architecture Decision Records (ADR-0006, ADR-0007) |
-| check-local.sh | `scripts/check-local.sh` | Full local CI — 10 gates, < 2 min target |
+| Artifact           | Path                     | Purpose                                                              |
+| ------------------ | ------------------------ | -------------------------------------------------------------------- |
+| FEATURES.md        | `docs/FEATURES.md`       | Feature inventory (F-001..F-029), behavior contracts, test anchoring |
+| SPECIFICATION.md   | `SPECIFICATION.md`       | AS-BUILT spec (MACRO/MESO/MICRO layers)                              |
+| ARCHITECTURE.md    | `ARCHITECTURE.md`        | C4 Level 1 diagram, module map, fitness functions, CI split          |
+| TECH_DEBT_AUDIT.md | `TECH_DEBT_AUDIT.md`     | Debt inventory with severity × effort triage                         |
+| ADRs               | `docs/adr/`              | Architecture Decision Records (ADR-0006, ADR-0007)                   |
+| check-local.sh     | `scripts/check-local.sh` | Full local CI — 10 gates, < 2 min target                             |
 
 Feature lifecycle follows Development-Protocol `docs/engineering-plugin.md` §1.1: `proposed → approved → applied → archived`.
 
@@ -191,3 +191,10 @@ cp pkg/ithmb_wasm_bg.wasm ../../Ithmb-Codec-Web/ithmb-decoder/ithmb_wasm_bg.wasm
 - Do NOT add a wasm import that the loader glue doesn't provide (check-wasm-drift.sh enforces).
 - Do NOT run Playwright against `https://ithmb-codec.dev` during local dev/tests; always set `BASE_URL`.
 - Do NOT commit `.omo/` or any secrets.
+
+## Flaky-Test Policy
+
+- Playwright runs `retries: CI ? 2 : 0` — a test that fails then passes on retry is reported **flaky** and the job still greens. That green is legitimate, not result-hiding (browsers, webkit especially, have timing flakes unrelated to the code).
+- Flaky is not ignored: the **same test flaking 3 consecutive runs stops being a flake and becomes a bug** — quarantine or fix it. The Playwright report names flaky tests every run; that list is the watchlist.
+- Never raise retries to green a consistently failing test. That is the bright line between flake-tolerance and hiding results.
+- Fresh, timing-sensitive tests (uploads, failure cards, perf budgets) are the usual suspects — watch them first when a new flake appears.

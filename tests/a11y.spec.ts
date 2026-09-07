@@ -1,5 +1,19 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import path from "path";
+
+// Shared gate: collect critical/serious violations minus documented exclusions.
+async function seriousViolations(page: import("@playwright/test").Page) {
+  const results = await new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "best-practice"])
+    .analyze();
+  const KNOWN_A11Y_EXCLUSIONS = new Set(["color-contrast"]);
+  return results.violations.filter(
+    (v) =>
+      (v.impact === "critical" || v.impact === "serious") &&
+      !KNOWN_A11Y_EXCLUSIONS.has(v.id),
+  );
+}
 
 test.describe("Accessibility", () => {
   const pages = [
@@ -8,29 +22,25 @@ test.describe("Accessibility", () => {
     { name: "Guide", url: "/guide/how-to-open-ithmb-files.html" },
     { name: "Enterprise", url: "/enterprise/" },
     { name: "404", url: "/nonexistent" },
+    { name: "Home (zh)", url: "/zh/" },
+    { name: "Decoder (zh)", url: "/zh/ithmb-decoder/" },
+    { name: "Guide (zh)", url: "/zh/guide/how-to-open-ithmb-files.html" },
+    { name: "Enterprise (zh)", url: "/zh/enterprise/" },
   ];
 
   for (const { name, url } of pages) {
-    test(`${name} page has no critical accessibility violations`, async ({ page }) => {
+    test(`${name} page has no critical accessibility violations`, async ({
+      page,
+    }) => {
       await page.goto(url);
       await page.waitForLoadState("networkidle");
 
-      const results = await new AxeBuilder({ page })
-        .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "best-practice"])
-        .analyze();
-
-      // Known intentional exclusions (Apple-like low-contrast grays for visual aesthetics)
-      const KNOWN_A11Y_EXCLUSIONS = new Set(["color-contrast"]);
-
-      // Filter to critical/serious, excluding known intentional design choices
-      const serious = results.violations.filter(
-        (v) =>
-          (v.impact === "critical" || v.impact === "serious") &&
-          !KNOWN_A11Y_EXCLUSIONS.has(v.id)
-      );
+      const serious = await seriousViolations(page);
 
       if (serious.length > 0) {
-        console.log(`\n=== ${name}: ${serious.length} critical/serious violations ===`);
+        console.log(
+          `\n=== ${name}: ${serious.length} critical/serious violations ===`,
+        );
         for (const v of serious) {
           console.log(`  ${v.id}: ${v.help}`);
           console.log(`  Impact: ${v.impact}`);
@@ -44,4 +54,19 @@ test.describe("Accessibility", () => {
       expect(serious).toHaveLength(0);
     });
   }
+});
+
+test("Decoder post-upload state has no critical accessibility violations", async ({
+  page,
+}) => {
+  await page.goto("/ithmb-decoder/");
+  await page.waitForLoadState("networkidle");
+  const [fc] = await Promise.all([
+    page.waitForEvent("filechooser"),
+    page.locator("#dropzone").click(),
+  ]);
+  await fc.setFiles(path.resolve(__dirname, "fixtures/test1.ithmb"));
+  await expect(page.locator(".file-card")).toHaveCount(1);
+  const serious = await seriousViolations(page);
+  expect(serious).toHaveLength(0);
 });
