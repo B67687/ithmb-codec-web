@@ -10,12 +10,12 @@
 proposed -> approved -> applied -> archived
 ```
 
-| Status | Meaning | Can be shipped? |
-| --- | --- | --- |
-| `proposed` | Intended, not yet ratified into V1 | No |
-| `approved` | In V1 scope (IN SCOPE, RULES section 5) | No: needs `applied` |
-| `applied` | Implemented, tests anchored, spec-synced | Yes |
-| `archived` | Removed/superseded; entry kept for history | No |
+| Status     | Meaning                                    | Can be shipped?     |
+| ---------- | ------------------------------------------ | ------------------- |
+| `proposed` | Intended, not yet ratified into V1         | No                  |
+| `approved` | In V1 scope (IN SCOPE, RULES section 5)    | No: needs `applied` |
+| `applied`  | Implemented, tests anchored, spec-synced   | Yes                 |
+| `archived` | Removed/superseded; entry kept for history | No                  |
 
 ## Table of Contents
 
@@ -46,8 +46,8 @@ ithmb-codec-web/
 ├── lang-redirect.js                   # Pre-paint locale redirect (stored pref / zh browser → /zh/ counterpart)
 ├── bmc-icon.svg / favicon.svg / thumb-decoder-preview.png
 ├── CNAME                              # Custom domain: ithmb-codec.dev
-├── package.json                       # Zero runtime deps; dev: @playwright/test, playwright, vitest
-├── vitest.config.ts                   # Unit test config (tests/unit/**/*.test.ts)
+├── package.json                       # Zero runtime deps; bun 1.3.14 (scripts, unit tests); dev: @playwright/test, playwright
+├── biome.json                         # Biome 1.9.4 format gate (2-space, 100-col); recommended lint unenforced
 ├── playwright.config.ts               # 3 projects (chromium, firefox, webkit); baseURL = BASE_URL || live site
 ├── AGENTS.md                          # Agent onboarding (build/test/deploy/wasm-regen/dev-public workflow)
 │
@@ -98,12 +98,12 @@ ithmb-codec-web/
 
 ### Page Matrix
 
-| Page       | Route                            | Purpose        | Type                         | JS Required |
-| ---------- | -------------------------------- | -------------- | ---------------------------- | ----------- |
-| Home       | `/`                              | Landing page   | Static + CSS                 | nav.js, footer.js, lang-redirect.js |
-| Decoder    | `/ithmb-decoder/`                | Core web app   | Full SPA (ES modules + WASM) | nav.js, footer.js, app.js (14 modules), lang-redirect.js |
-| Guide      | `/guide/how-to-open-ithmb-files.html` | Documentation | Static + CSS                 | nav.js, footer.js, lang-redirect.js |
-| Enterprise | `/enterprise/`                   | Marketing page | Static + CSS                 | nav.js, footer.js, lang-redirect.js |
+| Page       | Route                                 | Purpose        | Type                         | JS Required                                              |
+| ---------- | ------------------------------------- | -------------- | ---------------------------- | -------------------------------------------------------- |
+| Home       | `/`                                   | Landing page   | Static + CSS                 | nav.js, footer.js, lang-redirect.js                      |
+| Decoder    | `/ithmb-decoder/`                     | Core web app   | Full SPA (ES modules + WASM) | nav.js, footer.js, app.js (14 modules), lang-redirect.js |
+| Guide      | `/guide/how-to-open-ithmb-files.html` | Documentation  | Static + CSS                 | nav.js, footer.js, lang-redirect.js                      |
+| Enterprise | `/enterprise/`                        | Marketing page | Static + CSS                 | nav.js, footer.js, lang-redirect.js                      |
 
 ### Dependency Direction (module graph)
 
@@ -134,15 +134,15 @@ i18n.js is dependency-free: other modules import `{ t }` from it; re-renders are
 
 **Test Anchoring:**
 
-| Test file / name | Covers |
-|---|---|
-| `tests/pages.spec.ts` — "loads and shows ITHMB title" | Nav renders on home page |
-| `tests/ithmb-decoder.spec.ts` — "GitHub corner exists" | GitHub corner positioning |
-| `tests/ithmb-decoder.spec.ts` — "BMC corner exists" | BMC corner positioning |
-| `tests/visual.spec.ts` — "nav — home (active: Home, brand logo present)" | Nav visual snapshot |
-| `tests/visual.spec.ts` — "nav — decoder (active: Decoder)" | Nav visual snapshot |
-| `tests/visual.spec.ts` — "nav — guide (active: Guide)" | Nav visual snapshot |
-| `tests/visual.spec.ts` — "nav — enterprise (active: Enterprise)" | Nav visual snapshot |
+| Test file / name                                                         | Covers                    |
+| ------------------------------------------------------------------------ | ------------------------- |
+| `tests/pages.spec.ts` — "loads and shows ITHMB title"                    | Nav renders on home page  |
+| `tests/ithmb-decoder.spec.ts` — "GitHub corner exists"                   | GitHub corner positioning |
+| `tests/ithmb-decoder.spec.ts` — "BMC corner exists"                      | BMC corner positioning    |
+| `tests/visual.spec.ts` — "nav — home (active: Home, brand logo present)" | Nav visual snapshot       |
+| `tests/visual.spec.ts` — "nav — decoder (active: Decoder)"               | Nav visual snapshot       |
+| `tests/visual.spec.ts` — "nav — guide (active: Guide)"                   | Nav visual snapshot       |
+| `tests/visual.spec.ts` — "nav — enterprise (active: Enterprise)"         | Nav visual snapshot       |
 
 ### F-002: Footer (`footer.js`)
 
@@ -153,11 +153,11 @@ i18n.js is dependency-free: other modules import `{ t }` from it; re-renders are
 
 **Test Anchoring:**
 
-| Test file / name | Covers |
-|---|---|
-| `tests/gallery.spec.ts` — "footer has GitHub and BMC links" | Footer content |
-| `tests/visual.spec.ts` — "footer — enterprise page" | Footer visual snapshot |
-| `tests/ithmb-decoder.spec.ts` — "mentions 'Powered by Ithmb-Codec'" | Footer text |
+| Test file / name                                                    | Covers                 |
+| ------------------------------------------------------------------- | ---------------------- |
+| `tests/gallery.spec.ts` — "footer has GitHub and BMC links"         | Footer content         |
+| `tests/visual.spec.ts` — "footer — enterprise page"                 | Footer visual snapshot |
+| `tests/ithmb-decoder.spec.ts` — "mentions 'Powered by Ithmb-Codec'" | Footer text            |
 
 ---
 
@@ -172,15 +172,15 @@ i18n.js is dependency-free: other modules import `{ t }` from it; re-renders are
 
 **Test Anchoring:**
 
-| Test file / name | Covers |
-|---|---|
-| `tests/pages.spec.ts` — "loads and shows ITHMB title" | Title, structure |
-| `tests/pages.spec.ts` — "has links to decoder and enterprise" | Card links |
-| `tests/pages.spec.ts` — "EN subtitle is horizontally centered" | Layout |
-| `tests/pages.spec.ts` — "zh subtitle is horizontally centered" | zh layout |
-| `tests/visual.spec.ts` — "home page — full page" | Visual snapshot |
-| `tests/seo-metadata.spec.ts` — "has a meta description" | Meta tag |
-| `tests/a11y.spec.ts` — "home page has no critical accessibility violations" | a11y scan |
+| Test file / name                                                            | Covers           |
+| --------------------------------------------------------------------------- | ---------------- |
+| `tests/pages.spec.ts` — "loads and shows ITHMB title"                       | Title, structure |
+| `tests/pages.spec.ts` — "has links to decoder and enterprise"               | Card links       |
+| `tests/pages.spec.ts` — "EN subtitle is horizontally centered"              | Layout           |
+| `tests/pages.spec.ts` — "zh subtitle is horizontally centered"              | zh layout        |
+| `tests/visual.spec.ts` — "home page — full page"                            | Visual snapshot  |
+| `tests/seo-metadata.spec.ts` — "has a meta description"                     | Meta tag         |
+| `tests/a11y.spec.ts` — "home page has no critical accessibility violations" | a11y scan        |
 
 ---
 
@@ -195,16 +195,16 @@ i18n.js is dependency-free: other modules import `{ t }` from it; re-renders are
 
 **Test Anchoring:**
 
-| Test file / name | Covers |
-|---|---|
-| `tests/ithmb-decoder.spec.ts` — "loads without console errors" | Clean load |
-| `tests/ithmb-decoder.spec.ts` — "has correct title" | Title |
-| `tests/ithmb-decoder.spec.ts` — "dropzone is present with correct styling" | Dropzone |
-| `tests/ithmb-decoder.spec.ts` — "#toolbar element exists and is initially hidden" | Toolbar |
-| `tests/ithmb-decoder.spec.ts` — "no batch-share checkbox exists in toolbar" | Batch removal |
-| `tests/ithmb-decoder.spec.ts` — "--bg is #f5f5f7" | CSS variable |
-| `tests/ithmb-decoder.spec.ts` — "--accent is #007AFF" | CSS variable |
-| `tests/ithmb-decoder.spec.ts` — "--surface is #fff" | CSS variable |
+| Test file / name                                                                  | Covers        |
+| --------------------------------------------------------------------------------- | ------------- |
+| `tests/ithmb-decoder.spec.ts` — "loads without console errors"                    | Clean load    |
+| `tests/ithmb-decoder.spec.ts` — "has correct title"                               | Title         |
+| `tests/ithmb-decoder.spec.ts` — "dropzone is present with correct styling"        | Dropzone      |
+| `tests/ithmb-decoder.spec.ts` — "#toolbar element exists and is initially hidden" | Toolbar       |
+| `tests/ithmb-decoder.spec.ts` — "no batch-share checkbox exists in toolbar"       | Batch removal |
+| `tests/ithmb-decoder.spec.ts` — "--bg is #f5f5f7"                                 | CSS variable  |
+| `tests/ithmb-decoder.spec.ts` — "--accent is #007AFF"                             | CSS variable  |
+| `tests/ithmb-decoder.spec.ts` — "--surface is #fff"                               | CSS variable  |
 
 ### F-005: Decoder App States
 
@@ -215,14 +215,14 @@ i18n.js is dependency-free: other modules import `{ t }` from it; re-renders are
 
 **Test Anchoring:**
 
-| Test file / name | Covers |
-|---|---|
-| `tests/stress.spec.ts` — "1: Drop zone rejects invalid files" | Invalid file rejection |
-| `tests/stress.spec.ts` — "2: Drop single file — viewer opens" | Single file state |
-| `tests/stress.spec.ts` — "3: Drop 8 files — filmstrip has 8 thumbnails" | Multi-file state |
-| `tests/stress.spec.ts` — "6: Toggle to grid mode and back" | State transitions |
-| `tests/stress.spec.ts` — "9: Escape closes viewer" | Viewer close |
-| `tests/quality.spec.ts` — "corrupt .ithmb shows share card, not an error" | Error state |
+| Test file / name                                                          | Covers                 |
+| ------------------------------------------------------------------------- | ---------------------- |
+| `tests/stress.spec.ts` — "1: Drop zone rejects invalid files"             | Invalid file rejection |
+| `tests/stress.spec.ts` — "2: Drop single file — viewer opens"             | Single file state      |
+| `tests/stress.spec.ts` — "3: Drop 8 files — filmstrip has 8 thumbnails"   | Multi-file state       |
+| `tests/stress.spec.ts` — "6: Toggle to grid mode and back"                | State transitions      |
+| `tests/stress.spec.ts` — "9: Escape closes viewer"                        | Viewer close           |
+| `tests/quality.spec.ts` — "corrupt .ithmb shows share card, not an error" | Error state            |
 
 ### F-006: File Drop/Upload Flow
 
@@ -233,15 +233,15 @@ i18n.js is dependency-free: other modules import `{ t }` from it; re-renders are
 
 **Test Anchoring:**
 
-| Test file / name | Covers |
-|---|---|
-| `tests/upload.spec.ts` — "drops 8 distinct files — all decode successfully" | 8-file batch |
-| `tests/upload.spec.ts` — "second batch of distinct files also decodes" | Batch append |
-| `tests/upload.spec.ts` — "duplicate filenames — same file dropped 8 times" | Dedup |
-| `tests/upload.spec.ts` — "drag overlay appears on dragenter and clears on dragleave" | Drag overlay |
-| `tests/upload.spec.ts` — "drop processes files and creates file cards" | Card creation |
-| `tests/stress.spec.ts` — "10: Same file deduplication" | Dedup stress |
-| `tests/stress.spec.ts` — "11: Multiple batches append correctly" | Multi-batch |
+| Test file / name                                                                     | Covers        |
+| ------------------------------------------------------------------------------------ | ------------- |
+| `tests/upload.spec.ts` — "drops 8 distinct files — all decode successfully"          | 8-file batch  |
+| `tests/upload.spec.ts` — "second batch of distinct files also decodes"               | Batch append  |
+| `tests/upload.spec.ts` — "duplicate filenames — same file dropped 8 times"           | Dedup         |
+| `tests/upload.spec.ts` — "drag overlay appears on dragenter and clears on dragleave" | Drag overlay  |
+| `tests/upload.spec.ts` — "drop processes files and creates file cards"               | Card creation |
+| `tests/stress.spec.ts` — "10: Same file deduplication"                               | Dedup stress  |
+| `tests/stress.spec.ts` — "11: Multiple batches append correctly"                     | Multi-batch   |
 
 ### F-007: Decode Pipeline (`decodeFile`)
 
@@ -252,12 +252,12 @@ i18n.js is dependency-free: other modules import `{ t }` from it; re-renders are
 
 **Test Anchoring:**
 
-| Test file / name | Covers |
-|---|---|
+| Test file / name                                                            | Covers             |
+| --------------------------------------------------------------------------- | ------------------ |
 | `tests/upload.spec.ts` — "drops 8 distinct files — all decode successfully" | Decode correctness |
-| `tests/quality.spec.ts` — "corrupt .ithmb shows share card, not an error" | Failure path |
-| `tests/quality.spec.ts` — "invalid file shows error toast" | Error path |
-| `tests/gallery.spec.ts` — "failed decode shows placeholder in viewer" | Failure viewer |
+| `tests/quality.spec.ts` — "corrupt .ithmb shows share card, not an error"   | Failure path       |
+| `tests/quality.spec.ts` — "invalid file shows error toast"                  | Error path         |
+| `tests/gallery.spec.ts` — "failed decode shows placeholder in viewer"       | Failure viewer     |
 
 ### F-008: Viewer
 
@@ -268,21 +268,21 @@ i18n.js is dependency-free: other modules import `{ t }` from it; re-renders are
 
 **Test Anchoring:**
 
-| Test file / name | Covers |
-|---|---|
-| `tests/gallery.spec.ts` — "viewer container appears with 8 files" | Open state |
-| `tests/gallery.spec.ts` — "first thumbnail is active when viewer opens" | Initial state |
-| `tests/gallery.spec.ts` — "clicking a thumbnail switches the viewer" | Click nav |
-| `tests/gallery.spec.ts` — "arrow keys navigate between images" | Keyboard nav |
-| `tests/gallery.spec.ts` — "Escape closes viewer" | Close |
-| `tests/gallery.spec.ts` — "filmstrip thumbs appear in file order as placeholders" | Filmstrip order |
-| `tests/gallery.spec.ts` — "keyboard shortcut G toggles grid view" | G key toggle |
-| `tests/gallery.spec.ts` — "mobile viewport hides arrows and adapts filmstrip" | Mobile |
-| `tests/gallery.spec.ts` — "holding ArrowRight advances viewer repeatedly" | Hold-to-repeat |
-| `tests/gallery.spec.ts` — "viewer stage canvas has non-blank pixel content" | Canvas content |
-| `tests/stress.spec.ts` — "5: Navigate by arrow keys (cyclic)" | Cyclic nav |
-| `tests/quality.spec.ts` — "arrow keys navigate between decoded images" | Keyboard nav |
-| `tests/unit/client-utils.test.ts` — "KNOWN_PREFIXES contains expected entries" | Prefix knowledge |
+| Test file / name                                                                  | Covers           |
+| --------------------------------------------------------------------------------- | ---------------- |
+| `tests/gallery.spec.ts` — "viewer container appears with 8 files"                 | Open state       |
+| `tests/gallery.spec.ts` — "first thumbnail is active when viewer opens"           | Initial state    |
+| `tests/gallery.spec.ts` — "clicking a thumbnail switches the viewer"              | Click nav        |
+| `tests/gallery.spec.ts` — "arrow keys navigate between images"                    | Keyboard nav     |
+| `tests/gallery.spec.ts` — "Escape closes viewer"                                  | Close            |
+| `tests/gallery.spec.ts` — "filmstrip thumbs appear in file order as placeholders" | Filmstrip order  |
+| `tests/gallery.spec.ts` — "keyboard shortcut G toggles grid view"                 | G key toggle     |
+| `tests/gallery.spec.ts` — "mobile viewport hides arrows and adapts filmstrip"     | Mobile           |
+| `tests/gallery.spec.ts` — "holding ArrowRight advances viewer repeatedly"         | Hold-to-repeat   |
+| `tests/gallery.spec.ts` — "viewer stage canvas has non-blank pixel content"       | Canvas content   |
+| `tests/stress.spec.ts` — "5: Navigate by arrow keys (cyclic)"                     | Cyclic nav       |
+| `tests/quality.spec.ts` — "arrow keys navigate between decoded images"            | Keyboard nav     |
+| `tests/unit/client-utils.test.ts` — "KNOWN_PREFIXES contains expected entries"    | Prefix knowledge |
 
 ### F-009: Share / Report
 
@@ -293,17 +293,17 @@ i18n.js is dependency-free: other modules import `{ t }` from it; re-renders are
 
 **Test Anchoring:**
 
-| Test file / name | Covers |
-|---|---|
-| `tests/quality.spec.ts` — "Share 16 bytes posts header-only payload and disables buttons" | Header share |
-| `tests/quality.spec.ts` — "Share full file posts full_file base64 payload" | Full file share |
-| `tests/quality.spec.ts` — "double-clicking Share 16 bytes sends exactly one POST" | Dedup |
-| `tests/quality.spec.ts` — "sharing 16 bytes then full file sends both payloads" | Upgrade flow |
-| `tests/quality.spec.ts` — "server rejection shows honest failure toast, button stays active" | Rollback |
-| `tests/quality.spec.ts` — "success card has no contribute button, shows report link" | Success card |
-| `tests/quality.spec.ts` — "report link shares first 16 bytes and marks shared" | Report flow |
-| `tests/quality.spec.ts` — "viewer stage shows share box for a failed card" | Viewer share |
-| `tests/quality.spec.ts` — "viewer stage report link posts header for a success card" | Viewer report |
+| Test file / name                                                                             | Covers          |
+| -------------------------------------------------------------------------------------------- | --------------- |
+| `tests/quality.spec.ts` — "Share 16 bytes posts header-only payload and disables buttons"    | Header share    |
+| `tests/quality.spec.ts` — "Share full file posts full_file base64 payload"                   | Full file share |
+| `tests/quality.spec.ts` — "double-clicking Share 16 bytes sends exactly one POST"            | Dedup           |
+| `tests/quality.spec.ts` — "sharing 16 bytes then full file sends both payloads"              | Upgrade flow    |
+| `tests/quality.spec.ts` — "server rejection shows honest failure toast, button stays active" | Rollback        |
+| `tests/quality.spec.ts` — "success card has no contribute button, shows report link"         | Success card    |
+| `tests/quality.spec.ts` — "report link shares first 16 bytes and marks shared"               | Report flow     |
+| `tests/quality.spec.ts` — "viewer stage shows share box for a failed card"                   | Viewer share    |
+| `tests/quality.spec.ts` — "viewer stage report link posts header for a success card"         | Viewer report   |
 
 ### F-010: Download All
 
@@ -314,12 +314,12 @@ i18n.js is dependency-free: other modules import `{ t }` from it; re-renders are
 
 **Test Anchoring:**
 
-| Test file / name | Covers |
-|---|---|
-| `tests/gallery.spec.ts` — "download all creates a zip file" | ZIP creation |
-| `tests/gallery.spec.ts` — "download format dropdown changes button text" | Format select |
+| Test file / name                                                                             | Covers             |
+| -------------------------------------------------------------------------------------------- | ------------------ |
+| `tests/gallery.spec.ts` — "download all creates a zip file"                                  | ZIP creation       |
+| `tests/gallery.spec.ts` — "download format dropdown changes button text"                     | Format select      |
 | `tests/gallery.spec.ts` — "global download-format select does not override per-card formats" | Per-card isolation |
-| `tests/gallery.spec.ts` — "grid mode has format select in file cards" | Grid format select |
+| `tests/gallery.spec.ts` — "grid mode has format select in file cards"                        | Grid format select |
 
 ### F-011: Toast
 
@@ -330,8 +330,8 @@ i18n.js is dependency-free: other modules import `{ t }` from it; re-renders are
 
 **Test Anchoring:**
 
-| Test file / name | Covers |
-|---|---|
+| Test file / name                                                 | Covers          |
+| ---------------------------------------------------------------- | --------------- |
 | `tests/gallery.spec.ts` — "toast message appears and disappears" | Toast lifecycle |
 
 ### F-012: WASM Load-Failure Retry
@@ -343,9 +343,9 @@ i18n.js is dependency-free: other modules import `{ t }` from it; re-renders are
 
 **Test Anchoring:**
 
-| Test file / name | Covers |
-|---|---|
-| `tests/quality.spec.ts` — "invalid file shows error toast" | Error handling |
+| Test file / name                                              | Covers         |
+| ------------------------------------------------------------- | -------------- |
+| `tests/quality.spec.ts` — "invalid file shows error toast"    | Error handling |
 | `tests/stress.spec.ts` — "1: Drop zone rejects invalid files" | Rejection flow |
 
 ---
@@ -361,13 +361,13 @@ i18n.js is dependency-free: other modules import `{ t }` from it; re-renders are
 
 **Test Anchoring:**
 
-| Test file / name | Covers |
-|---|---|
-| `tests/pages.spec.ts` — "loads with correct title" (guide) | Title |
-| `tests/pages.spec.ts` — "has FAQ heading" (guide) | Content |
-| `tests/visual.spec.ts` — "guide page — full page" | Visual snapshot |
-| `tests/quality.spec.ts` — "guide page layout at 375px" | Responsive |
-| `tests/seo-metadata.spec.ts` — "has a meta description" | Meta tag |
+| Test file / name                                           | Covers          |
+| ---------------------------------------------------------- | --------------- |
+| `tests/pages.spec.ts` — "loads with correct title" (guide) | Title           |
+| `tests/pages.spec.ts` — "has FAQ heading" (guide)          | Content         |
+| `tests/visual.spec.ts` — "guide page — full page"          | Visual snapshot |
+| `tests/quality.spec.ts` — "guide page layout at 375px"     | Responsive      |
+| `tests/seo-metadata.spec.ts` — "has a meta description"    | Meta tag        |
 
 ---
 
@@ -382,11 +382,11 @@ i18n.js is dependency-free: other modules import `{ t }` from it; re-renders are
 
 **Test Anchoring:**
 
-| Test file / name | Covers |
-|---|---|
-| `tests/pages.spec.ts` — "loads with correct title" (enterprise) | Title |
-| `tests/pages.spec.ts` — "has hero section" (enterprise) | Structure |
-| `tests/visual.spec.ts` — "enterprise page — full page" | Visual snapshot |
+| Test file / name                                                | Covers          |
+| --------------------------------------------------------------- | --------------- |
+| `tests/pages.spec.ts` — "loads with correct title" (enterprise) | Title           |
+| `tests/pages.spec.ts` — "has hero section" (enterprise)         | Structure       |
+| `tests/visual.spec.ts` — "enterprise page — full page"          | Visual snapshot |
 
 ---
 
@@ -401,10 +401,10 @@ i18n.js is dependency-free: other modules import `{ t }` from it; re-renders are
 
 **Test Anchoring:**
 
-| Test file / name | Covers |
-|---|---|
-| `tests/unit/client-utils.test.ts` — "KNOWN_PREFIXES contains expected entries" | Prefix set |
-| `tests/unit/client-utils.test.ts` — "KNOWN_PREFIXES has correct size" | Set integrity |
+| Test file / name                                                                  | Covers        |
+| --------------------------------------------------------------------------------- | ------------- |
+| `tests/unit/client-utils.test.ts` — "KNOWN_PREFIXES contains expected entries"    | Prefix set    |
+| `tests/unit/client-utils.test.ts` — "KNOWN_PREFIXES has correct size"             | Set integrity |
 | `tests/unit/client-utils.test.ts` — "KNOWN_PREFIXES rejects non-prefixed numbers" | Negative case |
 
 ### F-016: Cards Module (`cards.js`)
@@ -416,11 +416,11 @@ i18n.js is dependency-free: other modules import `{ t }` from it; re-renders are
 
 **Test Anchoring:**
 
-| Test file / name | Covers |
-|---|---|
+| Test file / name                                                           | Covers          |
+| -------------------------------------------------------------------------- | --------------- |
 | `tests/upload.spec.ts` — "duplicate filenames — same file dropped 8 times" | Dedup via cards |
-| `tests/stress.spec.ts` — "3: Drop 8 files — filmstrip has 8 thumbnails" | Card count |
-| `tests/gallery.spec.ts` — "dropping same files twice deduplicates" | Dedup flow |
+| `tests/stress.spec.ts` — "3: Drop 8 files — filmstrip has 8 thumbnails"    | Card count      |
+| `tests/gallery.spec.ts` — "dropping same files twice deduplicates"         | Dedup flow      |
 
 ### F-017: Pure Utility Functions
 
@@ -431,13 +431,13 @@ i18n.js is dependency-free: other modules import `{ t }` from it; re-renders are
 
 **Test Anchoring:**
 
-| Test file / name | Covers |
-|---|---|
-| `tests/unit/client-utils.test.ts` — "formatSize formats bytes correctly" (3 cases) | formatSize |
-| `tests/unit/client-utils.test.ts` — "bytesToHex converts correctly" (4 cases) | bytesToHex |
-| `tests/unit/client-utils.test.ts` — "bytesToBase64 converts correctly" (3 cases) | bytesToBase64 |
-| `tests/unit/client-utils.test.ts` — "formatLabels returns a non-empty string" | formatLabels |
-| `tests/unit/client-utils.test.ts` — "extMap maps known prefixes" | extMap |
+| Test file / name                                                                   | Covers        |
+| ---------------------------------------------------------------------------------- | ------------- |
+| `tests/unit/client-utils.test.ts` — "formatSize formats bytes correctly" (3 cases) | formatSize    |
+| `tests/unit/client-utils.test.ts` — "bytesToHex converts correctly" (4 cases)      | bytesToHex    |
+| `tests/unit/client-utils.test.ts` — "bytesToBase64 converts correctly" (3 cases)   | bytesToBase64 |
+| `tests/unit/client-utils.test.ts` — "formatLabels returns a non-empty string"      | formatLabels  |
+| `tests/unit/client-utils.test.ts` — "extMap maps known prefixes"                   | extMap        |
 
 ### F-018: Decode Pipeline Unit Logic
 
@@ -448,12 +448,12 @@ i18n.js is dependency-free: other modules import `{ t }` from it; re-renders are
 
 **Test Anchoring:**
 
-| Test file / name | Covers |
-|---|---|
-| `tests/unit/worker-crypto.test.ts` — "escapeHtml escapes all HTML special characters" (5 cases) | HTML safety |
-| `tests/unit/worker-crypto.test.ts` — "validBase64Payload accepts valid base64" (5 cases) | Base64 validation |
-| `tests/unit/worker-crypto.test.ts` — "tokensEqual uses constant-time comparison" (3 cases) | Timing safety |
-| `tests/unit/worker-crypto.test.ts` — "keyedPseudonym produces deterministic output" (4 cases) | HMAC |
+| Test file / name                                                                                | Covers            |
+| ----------------------------------------------------------------------------------------------- | ----------------- |
+| `tests/unit/worker-crypto.test.ts` — "escapeHtml escapes all HTML special characters" (5 cases) | HTML safety       |
+| `tests/unit/worker-crypto.test.ts` — "validBase64Payload accepts valid base64" (5 cases)        | Base64 validation |
+| `tests/unit/worker-crypto.test.ts` — "tokensEqual uses constant-time comparison" (3 cases)      | Timing safety     |
+| `tests/unit/worker-crypto.test.ts` — "keyedPseudonym produces deterministic output" (4 cases)   | HMAC              |
 
 ---
 
@@ -468,11 +468,11 @@ i18n.js is dependency-free: other modules import `{ t }` from it; re-renders are
 
 **Test Anchoring:**
 
-| Test file / name | Covers |
-|---|---|
-| `tests/seo-metadata.spec.ts` — "has a meta description" | Localized meta |
-| `tests/seo-metadata.spec.ts` — "${name}: en ↔ zh alternates with x-default" | hreflang |
-| `tests/seo-metadata.spec.ts` — "${name}: fully Chinese HTML with real en ↔ zh hreflang" | zh hreflang |
+| Test file / name                                                                        | Covers         |
+| --------------------------------------------------------------------------------------- | -------------- |
+| `tests/seo-metadata.spec.ts` — "has a meta description"                                 | Localized meta |
+| `tests/seo-metadata.spec.ts` — "${name}: en ↔ zh alternates with x-default"             | hreflang       |
+| `tests/seo-metadata.spec.ts` — "${name}: fully Chinese HTML with real en ↔ zh hreflang" | zh hreflang    |
 
 ### F-020: Derived i18n (`t()`)
 
@@ -483,10 +483,10 @@ i18n.js is dependency-free: other modules import `{ t }` from it; re-renders are
 
 **Test Anchoring:**
 
-| Test file / name | Covers |
-|---|---|
+| Test file / name                                                                      | Covers        |
+| ------------------------------------------------------------------------------------- | ------------- |
 | `tests/gallery.spec.ts` — "toggle button text switches between Grid view and Gallery" | Derived label |
-| `tests/gallery.spec.ts` — "download format dropdown changes button text" | Format label |
+| `tests/gallery.spec.ts` — "download format dropdown changes button text"              | Format label  |
 
 ### F-021: Language-Preference Redirect (`lang-redirect.js`)
 
@@ -497,15 +497,15 @@ i18n.js is dependency-free: other modules import `{ t }` from it; re-renders are
 
 **Test Anchoring:**
 
-| Test file / name | Covers |
-|---|---|
-| `tests/seo-metadata.spec.ts` — "stored zh preference redirects an EN page to its /zh/ counterpart" | zh redirect |
-| `tests/seo-metadata.spec.ts` — "stored en preference redirects a /zh/ page to its EN counterpart" | en redirect |
-| `tests/seo-metadata.spec.ts` — "no preference + zh browser redirects an EN page to /zh/" | Browser detection |
-| `tests/seo-metadata.spec.ts` — "no preference + zh browser stays on a /zh/ page (never bounces to EN)" | No-loop |
-| `tests/seo-metadata.spec.ts` — "an unmapped path is never redirected (404 stays put)" | Unmapped |
-| `tests/seo-metadata.spec.ts` — "stored zh preference redirects the guide .html URL" | Guide redirect |
-| `tests/seo-metadata.spec.ts` — "no preference + non-zh browser keeps an EN page in place" | No-op |
+| Test file / name                                                                                       | Covers            |
+| ------------------------------------------------------------------------------------------------------ | ----------------- |
+| `tests/seo-metadata.spec.ts` — "stored zh preference redirects an EN page to its /zh/ counterpart"     | zh redirect       |
+| `tests/seo-metadata.spec.ts` — "stored en preference redirects a /zh/ page to its EN counterpart"      | en redirect       |
+| `tests/seo-metadata.spec.ts` — "no preference + zh browser redirects an EN page to /zh/"               | Browser detection |
+| `tests/seo-metadata.spec.ts` — "no preference + zh browser stays on a /zh/ page (never bounces to EN)" | No-loop           |
+| `tests/seo-metadata.spec.ts` — "an unmapped path is never redirected (404 stays put)"                  | Unmapped          |
+| `tests/seo-metadata.spec.ts` — "stored zh preference redirects the guide .html URL"                    | Guide redirect    |
+| `tests/seo-metadata.spec.ts` — "no preference + non-zh browser keeps an EN page in place"              | No-op             |
 
 ---
 
@@ -520,13 +520,13 @@ i18n.js is dependency-free: other modules import `{ t }` from it; re-renders are
 
 **Test Anchoring:**
 
-| Test file / name | Covers |
-|---|---|
-| `tests/ithmb-decoder.spec.ts` — "body background is --bg CSS variable" | CSS vars |
-| `tests/ithmb-decoder.spec.ts` — "dropzone is present with correct styling" | Component styling |
+| Test file / name                                                                                  | Covers                                |
+| ------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| `tests/ithmb-decoder.spec.ts` — "body background is --bg CSS variable"                            | CSS vars                              |
+| `tests/ithmb-decoder.spec.ts` — "dropzone is present with correct styling"                        | Component styling                     |
 | `tests/dark-mode.spec.ts` — "dark mode: ${name} has no light-background or low-contrast elements" | Dark mode (documented: not supported) |
-| `tests/quality.spec.ts` — "home page fits viewport at 375px (iPhone)" | Responsive |
-| `tests/quality.spec.ts` — "decoder page layout at 375px (iPhone)" | Responsive |
+| `tests/quality.spec.ts` — "home page fits viewport at 375px (iPhone)"                             | Responsive                            |
+| `tests/quality.spec.ts` — "decoder page layout at 375px (iPhone)"                                 | Responsive                            |
 
 ---
 
@@ -541,24 +541,24 @@ i18n.js is dependency-free: other modules import `{ t }` from it; re-renders are
 
 **Test Anchoring:**
 
-| Test file / name | Covers |
-|---|---|
-| `workers/telemetry/test-worker.ts` — "200 GET / returns JSON with prefix counts" | GET JSON |
-| `workers/telemetry/test-worker.ts` — "POST / persists a record to KV" | POST persist |
-| `workers/telemetry/test-worker.ts` — "POST / dashboard renders HTML" | Dashboard |
-| `workers/telemetry/test-worker.ts` — "POST / with invalid JSON returns 400" | Error: bad body |
-| `workers/telemetry/test-worker.ts` — "POST / without auth returns 401" | Error: no auth |
-| `workers/telemetry/test-worker.ts` — "POST / with bad token returns 401" | Error: bad auth |
-| `workers/telemetry/test-worker.ts` — "POST / OPTIONS returns CORS headers" | CORS |
-| `workers/telemetry/test-worker.ts` — "POST / deduplicates records" | Dedup |
-| `workers/telemetry/test-worker.ts` — "POST / enforces rate limits" | Rate limit |
-| `workers/telemetry/test-worker.ts` — "POST / validates body size" | Body cap |
-| `workers/telemetry/test-worker.ts` — "GET / dashboard without auth returns 401" | Dashboard auth |
-| `workers/telemetry/test-worker.ts` — "POST / full_file base64 stored separately" | Full file storage |
-| `tests/unit/worker-validation.test.ts` — "accepts valid entry with all fields" (15 cases) | Validation logic |
-| `tests/unit/worker-crypto.test.ts` — "keyedPseudonym produces deterministic output" (4 cases) | HMAC-SHA256 |
-| `tests/unit/worker-crypto.test.ts` — "fingerprint produces consistent hash" | Fingerprint |
-| `tests/unit/worker-crypto.test.ts` — "ipFingerprint produces consistent hash" | IP fingerprint |
+| Test file / name                                                                              | Covers            |
+| --------------------------------------------------------------------------------------------- | ----------------- |
+| `workers/telemetry/test-worker.ts` — "200 GET / returns JSON with prefix counts"              | GET JSON          |
+| `workers/telemetry/test-worker.ts` — "POST / persists a record to KV"                         | POST persist      |
+| `workers/telemetry/test-worker.ts` — "POST / dashboard renders HTML"                          | Dashboard         |
+| `workers/telemetry/test-worker.ts` — "POST / with invalid JSON returns 400"                   | Error: bad body   |
+| `workers/telemetry/test-worker.ts` — "POST / without auth returns 401"                        | Error: no auth    |
+| `workers/telemetry/test-worker.ts` — "POST / with bad token returns 401"                      | Error: bad auth   |
+| `workers/telemetry/test-worker.ts` — "POST / OPTIONS returns CORS headers"                    | CORS              |
+| `workers/telemetry/test-worker.ts` — "POST / deduplicates records"                            | Dedup             |
+| `workers/telemetry/test-worker.ts` — "POST / enforces rate limits"                            | Rate limit        |
+| `workers/telemetry/test-worker.ts` — "POST / validates body size"                             | Body cap          |
+| `workers/telemetry/test-worker.ts` — "GET / dashboard without auth returns 401"               | Dashboard auth    |
+| `workers/telemetry/test-worker.ts` — "POST / full_file base64 stored separately"              | Full file storage |
+| `tests/unit/worker-validation.test.ts` — "accepts valid entry with all fields" (15 cases)     | Validation logic  |
+| `tests/unit/worker-crypto.test.ts` — "keyedPseudonym produces deterministic output" (4 cases) | HMAC-SHA256       |
+| `tests/unit/worker-crypto.test.ts` — "fingerprint produces consistent hash"                   | Fingerprint       |
+| `tests/unit/worker-crypto.test.ts` — "ipFingerprint produces consistent hash"                 | IP fingerprint    |
 
 ---
 
@@ -569,38 +569,38 @@ i18n.js is dependency-free: other modules import `{ t }` from it; re-renders are
 - **Status:** applied
 - **Reviewed:** 2026-08-27
 
-**Behavior Contract:** Preconditions: Playwright installed + BASE_URL set. Postconditions: 11 spec files covering pages, decoder, gallery, stress, upload, quality, a11y, seo-metadata, visual, dark-mode, port-regression; 3 projects (chromium, firefox, webkit); test:quick = chromium only, test:full = all 3. Invariants: tests/hooks must always set BASE_URL to local server (never production). Error cases: any spec failure → non-zero exit.
+**Behavior Contract:** Preconditions: Playwright installed + BASE_URL set. Postconditions: 12 spec files covering pages, decoder, gallery, stress, upload, quality, a11y, seo-metadata, visual, dark-mode, decode-failure, perf-budget (tiers frozen in docs/TEST_STRATEGY.md) plus `tests/unit/port-regression.test.ts` in bun:test; 3 projects (chromium, firefox, webkit); test:quick = chromium only, test:full = all 3. Invariants: tests/hooks must always set BASE_URL to local server (never production). Error cases: any spec failure → non-zero exit.
 
 **Test Anchoring:**
 
-| Test file / name | Covers |
-|---|---|
-| `tests/pages.spec.ts` — all tests | Page load coverage |
-| `tests/ithmb-decoder.spec.ts` — all tests | Decoder structure |
-| `tests/gallery.spec.ts` — all tests | Viewer/gallery flows |
-| `tests/stress.spec.ts` — all tests | Full-flow stress |
-| `tests/upload.spec.ts` — all tests | Upload/decode |
-| `tests/quality.spec.ts` — all tests | Share/report + responsive |
-| `tests/a11y.spec.ts` — all tests | Accessibility |
-| `tests/seo-metadata.spec.ts` — all tests | SEO + i18n redirect |
-| `tests/visual.spec.ts` — all tests | Visual snapshots |
-| `tests/dark-mode.spec.ts` — all tests | Dark mode |
-| `tests/port-regression.spec.ts` — all tests | Port allocation |
+| Test file / name                                 | Covers                     |
+| ------------------------------------------------ | -------------------------- |
+| `tests/pages.spec.ts` — all tests                | Page load coverage         |
+| `tests/ithmb-decoder.spec.ts` — all tests        | Decoder structure          |
+| `tests/gallery.spec.ts` — all tests              | Viewer/gallery flows       |
+| `tests/stress.spec.ts` — all tests               | Full-flow stress           |
+| `tests/upload.spec.ts` — all tests               | Upload/decode              |
+| `tests/quality.spec.ts` — all tests              | Share/report + responsive  |
+| `tests/a11y.spec.ts` — all tests                 | Accessibility              |
+| `tests/seo-metadata.spec.ts` — all tests         | SEO + i18n redirect        |
+| `tests/visual.spec.ts` — all tests               | Visual snapshots           |
+| `tests/dark-mode.spec.ts` — all tests            | Dark mode                  |
+| `tests/unit/port-regression.test.ts` — all tests | Port allocation (bun:test) |
 
-### F-025: Vitest Unit Test Layer
+### F-025: Bun Unit Test Layer
 
 - **Status:** applied
 - **Reviewed:** 2026-08-27
 
-**Behavior Contract:** Preconditions: vitest installed. Postconditions: tests/unit/*.test.ts covering pure logic (crypto, validation, client utils); npm run test:unit → vitest run. Invariants: no DOM dependencies; fast (< 1s). Error cases: any test failure → non-zero exit.
+**Behavior Contract:** Preconditions: bun 1.3.14 installed. Postconditions: tests/unit/*.test.ts covering pure logic (crypto, validation, client utils); bun run test:unit → bun test tests/unit/. Invariants: no DOM dependencies; fast (< 1s). Error cases: any test failure → non-zero exit.
 
 **Test Anchoring:**
 
-| Test file / name | Covers |
-|---|---|
-| `tests/unit/worker-crypto.test.ts` — all tests (14) | Worker crypto logic |
+| Test file / name                                        | Covers                  |
+| ------------------------------------------------------- | ----------------------- |
+| `tests/unit/worker-crypto.test.ts` — all tests (14)     | Worker crypto logic     |
 | `tests/unit/worker-validation.test.ts` — all tests (15) | Worker validation logic |
-| `tests/unit/client-utils.test.ts` — all tests (19) | Client pure utilities |
+| `tests/unit/client-utils.test.ts` — all tests (19)      | Client pure utilities   |
 
 ### F-026: a11y Authoritative Gate
 
@@ -611,8 +611,8 @@ i18n.js is dependency-free: other modules import `{ t }` from it; re-renders are
 
 **Test Anchoring:**
 
-| Test file / name | Covers |
-|---|---|
+| Test file / name                                                               | Covers             |
+| ------------------------------------------------------------------------------ | ------------------ |
 | `tests/a11y.spec.ts` — "${name} page has no critical accessibility violations" | Authoritative a11y |
 
 ### F-027: Pre-commit & Local CI Gates
@@ -624,38 +624,38 @@ i18n.js is dependency-free: other modules import `{ t }` from it; re-renders are
 
 **Test Anchoring:**
 
-| Test file / name | Covers |
-|---|---|
-| `scripts/check-local.sh` — all 10 steps | Local CI parity |
-| `tests/port-regression.spec.ts` — all tests | Port allocation |
+| Test file / name                                 | Covers                     |
+| ------------------------------------------------ | -------------------------- |
+| `scripts/check-local.sh` — all 10 steps          | Local CI parity            |
+| `tests/unit/port-regression.test.ts` — all tests | Port allocation (bun:test) |
 
 ### F-028: GitHub CI Pipeline
 
 - **Status:** applied
 - **Reviewed:** 2026-08-27
 
-**Behavior Contract:** Preconditions: push to main or PR. Postconditions: 2 jobs — lint (typecheck + build + determinism + vitest) + test (chromium/firefox/webkit matrix with Playwright against local server). Invariants: SHA-pinned actions; playwright webServer handles server lifecycle. Error cases: any job failure → non-zero exit.
+**Behavior Contract:** Preconditions: push to main or PR. Postconditions: 2 jobs — lint (typecheck + build + determinism + biome format gate + bun test) + test (chromium/firefox/webkit matrix with Playwright against local server). Invariants: SHA-pinned actions; playwright webServer handles server lifecycle. Error cases: any job failure → non-zero exit.
 
 **Test Anchoring:**
 
-| Test file / name | Covers |
-|---|---|
-| `.github/workflows/ci.yml` — lint job | Type-check + build + vitest |
-| `.github/workflows/ci.yml` — test job (3 browsers) | Cross-browser Playwright |
+| Test file / name                                   | Covers                                       |
+| -------------------------------------------------- | -------------------------------------------- |
+| `.github/workflows/ci.yml` — lint job              | Type-check + build + biome format + bun test |
+| `.github/workflows/ci.yml` — test job (3 browsers) | Cross-browser Playwright                     |
 
 ### F-029: Dev/Public Deploy Workflow
 
 - **Status:** applied
 - **Reviewed:** 2026-08-27
 
-**Behavior Contract:** Preconditions: dev + public repos configured. Postconditions: all work on dev main → squash onto squash-work (tracks public/main) → verify trees identical → push to public; Cloudflare Pages auto-deploys on push (~1-2 min); telemetry worker via wrangler. Invariants: public CI is the gate; WASM regeneration copies ONLY .wasm (loader/glue hand-adapted, unchanged). Error cases: tree mismatch → deploy blocked.
+**Behavior Contract:** Preconditions: dev + public repos configured. Postconditions: all work on dev main → squash onto squash-work (tracks public/main) → verify trees identical → push to public; GitHub Pages auto-deploys on push (~1-2 min); telemetry worker via wrangler. Invariants: public CI is the gate; WASM regeneration copies ONLY .wasm (loader/glue hand-adapted, unchanged). Error cases: tree mismatch → deploy blocked.
 
 **Test Anchoring:**
 
-| Test file / name | Covers |
-|---|---|
-| `scripts/check-local.sh` — step [5] build determinism | Build reproducibility |
-| `scripts/check-wasm-drift.sh` | WASM import compatibility |
+| Test file / name                                      | Covers                    |
+| ----------------------------------------------------- | ------------------------- |
+| `scripts/check-local.sh` — step [5] build determinism | Build reproducibility     |
+| `scripts/check-wasm-drift.sh`                         | WASM import compatibility |
 
 ---
 

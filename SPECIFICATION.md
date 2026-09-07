@@ -10,11 +10,11 @@
 
 **Design influences:** Volere, IEEE 830, Shape Up, and Jackson Structured Design.
 
-| Layer | Scope | Example |
-|---|---|---|
-| MACRO | The whole system | The ithmb-codec.dev website |
-| MESO | A component | The decoder SPA, the telemetry worker |
-| MICRO | An implementation detail | A single ES module or worker route |
+| Layer | Scope                    | Example                               |
+| ----- | ------------------------ | ------------------------------------- |
+| MACRO | The whole system         | The ithmb-codec.dev website           |
+| MESO  | A component              | The decoder SPA, the telemetry worker |
+| MICRO | An implementation detail | A single ES module or worker route    |
 
 **Priority tiers:** Tier 1 = sections 0-7 (any project), Tier 2 = sections 8-11 (production), Tier 3 = sections 12-14 (ecosystem). Section 15 is the verification checklist.
 
@@ -64,19 +64,19 @@ Stakeholders: End users opening .ithmb files, privacy-conscious users, the Ithmb
 
 ## 2. Architecture & Design Decisions
 
-> **Y-Statement format:** *In the context of {{situation}}, facing {{concern}}, we decided for {{option}} to achieve {{goal}}, accepting {{downside}}.*
+> **Y-Statement format:** _In the context of {{situation}}, facing {{concern}}, we decided for {{option}} to achieve {{goal}}, accepting {{downside}}._
 
 **Decision 1: Client-side WASM decoding, no backend for the core path.**
-*In the context of* a privacy-first tool, *facing* the risk that server-side processing would force users to upload sensitive thumbnails, *we decided for* compiling the `ithmb-core` engine to WASM and running it entirely in the browser *to achieve* true zero-upload privacy, *accepting* a large initial payload (~194KB wasm) and the need to hand-adapt the loader (`ithmb_wasm.js` is hand-adapted and must not be replaced).
+_In the context of_ a privacy-first tool, _facing_ the risk that server-side processing would force users to upload sensitive thumbnails, _we decided for_ compiling the `ithmb-core` engine to WASM and running it entirely in the browser _to achieve_ true zero-upload privacy, _accepting_ a large initial payload (~194KB wasm) and the need to hand-adapt the loader (`ithmb_wasm.js` is hand-adapted and must not be replaced).
 
 **Decision 2: Quiet-by-default telemetry with explicit opt-in.**
-*In the context of* wanting failure diagnostics *facing* the conflict between observability and privacy, *we decided for* a telemetry design where nothing is sent automatically and failure/unknown cards present an explicit opt-in share action *to achieve* both diagnostics and privacy, *accepting* lower telemetry volume and the need for careful UX copy.
+_In the context of_ wanting failure diagnostics _facing_ the conflict between observability and privacy, _we decided for_ a telemetry design where nothing is sent automatically and failure/unknown cards present an explicit opt-in share action _to achieve_ both diagnostics and privacy, _accepting_ lower telemetry volume and the need for careful UX copy.
 
 **Decision 3: Static-first multi-page site plus a single SPA for decoding.**
-*In the context of* a content site that must be fast and indexable, *facing* the complexity of a fully client-rendered app, *we decided for* static HTML pages (Home, Guide, Enterprise) with one embedded SPA at `/ithmb-decoder/` *to achieve* fast loads, good SEO, and a focused decoding surface, *accepting* some duplication between page templates.
+_In the context of_ a content site that must be fast and indexable, _facing_ the complexity of a fully client-rendered app, _we decided for_ static HTML pages (Home, Guide, Enterprise) with one embedded SPA at `/ithmb-decoder/` _to achieve_ fast loads, good SEO, and a focused decoding surface, _accepting_ some duplication between page templates.
 
 **Decision 4: en/zh i18n with a server-rendered authoritative language attribute.**
-*In the context of* an international audience *facing* the risk of SEO-breaking duplicated content and FOUC, *we decided for* a language-redirect script that runs before paint and a canonical `lang` attribute in the served HTML *to achieve* correct initial language and indexable pages, *accepting* an i18n parity gate (`lint:i18n`) that every change must pass.
+_In the context of_ an international audience _facing_ the risk of SEO-breaking duplicated content and FOUC, _we decided for_ a language-redirect script that runs before paint and a canonical `lang` attribute in the served HTML _to achieve_ correct initial language and indexable pages, _accepting_ an i18n parity gate (`lint:i18n`) that every change must pass.
 
 ### PROJECT_MODEL
 
@@ -84,59 +84,60 @@ See `docs/PROJECT_MODEL.md`. Current state: **POLISHED**. The full state machine
 
 ## 3. File Tree & Module Responsibilities
 
-| Path | Responsibility | HIDES / EXPORTS / CALLER / Pre / Post / Invariant |
-|---|---|---|
-| `ithmb-decoder/app.js` | Boots the decoder SPA; wires modules together | CALLER of decoder, ui, state, input, i18n, telemetry |
-| `ithmb-decoder/decoder.js` | Orchestrates WASM decode; peek_prefix then decode_ithmb | Pre: file bytes; Post: success canvas or failure/error; HIDES wasm call details |
-| `ithmb-decoder/viewer.js` | Filmstrip navigation, arrows, G key, Escape, swipe | EXPORTS open/show; CALLER ui |
-| `ithmb-decoder/state.js` | App state, dedup via sharedSubmissionIds + processedFileIds | HIDES state shape; Invariant: no auto-send |
-| `ithmb-decoder/ui.js` | DOM rendering, success/failure/error cards | CALLER cards, card-success-ui, share-actions |
-| `ithmb-decoder/utils.js` | Shared helpers (hex dump, size checks) | EXPORTS pure helpers |
-| `ithmb-decoder/input.js` | File drop/select handling | Pre: user gesture; Post: bytes to decoder |
-| `ithmb-decoder/telemetry.js` | Opt-in share submission to worker | Invariant: nothing sent automatically |
-| `ithmb-decoder/download.js` | Download All ZIP via JSZip (JPEG 92%/PNG/BMP/WebP) | CALLER ui |
-| `ithmb-decoder/i18n.js` | Locale strings for en/zh | CALLER locales/*.json |
-| `ithmb-decoder/share-actions.js` | Share 16 bytes / full file (hidden >8MB) | CALLER ui, telemetry |
-| `ithmb-decoder/card-success-ui.js` | Success card + report modal (6 issue types) | Invariant: report is opt-in |
-| `ithmb-decoder/cards.js` | Card rendering primitives | CALLER ui |
-| `ithmb-decoder/ithmb_wasm.js` | Hand-adapted WASM loader | DO NOT REPLACE |
-| `ithmb-decoder/ithmb_wasm_bg.js` | Generated wasm glue | Generated; do not edit |
-| `ithmb-decoder/ithmb_wasm_bg.wasm` | The compiled engine (~194KB) | Copied from Ithmb-Codec |
-| `workers/telemetry/src/worker.ts` | Cloudflare Worker: POST /, GET /dashboard, GET / | HIDES KV schema; privacy contract |
-| `workers/telemetry/test-worker.ts` | Miniflare smoke test for the worker | Runs via `npm run test:worker` |
-| `scripts/build.mts` | Build pipeline (esbuild transform) | GENERATES .js from .ts |
-| `scripts/check-local.sh` | Local parity checks | Mirrors CI locally |
-| `scripts/check-parity.sh` | Remote parity checks | Mirrors CI locally |
+| Path                               | Responsibility                                              | HIDES / EXPORTS / CALLER / Pre / Post / Invariant                               |
+| ---------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `ithmb-decoder/app.js`             | Boots the decoder SPA; wires modules together               | CALLER of decoder, ui, state, input, i18n, telemetry                            |
+| `ithmb-decoder/decoder.js`         | Orchestrates WASM decode; peek_prefix then decode_ithmb     | Pre: file bytes; Post: success canvas or failure/error; HIDES wasm call details |
+| `ithmb-decoder/viewer.js`          | Filmstrip navigation, arrows, G key, Escape, swipe          | EXPORTS open/show; CALLER ui                                                    |
+| `ithmb-decoder/state.js`           | App state, dedup via sharedSubmissionIds + processedFileIds | HIDES state shape; Invariant: no auto-send                                      |
+| `ithmb-decoder/ui.js`              | DOM rendering, success/failure/error cards                  | CALLER cards, card-success-ui, share-actions                                    |
+| `ithmb-decoder/utils.js`           | Shared helpers (hex dump, size checks)                      | EXPORTS pure helpers                                                            |
+| `ithmb-decoder/input.js`           | File drop/select handling                                   | Pre: user gesture; Post: bytes to decoder                                       |
+| `ithmb-decoder/telemetry.js`       | Opt-in share submission to worker                           | Invariant: nothing sent automatically                                           |
+| `ithmb-decoder/download.js`        | Download All ZIP via JSZip (JPEG 92%/PNG/BMP/WebP)          | CALLER ui                                                                       |
+| `ithmb-decoder/i18n.js`            | Locale strings for en/zh                                    | CALLER locales/*.json                                                           |
+| `ithmb-decoder/share-actions.js`   | Share 16 bytes / full file (hidden >8MB)                    | CALLER ui, telemetry                                                            |
+| `ithmb-decoder/card-success-ui.js` | Success card + report modal (6 issue types)                 | Invariant: report is opt-in                                                     |
+| `ithmb-decoder/cards.js`           | Card rendering primitives                                   | CALLER ui                                                                       |
+| `ithmb-decoder/ithmb_wasm.js`      | Hand-adapted WASM loader                                    | DO NOT REPLACE                                                                  |
+| `ithmb-decoder/ithmb_wasm_bg.js`   | Generated wasm glue                                         | Generated; do not edit                                                          |
+| `ithmb-decoder/ithmb_wasm_bg.wasm` | The compiled engine (~194KB)                                | Copied from Ithmb-Codec                                                         |
+| `workers/telemetry/src/worker.ts`  | Cloudflare Worker: POST /, GET /dashboard, GET /            | HIDES KV schema; privacy contract                                               |
+| `workers/telemetry/test-worker.ts` | Miniflare smoke test for the worker                         | Runs via `bun run test:worker`                                                  |
+| `scripts/build.mts`                | Build pipeline (esbuild transform)                          | GENERATES .js from .ts                                                          |
+| `scripts/check-local.sh`           | Local parity checks                                         | Mirrors CI locally                                                              |
+| `scripts/check-parity.sh`          | Remote parity checks                                        | Mirrors CI locally                                                              |
 
 ## 4. Quality Gates
 
-| Gate | Requirement (EARS) |
-|---|---|
-| G1 Build | WHEN the build runs THEN it must complete via `npm run build` with no errors. |
-| G2 Typecheck | WHEN any TS changes THEN `npm run typecheck` (all 3 tsconfigs) must pass. |
-| G3 i18n parity | WHEN any locale or string changes THEN `npm run lint:i18n` must pass. |
-| G4 Test suite | WHEN the test suite runs THEN all Playwright projects (chromium/firefox/webkit) must pass. |
-| G5 WASM drift | WHEN the wasm changes THEN `scripts/check-wasm-drift.sh` must detect and gate. |
-| G6 Telemetry privacy | WHEN the telemetry worker changes THEN `npm run test:worker` must pass and the quiet-by-default contract must hold. |
-| G7 Secrets | WHEN any commit is prepared THEN gitleaks must find no secrets. |
+| Gate                 | Requirement (EARS)                                                                                                  |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| G1 Build             | WHEN the build runs THEN it must complete via `bun run build` with no errors.                                       |
+| G2 Typecheck         | WHEN any TS changes THEN `bun run typecheck` (all 3 tsconfigs) must pass.                                           |
+| G3 i18n parity       | WHEN any locale or string changes THEN `bun run lint:i18n` must pass.                                               |
+| G4 Test suite        | WHEN the test suite runs THEN all Playwright projects (chromium/firefox/webkit) must pass.                          |
+| G5 WASM drift        | WHEN the wasm changes THEN `scripts/check-wasm-drift.sh` must detect and gate.                                      |
+| G6 Telemetry privacy | WHEN the telemetry worker changes THEN `bun run test:worker` must pass and the quiet-by-default contract must hold. |
+| G7 Secrets           | WHEN any commit is prepared THEN gitleaks must find no secrets.                                                     |
 
 ## 5. Dependencies & External Contracts
 
-| Package | Version | Purpose | Contract | License |
-|---|---|---|---|---|
-| `esbuild` | dev | TS/JS bundling and transform | build only | MIT |
-| `typescript` | dev | Type checking | build only | Apache-2.0 |
-| `playwright` / `@playwright/test` | dev | Browser testing | dev only | Apache-2.0 |
-| `miniflare` | dev | Local Cloudflare worker runtime | dev only | MIT |
-| `fflate` | dev | ZIP generation | runtime, bundled | MIT |
-| `tsx` | dev | TS execution of scripts | dev only | MIT |
-| `http-server` | dev | Local static serving | dev only | MIT |
-| `@axe-core/playwright` | dev | Accessibility testing | dev only | MIT |
-| `@cloudflare/workers-types` | dev | Worker type definitions | dev only | Apache-2.0 |
-| `@types/node` | dev | Node type definitions | dev only | MIT |
-| `undici` | override | HTTP client patch | override | MIT |
+| Package                           | Version         | Purpose                                     | Contract         | License    |
+| --------------------------------- | --------------- | ------------------------------------------- | ---------------- | ---------- |
+| `esbuild`                         | dev             | TS/JS bundling and transform                | build only       | MIT        |
+| `typescript`                      | dev             | Type checking                               | build only       | Apache-2.0 |
+| `playwright` / `@playwright/test` | dev             | Browser testing                             | dev only         | Apache-2.0 |
+| `miniflare`                       | dev             | Local Cloudflare worker runtime             | dev only         | MIT        |
+| `fflate`                          | dev             | ZIP generation                              | runtime, bundled | MIT        |
+| `bun`                             | 1.3.14 (pinned) | Script + unit-test runtime, package manager | dev only         | MIT        |
+| `http-server`                     | dev             | Local static serving                        | dev only         | MIT        |
+| `@axe-core/playwright`            | dev             | Accessibility testing                       | dev only         | MIT        |
+| `@cloudflare/workers-types`       | dev             | Worker type definitions                     | dev only         | Apache-2.0 |
+| `@types/node`                     | dev             | Node type definitions                       | dev only         | MIT        |
+| `@types/bun`                      | dev             | Bun test/type definitions                   | dev only         | MIT        |
+| `undici`                          | override        | HTTP client patch                           | override         | MIT        |
 
-All dependencies are devDependencies or bundled runtime tools; the site ships no third-party runtime code on the public page. Lockfile (`package-lock.json`) is tracked.
+All dependencies are devDependencies or bundled runtime tools; the site ships no third-party runtime code on the public page. Lockfile (`bun.lock`) is tracked; installs via `bun install --frozen-lockfile`.
 
 ## 6. UX & Interface Contract
 
@@ -148,20 +149,20 @@ All dependencies are devDependencies or bundled runtime tools; the site ships no
 
 ## 7. Timeline / Milestones
 
-| Milestone | Content |
-|---|---|
-| M1 (done) | Core decoder SPA decoding .ithmb via WASM |
-| M2 (done) | Static pages, en/zh i18n, guide, enterprise |
-| M3 (done) | Opt-in telemetry worker with privacy contract |
-| M4 (done) | Full Playwright suite across 3 browser projects, CI on Dev repo |
-| M5 (current) | REVIEW remediation to PASS; governance docs |
+| Milestone    | Content                                                         |
+| ------------ | --------------------------------------------------------------- |
+| M1 (done)    | Core decoder SPA decoding .ithmb via WASM                       |
+| M2 (done)    | Static pages, en/zh i18n, guide, enterprise                     |
+| M3 (done)    | Opt-in telemetry worker with privacy contract                   |
+| M4 (done)    | Full Playwright suite across 3 browser projects, CI on Dev repo |
+| M5 (current) | REVIEW remediation to PASS; governance docs                     |
 
 **Circuit breaker:** If the WASM drift gate, i18n parity gate, or test suite regresses, work stops and the gate must be fixed before any further changes.
 
 ## 8. Testing Strategy
 
-- **Playwright E2E** across chromium/firefox/webkit (~423 tests) covering pages, decoder, gallery, stress, upload, quality, a11y, and SEO metadata.
-- **Worker smoke** via miniflare (`npm run test:worker`).
+- **Playwright E2E** across chromium/firefox/webkit covering pages, decoder, gallery, stress, upload, quality, a11y, SEO metadata, visual, dark-mode, decode-failure, perf-budget, plus port-resolution unit tests in `tests/unit/` (execution tiers frozen in docs/TEST_STRATEGY.md).
+- **Worker smoke** via miniflare (`bun run test:worker`).
 - **i18n parity** gate ensures en/zh mirrors stay in sync.
 - **WASM drift** gate ensures the bundled wasm stays in sync with the core.
 - Priority: decode correctness, privacy contract, i18n parity, and a11y carry the highest weight.
@@ -175,20 +176,20 @@ All dependencies are devDependencies or bundled runtime tools; the site ships no
 
 ## 10. Build & Release Pipeline
 
-- Local: `npm run build` (esbuild transform), `npm run typecheck`, `npm test`, `npm run test:worker`.
-- CI runs on the **Dev** repo (four-layer model: local -> github-dev CI -> public append-only). The public repo does not run CI.
-- Deploy: GitHub Pages via `pages-deploy.yml` to the public repo `main` (CNAME stripped for the -Dev variant).
+- Local: `bun run build` (esbuild transform), `bun run typecheck`, `bun run test`, `bun run test:worker`.
+- CI runs on both Dev and public repos (free public minutes are the fallback; four-layer model: local -> github-dev CI -> public append-only).
+- Deploy: GitHub Pages from the public repo `main` branch (CNAME stripped for the -Dev variant).
 - **MESO Distribution Surfaces:** (1) the public GitHub Pages site at ithmb-codec.dev, (2) the telemetry worker endpoint. Both are append-only release surfaces.
 
 ## 11. Design for Change
 
-| Change | Impact | Notes |
-|---|---|---|
-| New locale | i18n.json files + parity gate | Small, isolated |
-| New decoder feature | decoder.js, ui.js, tests | Medium, test-heavy |
-| New telemetry field | worker.ts, telemetry.js, tests | Medium, privacy-reviewed |
-| WASM engine update | ithmb_wasm_bg.wasm + drift gate | Large, must re-run full suite |
-| New page | static HTML + nav + tests | Small |
+| Change              | Impact                          | Notes                         |
+| ------------------- | ------------------------------- | ----------------------------- |
+| New locale          | i18n.json files + parity gate   | Small, isolated               |
+| New decoder feature | decoder.js, ui.js, tests        | Medium, test-heavy            |
+| New telemetry field | worker.ts, telemetry.js, tests  | Medium, privacy-reviewed      |
+| WASM engine update  | ithmb_wasm_bg.wasm + drift gate | Large, must re-run full suite |
+| New page            | static HTML + nav + tests       | Small                         |
 
 Size rule: keep modules under the 250/40 guideline (250 lines, 40 responsibilities); a module that grows beyond it should be split into cohesive submodules.
 
@@ -214,7 +215,7 @@ Size rule: keep modules under the 250/40 guideline (250 lines, 40 responsibiliti
 
 ## 15. Verification Checklist
 
-- [ ] Build passes (`npm run build`)
+- [ ] Build passes (`bun run build`)
 - [ ] Typecheck passes (all 3 tsconfigs)
 - [ ] Full Playwright suite passes (3 browser projects)
 - [ ] i18n parity gate passes

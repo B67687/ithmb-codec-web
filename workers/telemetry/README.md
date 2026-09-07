@@ -7,10 +7,11 @@ Deploys a Cloudflare Worker that stores format metadata submissions from the WAS
 Committed integration test (miniflare/workerd, in-memory KV, no external processes):
 
 ```bash
-npx tsx workers/telemetry/test-worker.ts   # or: npm run test:worker
+bun workers/telemetry/test-worker.ts   # or: bun run test:worker
 ```
 
 Covers: valid + garbage-base64 POSTs, Bearer-only auth (`?token=` dead), no raw IP in KV keys, `fullfile_` payload separation, uuid record keys.
+
 ## Deployment
 
 1. Install [Node.js](https://nodejs.org/) (if not already)
@@ -45,21 +46,22 @@ Covers: valid + garbage-base64 POSTs, Bearer-only auth (`?token=` dead), no raw 
 
 ### Status values
 
-| status | Meaning |
-|--------|---------|
-| `success` | File decoded successfully — client sends prefix + header (no dimensions) via the report modal |
-| `known-failed` | Known prefix but decode failed — 16-byte header sent |
-| `unknown` | Unknown prefix — 16-byte header sent |
-| `looks-good` / `looks-wrong` | Report-modal issue types from the success path |
+| status                       | Meaning                                                                                       |
+| ---------------------------- | --------------------------------------------------------------------------------------------- |
+| `success`                    | File decoded successfully — client sends prefix + header (no dimensions) via the report modal |
+| `known-failed`               | Known prefix but decode failed — 16-byte header sent                                          |
+| `unknown`                    | Unknown prefix — 16-byte header sent                                                          |
+| `looks-good` / `looks-wrong` | Report-modal issue types from the success path                                                |
 
 ### Optional fields
 
-| field | Meaning | Cap |
-|-------|---------|-----|
-| `full_file` | Base64 of the complete file (checkbox "Upload full file"); must be valid base64 ≤ 8 MB decoded | 11,184,812 chars ≈ 8 MB raw |
-| `issue` | One of: `color_space`, `dimensions`, `stride`, `offset`, `byte_order`, `other` | ≤ 40 chars |
-| `issue_detail` | Free-text explanation | ≤ 200 chars |
-| `extension` | `ipm` or `ithmb` | — |
+| field          | Meaning                                                                                        | Cap                         |
+| -------------- | ---------------------------------------------------------------------------------------------- | --------------------------- |
+| `full_file`    | Base64 of the complete file (checkbox "Upload full file"); must be valid base64 ≤ 8 MB decoded | 11,184,812 chars ≈ 8 MB raw |
+| `issue`        | One of: `color_space`, `dimensions`, `stride`, `offset`, `byte_order`, `other`                 | ≤ 40 chars                  |
+| `issue_detail` | Free-text explanation                                                                          | ≤ 200 chars                 |
+| `extension`    | `ipm` or `ithmb`                                                                               | —                           |
+
 ## Limits (anti-abuse)
 
 - **Request body:** ≤ 13 MB **UTF-8 bytes** (`MAX_BODY_BYTES`; measured on the wire, not UTF-16 units); larger → `413 body too large`
@@ -70,6 +72,7 @@ Covers: valid + garbage-base64 POSTs, Bearer-only auth (`?token=` dead), no raw 
 - **Batch endpoint:** removed — the single-record path (`POST /`) is the only live ingest path.
 - **Retention:** records + full-file payloads expire after 365 days; rate/dedup/record markers after 1-2 days
 - **Keep `FULL_FILE_MAX_BYTES` in `ithmb-decoder/card-failure-ui.js` in sync**: the client disables full-file upload above 8 MB raw (the app's own decode limit), matching the worker's 11,184,812-char field cap
+
 ## Reading Data
 
 ```bash

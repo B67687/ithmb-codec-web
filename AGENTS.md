@@ -53,13 +53,13 @@ Ithmb-Codec-Web/
 │   ├── check-mirror-parity.mts  # en/zh mirror parity gate
 │   ├── sync-embedded.mts    # Regenerates EMBEDDED_EN in i18n.ts from en.json
 │   ├── check-wasm-drift.sh  # Committed wasm imports vs loader glue
-│   ├── check-local.sh       # Full local CI (npm run check:local)
+│   ├── check-local.sh       # Full local CI (bun run check:local)
 │   ├── check-parity.sh      # Local-vs-GitHub parity gate (exit 0/1/2)
 │   ├── check-parity.config  # Parity config (REPO_SLUG, WORKFLOWS, LOCAL_CMD)
 │   ├── test-check-parity.sh # Hermetic tests for the parity gate
 │   └── real-user-journey.mts # Manual smoke script
 ├── tests/                   # Playwright specs (see test scripts in package.json)
-├── docs/                    # FEATURES.md, logo.svg, adr/, badges/, screenshots/
+├── docs/                    # FEATURES.md, TEST_STRATEGY.md, logo.svg, adr/, badges/, screenshots/
 ├── .github/workflows/       # ci.yml (lint+test+secrets), pages-deploy.yml (GitHub Pages)
 ├── .husky/pre-commit        # gitleaks + i18n gate + wasm-drift + 3 smoke specs
 ├── tsconfig.json            # Browser sources (strict, noEmit)
@@ -82,7 +82,7 @@ Ithmb-Codec-Web/
 | SPECIFICATION.md   | `SPECIFICATION.md`       | AS-BUILT spec (MACRO/MESO/MICRO layers)                              |
 | ARCHITECTURE.md    | `ARCHITECTURE.md`        | C4 Level 1 diagram, module map, fitness functions, CI split          |
 | TECH_DEBT_AUDIT.md | `TECH_DEBT_AUDIT.md`     | Debt inventory with severity × effort triage                         |
-| ADRs               | `docs/adr/`              | Architecture Decision Records (ADR-0006, ADR-0007)                   |
+| ADRs               | `docs/adr/`              | Architecture Decision Records (ADR-0006 through ADR-0010)            |
 | check-local.sh     | `scripts/check-local.sh` | Full local CI — 10 gates, < 2 min target                             |
 
 Feature lifecycle follows Development-Protocol `docs/engineering-plugin.md` §1.1: `proposed → approved → applied → archived`.
@@ -90,22 +90,22 @@ Feature lifecycle follows Development-Protocol `docs/engineering-plugin.md` §1.
 ## Quick Start (build / test / lint)
 
 ```bash
-npm ci                                  # install dev deps
-npm run build                           # esbuild: .ts to .js in place + ?v= cache-busting
+bun install --frozen-lockfile     # install dev deps
+bun run build                           # esbuild: .ts to .js in place + ?v= cache-busting
 npm run typecheck                       # tsc --noEmit across browser + node + worker tsconfigs
 npm run lint:modules                    # typecheck + build (the module gate)
 npm run lint:i18n                       # i18n integrity + en/zh mirror parity
 bash scripts/check-wasm-drift.sh        # committed wasm vs loader glue (after wasm updates)
 
 # Local dev server (serves the whole site)
-npm run serve                           # http-server on :8899
+bun run serve                           # http-server on :8899
 
 # Tests: ALWAYS point BASE_URL at the local server, never the live site
-BASE_URL=http://localhost:8899 npm run test:quick   # fast subset, chromium only
-npm test                                # all specs, all 3 browsers (playwright test)
-npm run test:full                       # same as npm test, explicit
-npm run test:worker                     # telemetry worker miniflare integration test
-npm run check:local                     # the FULL local CI (audit, typecheck, build+determinism, i18n, wasm, worker, all browsers, parity tests)
+BASE_URL=http://localhost:8899 bun run test:quick   # fast subset, chromium only
+bun run test                            # all specs, all 3 browsers (playwright test)
+bun run test:full                       # same as test, explicit
+bun run test:worker                     # telemetry worker miniflare integration test
+bun run check:local                     # the FULL local CI (audit, typecheck, build+determinism, i18n, wasm, worker, all browsers, parity tests)
 bash scripts/check-parity.sh            # local-vs-GitHub parity gate (exit 0/1/2)
 ```
 
@@ -165,10 +165,12 @@ cp pkg/ithmb_wasm_bg.wasm ../../Ithmb-Codec-Web/ithmb-decoder/ithmb_wasm_bg.wasm
 ## Release Process (checklist)
 
 1. Bump `package.json` version + add a CHANGELOG entry (`## X.Y.Z - date`, Keep-a-Changelog style).
-2. Commit to dev `main`, run the full local gate (`npm run check:local`, or at least `lint:modules` + `lint:i18n` + `test:quick`).
+2. Commit to dev `main`, run the full local gate (`bun run check:local`, or at least `lint:modules` + `lint:i18n` + `test:quick`).
 3. Push `origin/main` (dev); CI runs here and is the source of truth.
 4. Squash thematically onto `squash-work`, verify trees identical, push `public squash-work:main`.
 5. GitHub Pages auto-deploys; verify the live site (og tags, decoder load, no console errors).
+
+- **CI cost control:** `[skip browsers]` in the push message runs lint only (local gates must already cover the change); doc-only pushes skip CI entirely via paths-ignore. Rapid pushes auto-cancel superseded runs (concurrency group).
 
 ## Do Not Touch / Generated Paths
 

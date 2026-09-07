@@ -5,7 +5,11 @@
 # private dev repo exhausts its 2,000-min private limit.
 name: ci
 on:
-  push: { branches: [main] }
+  push:
+    branches: [main]
+    paths-ignore: # doc-only pushes skip CI (docs only; workflow changes still run)
+      - "docs/**"
+      - "*.md"
   workflow_dispatch: {} # allow manual re-run, e.g. after enabling on a repo
   pull_request:
     # Skip the whole CI for doc-only PRs (no code changed): preserves free
@@ -15,6 +19,10 @@ on:
       - "*.md"
       - ".github/**"
 permissions: { contents: read }
+
+concurrency: # superseded runs cancel automatically (rapid pushes don't stack matrices)
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   lint:
@@ -42,6 +50,9 @@ jobs:
         run: bun run test:unit
 
   test:
+    # Heavy matrix opt-out: include [skip browsers] in the push commit message
+    # to run lint only (local gates must already cover the change).
+    if: "!contains(github.event.head_commit.message, '[skip browsers]')"
     runs-on: ubuntu-latest
     timeout-minutes: 20
     strategy:
