@@ -5,7 +5,7 @@
  * No actual file uploads — purely structural and visual verification.
  */
 
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 const PAGE_URL = "/ithmb-decoder/";
 
@@ -25,15 +25,11 @@ test.describe("WASM Decoder Page", () => {
     });
 
     test("has correct title", async ({ page }) => {
-      await expect(page).toHaveTitle(
-        "Free .ITHMB File Viewer & Converter | ITHMB Codec",
-      );
+      await expect(page).toHaveTitle("Free .ITHMB File Viewer & Converter | ITHMB Codec");
     });
 
     test("body background is --bg CSS variable", async ({ page }) => {
-      const bg = await page.evaluate(
-        () => getComputedStyle(document.body).backgroundColor,
-      );
+      const bg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
       expect(bg).toBe("rgb(245, 245, 247)");
     });
 
@@ -63,10 +59,7 @@ test.describe("WASM Decoder Page", () => {
     test("exists with correct aria-label and href", async ({ page }) => {
       const link = page.locator("a.github-corner");
       await expect(link).toHaveAttribute("aria-label", "View source on GitHub");
-      await expect(link).toHaveAttribute(
-        "href",
-        "https://github.com/B67687/Ithmb-Codec",
-      );
+      await expect(link).toHaveAttribute("href", "https://github.com/B67687/Ithmb-Codec");
     });
 
     test("is positioned in nav bar", async ({ page }) => {
@@ -91,10 +84,7 @@ test.describe("WASM Decoder Page", () => {
   test.describe("Buy Me a Coffee Button", () => {
     test("exists with class, href, and SVG icon", async ({ page }) => {
       const bmc = page.locator(".bmc-corner");
-      await expect(bmc).toHaveAttribute(
-        "href",
-        "https://buymeacoffee.com/ThumbNami",
-      );
+      await expect(bmc).toHaveAttribute("href", "https://buymeacoffee.com/ThumbNami");
       await expect(bmc.locator("img")).toBeAttached();
     });
 
@@ -112,9 +102,7 @@ test.describe("WASM Decoder Page", () => {
   });
 
   test.describe("Toolbar Features", () => {
-    test("#toolbar element exists and is initially hidden", async ({
-      page,
-    }) => {
+    test("#toolbar element exists and is initially hidden", async ({ page }) => {
       const toolbar = page.locator("#toolbar");
       await expect(toolbar).toBeAttached();
 
@@ -140,17 +128,12 @@ test.describe("WASM Decoder Page", () => {
 
   test.describe("Footer", () => {
     test('mentions "Powered by Ithmb-Codec"', async ({ page }) => {
-      await expect(page.locator("footer")).toContainText(
-        "Powered by Ithmb-Codec",
-      );
+      await expect(page.locator("footer")).toContainText("Powered by Ithmb-Codec");
     });
 
     test("links to Ithmb-Codec GitHub repo", async ({ page }) => {
       const link = page.locator("footer a").first();
-      await expect(link).toHaveAttribute(
-        "href",
-        "https://github.com/B67687/Ithmb-Codec",
-      );
+      await expect(link).toHaveAttribute("href", "https://github.com/B67687/Ithmb-Codec");
     });
   });
 

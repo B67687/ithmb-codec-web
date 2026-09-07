@@ -17,9 +17,7 @@ export function createFilmstripThumb(cardId: string): void {
 
   thumb.addEventListener("click", () => {
     const allCards = document.querySelectorAll<HTMLElement>(".file-card");
-    const target = Array.from(allCards).find(
-      (c) => c.dataset.cardId === cardId,
-    );
+    const target = Array.from(allCards).find((c) => c.dataset.cardId === cardId);
     const idx = target ? Array.from(allCards).indexOf(target) : 0;
     openViewer(idx);
   });

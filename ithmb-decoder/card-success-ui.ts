@@ -1,12 +1,12 @@
-import { S, KNOWN_PREFIXES } from "./state.js";
-import { addSuccess, findSuccess, successCards, failedCards } from "./cards.js";
-import { formatLabels, extMap, formatSize } from "./utils.js";
-import { refreshViewerIfCurrent } from "./viewer.js";
+import { addSuccess, failedCards, findSuccess, successCards } from "./cards.js";
 import { addFilmstripThumb } from "./filmstrip.js";
-import { get_encoding_name } from "./ithmb_wasm.js";
-import { createShareBox } from "./share-actions.js";
-import { createReportLink } from "./report-modal.js";
 import { t } from "./i18n.js";
+import { get_encoding_name } from "./ithmb_wasm.js";
+import { createReportLink } from "./report-modal.js";
+import { createShareBox } from "./share-actions.js";
+import { KNOWN_PREFIXES, S } from "./state.js";
+import { extMap, formatLabels, formatSize } from "./utils.js";
+import { refreshViewerIfCurrent } from "./viewer.js";
 
 export function renderSuccessCard(
   cardId: string,
@@ -143,8 +143,7 @@ export function renderCardInfo(cardId: string): void {
       (blob) => {
         if (!blob) return;
         link.href = URL.createObjectURL(blob);
-        link.download =
-          (entry.fileName || "image").replace(/\.ithmb$/i, "") + ext;
+        link.download = (entry.fileName || "image").replace(/\.ithmb$/i, "") + ext;
         link.click();
         URL.revokeObjectURL(link.href);
       },

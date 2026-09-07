@@ -8,7 +8,7 @@
  * Run normally to compare:
  *   npx playwright test tests/visual.spec.ts
  */
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 test.describe("Visual Regression — Pages", () => {
   test("home page — full page", async ({ page }) => {
@@ -81,9 +81,7 @@ test.describe("Visual Regression — Nav bar", () => {
 });
 
 test.describe("Visual Regression — Footer", () => {
-  test("footer — enterprise page (should show BMC icon inside container)", async ({
-    page,
-  }) => {
+  test("footer — enterprise page (should show BMC icon inside container)", async ({ page }) => {
     await page.goto("/enterprise/", {
       waitUntil: "networkidle",
     });

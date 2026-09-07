@@ -1,13 +1,13 @@
 // Unit tests for ithmb-decoder pure utility functions
-import { describe, it, expect } from "vitest";
-import {
-  formatSize,
-  bytesToHex,
-  bytesToBase64,
-  formatLabels,
-  extMap,
-} from "../../ithmb-decoder/utils";
+import { describe, expect, it } from "vitest";
 import { KNOWN_PREFIXES } from "../../ithmb-decoder/state";
+import {
+  bytesToBase64,
+  bytesToHex,
+  extMap,
+  formatLabels,
+  formatSize,
+} from "../../ithmb-decoder/utils";
 
 describe("formatSize", () => {
   it("formats bytes", () => {

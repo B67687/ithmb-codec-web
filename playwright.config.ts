@@ -17,10 +17,7 @@ export const ACT_PORTS: Record<string, number> = {
   firefox: 8998,
   webkit: 8997,
 };
-export function resolveWebPort(
-  act: boolean,
-  browser: string | undefined,
-): number {
+export function resolveWebPort(act: boolean, browser: string | undefined): number {
   return act ? (ACT_PORTS[browser ?? ""] ?? 8999) : 8899;
 }
 const webPort = resolveWebPort(underAct, process.env.PLAYWRIGHT_BROWSER);

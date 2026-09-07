@@ -1,7 +1,7 @@
-import { sharedSubmissionIds } from "./state.js";
-import { bytesToHex, bytesToBase64, showToast } from "./utils.js";
-import { submitTelemetry } from "./telemetry.js";
 import { t } from "./i18n.js";
+import { sharedSubmissionIds } from "./state.js";
+import { submitTelemetry } from "./telemetry.js";
+import { bytesToBase64, bytesToHex, showToast } from "./utils.js";
 
 // Full-file shares are capped at the app's own decode limit (ui.js
 // MAX_FILE_SIZE: files > 8 MB are rejected before decoding, so any file you
@@ -23,7 +23,13 @@ interface ShareBoxParams {
 // Used by the failure card AND the viewer stage so both surfaces share the
 // exact same dedup keys and honest-failure semantics (one share per file;
 // header share keeps full available; full share disables both).
-export function createShareBox({ cardId, bytes, prefix, isKnown, fileSize }: ShareBoxParams): HTMLDivElement {
+export function createShareBox({
+  cardId,
+  bytes,
+  prefix,
+  isKnown,
+  fileSize,
+}: ShareBoxParams): HTMLDivElement {
   const box = document.createElement("div");
   box.className = "share-box";
   // Stable selector for re-finding the box after a re-render (the rollback
@@ -31,9 +37,7 @@ export function createShareBox({ cardId, bytes, prefix, isKnown, fileSize }: Sha
   // stale when a language switch replaces the box mid-POST).
   box.dataset.card = cardId;
   const heading = t("share.helpImprove");
-  const text = isKnown
-    ? t("share.knownText")
-    : t("share.unknownText");
+  const text = isKnown ? t("share.knownText") : t("share.unknownText");
   box.innerHTML = `
     <h4 class="share-heading">${heading}</h4>
     <p class="share-text">${text}</p>
@@ -94,9 +98,7 @@ export function createShareBox({ cardId, bytes, prefix, isKnown, fileSize }: Sha
       headerBtn.textContent = SHARED_TEXT();
       headerBtn.disabled = true;
     }
-    showToast(
-      fullFile ? t("share.fullSharedToast") : t("share.headerSharedToast"),
-    );
+    showToast(fullFile ? t("share.fullSharedToast") : t("share.headerSharedToast"));
     submitTelemetry(data).then((ok) => {
       if (!ok) {
         // Server rejected the share — roll back so the user can retry, and
@@ -140,4 +142,3 @@ export function createShareBox({ cardId, bytes, prefix, isKnown, fileSize }: Sha
 
   return box;
 }
-

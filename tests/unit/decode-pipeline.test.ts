@@ -1,10 +1,7 @@
 // Unit tests for decode-pipeline.ts (DOM-free by design, so node-scoped.
 // decoder.ts applies these to every file via decodeFile).
-import { describe, it, expect } from "vitest";
-import {
-  classifyResult,
-  parsePixelHeader,
-} from "../../ithmb-decoder/decode-pipeline";
+import { describe, expect, it } from "vitest";
+import { classifyResult, parsePixelHeader } from "../../ithmb-decoder/decode-pipeline";
 
 const header = (w: number, h: number, px: number[]): Uint8Array => {
   const buf = new Uint8Array(8 + px.length);

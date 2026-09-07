@@ -1,4 +1,4 @@
-(function () {
+(() => {
   // Theme: applies data-theme="light|dark" to <html> before first paint so
   // there is no flash of the wrong theme. Resolution order:
   //   1. explicit choice saved in localStorage (ithmbTheme)
@@ -15,8 +15,7 @@
     } catch {
       // storage blocked — fall through to system preference
     }
-    return window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
       ? "dark"
       : "light";
   }

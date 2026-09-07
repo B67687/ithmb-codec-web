@@ -1,8 +1,8 @@
-import { sharedSubmissionIds } from "./state.js";
 import { findSuccess } from "./cards.js";
-import { bytesToHex, showToast } from "./utils.js";
-import { submitTelemetry } from "./telemetry.js";
 import { t } from "./i18n.js";
+import { sharedSubmissionIds } from "./state.js";
+import { submitTelemetry } from "./telemetry.js";
+import { bytesToHex, showToast } from "./utils.js";
 
 interface ReportLinkParams {
   cardId: string;
@@ -16,7 +16,12 @@ interface ReportLinkParams {
 // original contribute-workflow UX: centered dialog over a dimmed + blurred
 // backdrop. The same link/entry is used by the success card AND the viewer
 // stage (same fb-<cardId> dedup key, honest feedback).
-export function createReportLink({ cardId, bytes, prefix, fileSize }: ReportLinkParams): HTMLDivElement {
+export function createReportLink({
+  cardId,
+  bytes,
+  prefix,
+  fileSize,
+}: ReportLinkParams): HTMLDivElement {
   const wrap = document.createElement("div");
   wrap.className = "success-report";
   const link = document.createElement("a");
@@ -68,7 +73,12 @@ if (reportModalOverlay) {
 }
 
 // Open the shared report modal, populated for this card's file.
-function openReportModal(cardId: string, bytes: Uint8Array, prefix: number, fileSize: number): void {
+function openReportModal(
+  cardId: string,
+  bytes: Uint8Array,
+  prefix: number,
+  fileSize: number,
+): void {
   const overlay = document.getElementById("reportModal");
   const content = document.getElementById("reportModalContent");
   if (!overlay || !content) return;

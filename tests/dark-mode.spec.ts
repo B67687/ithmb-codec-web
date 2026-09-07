@@ -1,8 +1,8 @@
-import { test, expect } from "@playwright/test";
-import type { Page } from "@playwright/test";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { expect, test } from "@playwright/test";
+import type { Page } from "@playwright/test";
 
 // Dark-mode regression gate.
 //
@@ -43,19 +43,19 @@ async function auditDark(page: Page): Promise<string[]> {
         hasBg = false;
       while (cur) {
         const m = getComputedStyle(cur).backgroundColor.match(/[\d.]+/g);
-        if (m && m.length >= 4 && parseFloat(m[3] ?? "0") > 0) {
-          const br = parseFloat(m[0] ?? "0"),
-            bg2 = parseFloat(m[1] ?? "0"),
-            bb = parseFloat(m[2] ?? "0"),
-            ba = parseFloat(m[3] ?? "0");
+        if (m && m.length >= 4 && Number.parseFloat(m[3] ?? "0") > 0) {
+          const br = Number.parseFloat(m[0] ?? "0"),
+            bg2 = Number.parseFloat(m[1] ?? "0"),
+            bb = Number.parseFloat(m[2] ?? "0"),
+            ba = Number.parseFloat(m[3] ?? "0");
           r = br * ba + r * (1 - ba);
           g = bg2 * ba + g * (1 - ba);
           b = bb * ba + b * (1 - ba);
           hasBg = true;
         } else if (m && m.length >= 3) {
-          r = parseFloat(m[0] ?? "0");
-          g = parseFloat(m[1] ?? "0");
-          b = parseFloat(m[2] ?? "0");
+          r = Number.parseFloat(m[0] ?? "0");
+          g = Number.parseFloat(m[1] ?? "0");
+          b = Number.parseFloat(m[2] ?? "0");
           hasBg = true;
           break;
         }
@@ -66,8 +66,7 @@ async function auditDark(page: Page): Promise<string[]> {
     };
     const issues: string[] = [];
     for (const el of document.querySelectorAll("*")) {
-      if (["IMG", "CANVAS", "VIDEO", "SVG", "CODE"].includes(el.tagName))
-        continue;
+      if (["IMG", "CANVAS", "VIDEO", "SVG", "CODE"].includes(el.tagName)) continue;
       const rawBg = getComputedStyle(el).backgroundColor;
       if (rawBg === "rgba(0, 0, 0, 0)" || rawBg === "transparent") continue;
       const bgl = lum(effectiveBg(el));
@@ -90,8 +89,7 @@ async function auditDark(page: Page): Promise<string[]> {
       const color = getComputedStyle(el).color;
       if (color !== "rgba(0, 0, 0, 0)" && bgl > 0) {
         const tl = lum(color);
-        const contrast =
-          (Math.max(tl, bgl) + 0.05) / (Math.min(tl, bgl) + 0.05);
+        const contrast = (Math.max(tl, bgl) + 0.05) / (Math.min(tl, bgl) + 0.05);
         if (contrast < 2.2) {
           issues.push(
             `LOW-CONTRAST (${contrast.toFixed(2)}) <${el.tagName} class="${el.className}"> ${(el.textContent ?? "").trim().slice(0, 36)}`,
@@ -104,9 +102,7 @@ async function auditDark(page: Page): Promise<string[]> {
 }
 
 for (const { name, url } of PAGES) {
-  test(`dark mode: ${name} has no light-background or low-contrast elements`, async ({
-    page,
-  }) => {
+  test(`dark mode: ${name} has no light-background or low-contrast elements`, async ({ page }) => {
     await page.emulateMedia({ colorScheme: "dark" });
     await page.goto(url, { waitUntil: "networkidle" });
     const issues = await auditDark(page);
@@ -114,9 +110,7 @@ for (const { name, url } of PAGES) {
   });
 }
 
-test("dark mode: decoder with success + failure cards is clean", async ({
-  page,
-}) => {
+test("dark mode: decoder with success + failure cards is clean", async ({ page }) => {
   await page.emulateMedia({ colorScheme: "dark" });
   await page.goto("/ithmb-decoder/", { waitUntil: "networkidle" });
 
@@ -136,9 +130,7 @@ test("dark mode: decoder with success + failure cards is clean", async ({
   const garbage = path.join(os.tmpdir(), `dark-qa-${Date.now()}.ithmb`);
   fs.writeFileSync(
     garbage,
-    Buffer.from([
-      0xde, 0xad, 0xbe, 0xef, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
-    ]),
+    Buffer.from([0xde, 0xad, 0xbe, 0xef, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08]),
   );
   const [chooser2] = await Promise.all([
     page.waitForEvent("filechooser", { timeout: 15000 }),
@@ -160,32 +152,22 @@ test("dark mode: decoder with success + failure cards is clean", async ({
 test("dark mode: manual toggle flips theme and persists", async ({ page }) => {
   await page.emulateMedia({ colorScheme: "light" });
   await page.goto("/", { waitUntil: "networkidle" });
-  expect(
-    await page.evaluate(() => document.documentElement.dataset.theme),
-  ).toBe("light");
+  expect(await page.evaluate(() => document.documentElement.dataset.theme)).toBe("light");
 
   await page.locator("#themeToggle").click();
   await page.waitForTimeout(200);
-  expect(
-    await page.evaluate(() => document.documentElement.dataset.theme),
-  ).toBe("dark");
-  expect(await page.evaluate(() => localStorage.getItem("ithmbTheme"))).toBe(
-    "dark",
-  );
+  expect(await page.evaluate(() => document.documentElement.dataset.theme)).toBe("dark");
+  expect(await page.evaluate(() => localStorage.getItem("ithmbTheme"))).toBe("dark");
   const issues = await auditDark(page);
   expect(issues, issues.slice(0, 6).join("\n")).toEqual([]);
 
   // persists across reload
   await page.reload({ waitUntil: "networkidle" });
-  expect(
-    await page.evaluate(() => document.documentElement.dataset.theme),
-  ).toBe("dark");
+  expect(await page.evaluate(() => document.documentElement.dataset.theme)).toBe("dark");
 
   // and back to light
   await page.locator("#themeToggle").click();
   await page.waitForTimeout(200);
-  expect(
-    await page.evaluate(() => document.documentElement.dataset.theme),
-  ).toBe("light");
+  expect(await page.evaluate(() => document.documentElement.dataset.theme)).toBe("light");
   await page.evaluate(() => localStorage.removeItem("ithmbTheme"));
 });

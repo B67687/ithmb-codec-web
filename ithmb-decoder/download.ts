@@ -1,7 +1,7 @@
-import { S } from "./state.js";
 import { successCards } from "./cards.js";
-import { formatLabels, extMap } from "./utils.js";
 import { zipSync } from "./fflate-bundle.js";
+import { S } from "./state.js";
+import { extMap, formatLabels } from "./utils.js";
 
 // Pure zip-entry naming policy (unit-tested in tests/unit/download-naming.test.ts).
 // Strip path separators and leading dots so a hostile filename can never

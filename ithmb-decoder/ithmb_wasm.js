@@ -1,4 +1,3 @@
-
 // WASM init loader (cross-browser compatible streaming instantiation)
 // Re-exports all user-facing functions from the bindings module.
 // Built from: crates/ithmb-wasm in github.com/B67687/Ithmb-Codec
@@ -12,7 +11,7 @@ let wasm, wasmModule, wasmInstance;
 function __wbg_get_imports() {
   return {
     "./ithmb_wasm_bg.js": {
-      __wbindgen_init_externref_table: function () {
+      __wbindgen_init_externref_table: () => {
         const table = wasm.__wbindgen_externrefs;
         const offset = table.grow(4);
         table.set(0, undefined);
@@ -40,10 +39,7 @@ async function __wbg_load(module, imports) {
       try {
         return await WebAssembly.instantiateStreaming(module, imports);
       } catch (e) {
-        if (
-          module.ok &&
-          module.headers.get("Content-Type") !== "application/wasm"
-        ) {
+        if (module.ok && module.headers.get("Content-Type") !== "application/wasm") {
           console.warn(
             "`WebAssembly.instantiateStreaming` failed because your server does not serve Wasm with `application/wasm` MIME type. Falling back to `WebAssembly.instantiate` which is slower. Original error:\n",
             e,
@@ -72,9 +68,7 @@ function initSync(module) {
     if (Object.getPrototypeOf(module) === Object.prototype) {
       ({ module } = module);
     } else {
-      console.warn(
-        "using deprecated parameters for `initSync()`; pass a single object instead",
-      );
+      console.warn("using deprecated parameters for `initSync()`; pass a single object instead");
     }
   }
 

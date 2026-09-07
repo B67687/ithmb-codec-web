@@ -1,6 +1,6 @@
-import { test, expect } from "@playwright/test";
-import AxeBuilder from "@axe-core/playwright";
 import path from "path";
+import AxeBuilder from "@axe-core/playwright";
+import { expect, test } from "@playwright/test";
 
 // Shared gate: collect critical/serious violations minus documented exclusions.
 async function seriousViolations(page: import("@playwright/test").Page) {
@@ -9,9 +9,7 @@ async function seriousViolations(page: import("@playwright/test").Page) {
     .analyze();
   const KNOWN_A11Y_EXCLUSIONS = new Set(["color-contrast"]);
   return results.violations.filter(
-    (v) =>
-      (v.impact === "critical" || v.impact === "serious") &&
-      !KNOWN_A11Y_EXCLUSIONS.has(v.id),
+    (v) => (v.impact === "critical" || v.impact === "serious") && !KNOWN_A11Y_EXCLUSIONS.has(v.id),
   );
 }
 
@@ -29,18 +27,14 @@ test.describe("Accessibility", () => {
   ];
 
   for (const { name, url } of pages) {
-    test(`${name} page has no critical accessibility violations`, async ({
-      page,
-    }) => {
+    test(`${name} page has no critical accessibility violations`, async ({ page }) => {
       await page.goto(url);
       await page.waitForLoadState("networkidle");
 
       const serious = await seriousViolations(page);
 
       if (serious.length > 0) {
-        console.log(
-          `\n=== ${name}: ${serious.length} critical/serious violations ===`,
-        );
+        console.log(`\n=== ${name}: ${serious.length} critical/serious violations ===`);
         for (const v of serious) {
           console.log(`  ${v.id}: ${v.help}`);
           console.log(`  Impact: ${v.impact}`);
@@ -56,9 +50,7 @@ test.describe("Accessibility", () => {
   }
 });
 
-test("Decoder post-upload state has no critical accessibility violations", async ({
-  page,
-}) => {
+test("Decoder post-upload state has no critical accessibility violations", async ({ page }) => {
   await page.goto("/ithmb-decoder/");
   await page.waitForLoadState("networkidle");
   const [fc] = await Promise.all([

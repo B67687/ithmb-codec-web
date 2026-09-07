@@ -38,7 +38,9 @@ export const extMap: Record<string, string> = {
 };
 
 export function bytesToHex(bytes: Uint8Array, separator = " "): string {
-  return Array.from(bytes).map((b) => b.toString(16).padStart(2, "0")).join(separator);
+  return Array.from(bytes)
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join(separator);
 }
 
 export function bytesToBase64(bytes: Uint8Array): string {

@@ -35,6 +35,7 @@
 // from locales/en.json by `npm run sync:i18n` (scripts/sync-embedded.mjs) and
 // must never be hand-edited — scripts/check-i18n.mjs enforces exact parity.
 // The `: Record<string, string>` annotation lets t() index it by arbitrary key.
+// biome-ignore format: generated block (npm run sync:i18n) — must stay JSON.parse-able for scripts/check-i18n.mts.
 const EMBEDDED_EN: Record<string, string> = {
   "nav.home": "Home",
   "nav.decoder": "Decoder",
@@ -289,8 +290,7 @@ function applyToElement(el: HTMLElement): void {
     el.setAttribute("aria-label", t(el.dataset.i18nAriaLabel));
   if (el.dataset.i18nTitle !== undefined) el.setAttribute("title", t(el.dataset.i18nTitle));
   // meta[name=description] and similar content-attribute tags.
-  if (el.dataset.i18nContent !== undefined)
-    el.setAttribute("content", t(el.dataset.i18nContent));
+  if (el.dataset.i18nContent !== undefined) el.setAttribute("content", t(el.dataset.i18nContent));
 }
 
 // Highlight the active option in the nav EN/中 toggle.
@@ -299,9 +299,7 @@ function updateLangToggle(): void {
   if (!btn) return;
   btn.querySelectorAll<HTMLElement>(".lang-opt").forEach((opt) => {
     const active = opt.dataset.lang === I18N.lang;
-    opt.style.color = active
-      ? "var(--accent, #007aff)"
-      : "var(--muted, #86868b)";
+    opt.style.color = active ? "var(--accent, #007aff)" : "var(--muted, #86868b)";
     opt.style.fontWeight = active ? "700" : "500";
   });
 }
@@ -325,7 +323,9 @@ async function preloadLocales(): Promise<void> {
   const loaded: Record<string, Record<string, string>> = {};
   for (const lang of Object.keys(SUPPORTED)) {
     try {
-      const resp = await fetch(base + "locales/" + lang + ".json", { cache: "no-cache" });
+      const resp = await fetch(base + "locales/" + lang + ".json", {
+        cache: "no-cache",
+      });
       // fetch's json() is `Promise<any>` (DOM spec) — pinned to the locale
       // table shape at this one boundary.
       if (resp.ok) loaded[lang] = (await resp.json()) as Record<string, string>;
@@ -352,10 +352,10 @@ function activateLanguage(merged: Record<string, string>): void {
 }
 
 /**
-* Switch the active language. Persists to localStorage and re-applies all
-* data-i18n text immediately (embedded defaults), then refreshes from the
-* locale JSON in the background.
-*/
+ * Switch the active language. Persists to localStorage and re-applies all
+ * data-i18n text immediately (embedded defaults), then refreshes from the
+ * locale JSON in the background.
+ */
 export function setLang(lang: string): void {
   if (!SUPPORTED[lang]) return;
   I18N.lang = lang;
@@ -388,7 +388,9 @@ async function loadLocale(lang: string): Promise<void> {
     // module is served from /ithmb-decoder/ and may be injected into root
     // pages (via nav.js), where a bare "locales/..." path would 404.
     const base = new URL(".", import.meta.url).href;
-    const resp = await fetch(base + "locales/" + lang + ".json", { cache: "no-cache" });
+    const resp = await fetch(base + "locales/" + lang + ".json", {
+      cache: "no-cache",
+    });
     if (!resp.ok) throw new Error("HTTP " + resp.status);
     const data = (await resp.json()) as Record<string, string>;
     if (I18N.lang !== lang) return; // a newer setLang() superseded this fetch

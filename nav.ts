@@ -1,4 +1,4 @@
-(function () {
+(() => {
   var path: string = window.location.pathname;
 
   // Server-rendered /zh/ tree: pages under /zh/ are the canonical Chinese
@@ -36,7 +36,7 @@
 
   // Determine active link (strip the /zh prefix so the same rules apply).
   var activePath: string = isZh ? path.replace(/^\/zh/, "") : path;
-  var active: string = "home";
+  var active = "home";
   if (
     activePath.indexOf("/ithmb-decoder/") === 0 ||
     activePath === "/ithmb-decoder" ||
@@ -94,14 +94,7 @@
     // labels are the static Chinese strings (matching zh.json's nav.* keys);
     // data-i18n stays so i18n re-applies the authoritative text on activation.
     var text = isZh ? item.zhText : item.text;
-    var html =
-      '<a href="' +
-      href +
-      '" class="' +
-      cls +
-      '" data-i18n="' +
-      item.i18n +
-      '">';
+    var html = '<a href="' + href + '" class="' + cls + '" data-i18n="' + item.i18n + '">';
     html += text + "</a>";
     return html;
   }
@@ -170,7 +163,7 @@
   // just navigate (the redirect script handles the rest).
   var toggle = document.getElementById("langToggle");
   if (toggle) {
-    toggle.addEventListener("click", function () {
+    toggle.addEventListener("click", () => {
       try {
         localStorage.setItem("ithmbLang", isZh ? "en" : "zh");
       } catch (e) {
@@ -193,9 +186,8 @@
   // value before first paint and exposes the toggle API).
   var themeBtn = document.getElementById("themeToggle");
   if (themeBtn) {
-    themeBtn.addEventListener("click", function () {
-      if (typeof window.IthmbTheme === "object" && window.IthmbTheme)
-        window.IthmbTheme.toggle();
+    themeBtn.addEventListener("click", () => {
+      if (typeof window.IthmbTheme === "object" && window.IthmbTheme) window.IthmbTheme.toggle();
     });
   }
 })();

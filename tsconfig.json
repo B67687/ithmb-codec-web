@@ -5,11 +5,5 @@
     "types": [],
     "typeRoots": []
   },
-  "include": [
-    "ithmb-decoder/*.ts",
-    "nav.ts",
-    "footer.ts",
-    "lang-redirect.ts",
-    "globals.d.ts"
-  ]
+  "include": ["ithmb-decoder/*.ts", "nav.ts", "footer.ts", "lang-redirect.ts", "globals.d.ts"]
 }

@@ -21,11 +21,7 @@ export async function keyedPseudonym(env: Env, data: string): Promise<string> {
     false,
     ["sign"],
   );
-  const sig = await crypto.subtle.sign(
-    "HMAC",
-    key,
-    new TextEncoder().encode(data),
-  );
+  const sig = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(data));
   return Array.from(new Uint8Array(sig))
     .slice(0, 16)
     .map((b) => b.toString(16).padStart(2, "0"))
@@ -54,11 +50,7 @@ export function ipFingerprint(env: Env, ip: string): Promise<string> {
 // updates made the old cap/rate counters permanently bypassable (CWE-362).
 // Counting actual per-request/per-record keys self-corrects: the count is
 // always derived from what is actually stored.
-export async function countKeys(
-  env: Env,
-  prefix: string,
-  max: number,
-): Promise<number> {
+export async function countKeys(env: Env, prefix: string, max: number): Promise<number> {
   let count = 0;
   let cursor: string | null | undefined;
   do {

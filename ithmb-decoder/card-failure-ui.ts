@@ -1,10 +1,9 @@
 import { addFailure } from "./cards.js";
+import { addFilmstripThumb } from "./filmstrip.js";
+import { t } from "./i18n.js";
+import { createShareBox } from "./share-actions.js";
 import { escapeHtml } from "./utils.js";
 import { refreshViewerIfCurrent } from "./viewer.js";
-import { addFilmstripThumb } from "./filmstrip.js";
-import { createShareBox } from "./share-actions.js";
-import { t } from "./i18n.js";
-
 
 export function renderFailureCard(
   cardId: string,
@@ -21,9 +20,7 @@ export function renderFailureCard(
   const isKnown = mode === "known-failed";
 
   statusEl.className = "status " + (isKnown ? "err" : "unknown");
-  statusEl.textContent = isKnown
-    ? t("card.decodeFailed")
-    : t("card.unknownFormat", { prefix });
+  statusEl.textContent = isKnown ? t("card.decodeFailed") : t("card.unknownFormat", { prefix });
   previewEl.style.display = "block";
   previewEl.innerHTML = "";
   previewEl.appendChild(

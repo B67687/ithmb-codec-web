@@ -1,10 +1,10 @@
-import { S, processedFileIds } from "./state.js";
 import { resetCards } from "./cards.js";
-import { bytesToHex, escapeHtml, formatSize, showToast } from "./utils.js";
 import { decodeFile } from "./decoder.js";
-import { openViewer, updateToolbar } from "./viewer.js";
 import { createFilmstripThumb } from "./filmstrip.js";
 import { t } from "./i18n.js";
+import { S, processedFileIds } from "./state.js";
+import { bytesToHex, escapeHtml, formatSize, showToast } from "./utils.js";
+import { openViewer, updateToolbar } from "./viewer.js";
 
 const fileList = document.getElementById("file-list")!;
 

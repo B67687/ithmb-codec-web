@@ -1,14 +1,14 @@
 // Cloudflare Worker — KV persistence + POST ingestion handler
 
+import { countKeys, fingerprint, ipFingerprint } from "./crypto";
 import type { Env, TelemetryBody } from "./types";
 import {
+  MAX_BODY_BYTES,
   MAX_RECORDS_PER_FP_PER_DAY,
   MAX_RECORDS_PER_IP_PER_DAY,
   RATE_LIMIT_PER_DAY,
   RATE_LIMIT_PER_IP_PER_DAY,
-  MAX_BODY_BYTES,
 } from "./types";
-import { countKeys, fingerprint, ipFingerprint } from "./crypto";
 import { type ValidatedEntry, validateEntry } from "./validation";
 
 // ---- Persist: dedup check + record count cap + KV store ----
@@ -46,22 +46,16 @@ export async function persistRecord(
     countKeys(env, ipRecordPrefix, MAX_RECORDS_PER_IP_PER_DAY),
   ]);
   if (storedCount >= MAX_RECORDS_PER_FP_PER_DAY) {
-    return new Response(
-      JSON.stringify({ ok: false, error: "too many records" }),
-      {
-        status: 429,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      },
-    );
+    return new Response(JSON.stringify({ ok: false, error: "too many records" }), {
+      status: 429,
+      headers: { "Content-Type": "application/json", ...corsHeaders },
+    });
   }
   if (ipStoredCount >= MAX_RECORDS_PER_IP_PER_DAY) {
-    return new Response(
-      JSON.stringify({ ok: false, error: "too many records" }),
-      {
-        status: 429,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      },
-    );
+    return new Response(JSON.stringify({ ok: false, error: "too many records" }), {
+      status: 429,
+      headers: { "Content-Type": "application/json", ...corsHeaders },
+    });
   }
 
   // ---- Store ----
@@ -119,13 +113,10 @@ export async function handlePostIngestion(
 ): Promise<Response> {
   const contentType = request.headers.get("Content-Type") || "";
   if (!contentType.startsWith("application/json")) {
-    return new Response(
-      JSON.stringify({ error: "expected application/json" }),
-      {
-        status: 415,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      },
-    );
+    return new Response(JSON.stringify({ error: "expected application/json" }), {
+      status: 415,
+      headers: { "Content-Type": "application/json", ...corsHeaders },
+    });
   }
 
   const bodyText = await request.text();
@@ -163,22 +154,16 @@ export async function handlePostIngestion(
     countKeys(env, ipRatePrefix, RATE_LIMIT_PER_IP_PER_DAY),
   ]);
   if (rateCount >= RATE_LIMIT_PER_DAY) {
-    return new Response(
-      JSON.stringify({ ok: false, error: "rate limited" }),
-      {
-        status: 429,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      },
-    );
+    return new Response(JSON.stringify({ ok: false, error: "rate limited" }), {
+      status: 429,
+      headers: { "Content-Type": "application/json", ...corsHeaders },
+    });
   }
   if (ipRateCount >= RATE_LIMIT_PER_IP_PER_DAY) {
-    return new Response(
-      JSON.stringify({ ok: false, error: "rate limited" }),
-      {
-        status: 429,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      },
-    );
+    return new Response(JSON.stringify({ ok: false, error: "rate limited" }), {
+      status: 429,
+      headers: { "Content-Type": "application/json", ...corsHeaders },
+    });
   }
   // Rate markers are written for EVERY request that passes the rate
   // check — before dedup/validation early-returns — so an attacker can't

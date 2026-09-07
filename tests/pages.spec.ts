@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 test.describe("Landing page", () => {
   test("loads and shows ITHMB title", async ({ page }) => {
@@ -22,7 +22,9 @@ test.describe("Landing page subtitle centering", () => {
     expect(Math.abs(box!.x - (vw - box!.x - box!.width))).toBeLessThan(2);
   });
 
-  test("zh subtitle is horizontally centered (not broken by :lang(zh) p margin)", async ({ page }) => {
+  test("zh subtitle is horizontally centered (not broken by :lang(zh) p margin)", async ({
+    page,
+  }) => {
     await page.goto("/zh/", { waitUntil: "networkidle" });
     const box = await page.locator(".subtitle").boundingBox();
     expect(box).not.toBeNull();
@@ -59,8 +61,6 @@ test.describe("Guide page", () => {
     await page.goto("/guide/how-to-open-ithmb-files.html", {
       waitUntil: "networkidle",
     });
-    await expect(
-      page.locator("h2").filter({ hasText: "Frequently" }),
-    ).toBeVisible();
+    await expect(page.locator("h2").filter({ hasText: "Frequently" })).toBeVisible();
   });
 });

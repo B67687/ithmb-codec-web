@@ -1,5 +1,5 @@
 // Unit tests for uniqueZipName (ithmb-decoder/download.ts filename policy)
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { uniqueZipName } from "../../ithmb-decoder/download";
 
 const taken = (...names: string[]): Record<string, Uint8Array> =>
@@ -23,15 +23,13 @@ describe("uniqueZipName", () => {
   });
 
   it("suffixes duplicates so no file is overwritten", () => {
-    expect(uniqueZipName(taken("photo.jpg"), "photo.ithmb", ".jpg")).toBe(
-      "photo-2.jpg",
-    );
+    expect(uniqueZipName(taken("photo.jpg"), "photo.ithmb", ".jpg")).toBe("photo-2.jpg");
   });
 
   it("chains suffixes past -2", () => {
-    expect(
-      uniqueZipName(taken("photo.jpg", "photo-2.jpg"), "photo.ithmb", ".jpg"),
-    ).toBe("photo-3.jpg");
+    expect(uniqueZipName(taken("photo.jpg", "photo-2.jpg"), "photo.ithmb", ".jpg")).toBe(
+      "photo-3.jpg",
+    );
   });
 
   it("leaves non-colliding names untouched", () => {

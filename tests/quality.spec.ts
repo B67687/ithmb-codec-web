@@ -1,6 +1,6 @@
-import { test, expect } from "@playwright/test";
-import path from "node:path";
 import fs from "node:fs";
+import path from "node:path";
+import { expect, test } from "@playwright/test";
 
 interface TelemetryPayload {
   header?: string;
@@ -52,9 +52,7 @@ test.describe("Mobile responsive", () => {
 // ─── Keyboard Accessibility ─────────────────────────────────────────────────
 
 test.describe("Keyboard navigation", () => {
-  test("Tab navigates through interactive elements on home page", async ({
-    page,
-  }) => {
+  test("Tab navigates through interactive elements on home page", async ({ page }) => {
     await page.goto("/");
     const elements = [];
     for (let i = 0; i < 15; i++) {
@@ -121,11 +119,7 @@ test.describe("Error states", () => {
     // (one worker's unlink deletes while the other is mid-test).
     const invalidFile = path.join(
       FIXTURES,
-      "invalid-" +
-        Date.now() +
-        "-" +
-        Math.random().toString(36).slice(2, 8) +
-        ".bin",
+      "invalid-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8) + ".bin",
     );
     fs.writeFileSync(invalidFile, Buffer.alloc(64, 0xff));
     const [fc] = await Promise.all([
@@ -159,24 +153,16 @@ test.describe("Error states", () => {
     // Regression: decodeFile used to swallow a null-addEventListener crash and
     // render the generic Error card instead of the share prompt.
     await expect(card.locator(".status")).not.toContainText("Error");
-    await expect(card.locator(".share-heading")).toHaveText(
-      "Help improve the decoder",
-    );
-    await expect(card.locator('[data-share="header"]')).toHaveText(
-      "Share 16 bytes",
-    );
-    await expect(card.locator('[data-share="full"]')).toHaveText(
-      "Share full file",
-    );
+    await expect(card.locator(".share-heading")).toHaveText("Help improve the decoder");
+    await expect(card.locator('[data-share="header"]')).toHaveText("Share 16 bytes");
+    await expect(card.locator('[data-share="full"]')).toHaveText("Share full file");
     await expect(card.locator(".share-hexdump code")).toContainText(
       /[0-9a-f]{2}( [0-9a-f]{2}){15}/,
     );
     fs.rmSync(corruptFile, { force: true });
   });
 
-  test("Share 16 bytes posts header-only payload and disables buttons", async ({
-    page,
-  }) => {
+  test("Share 16 bytes posts header-only payload and disables buttons", async ({ page }) => {
     await page.goto("/ithmb-decoder/");
     const corruptFile = path.join(FIXTURES, "corrupt-header.ithmb");
     fs.writeFileSync(
@@ -196,20 +182,17 @@ test.describe("Error states", () => {
 
     // Intercept the telemetry POST; fulfill 200 so the app sees a successful share
     const posted: TelemetryPayload[] = [];
-    await page.route(
-      "**/ithmb-telemetry.ithmb-codec.workers.dev/**",
-      async (route) => {
-        if (route.request().method() === "POST") {
-          posted.push(JSON.parse(route.request().postData() || "{}"));
-        }
-        await route.fulfill({
-          status: 200,
-          contentType: "application/json",
-          headers: { "Access-Control-Allow-Origin": "*" },
-          body: '{"ok":true}',
-        });
-      },
-    );
+    await page.route("**/ithmb-telemetry.ithmb-codec.workers.dev/**", async (route) => {
+      if (route.request().method() === "POST") {
+        posted.push(JSON.parse(route.request().postData() || "{}"));
+      }
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        headers: { "Access-Control-Allow-Origin": "*" },
+        body: '{"ok":true}',
+      });
+    });
 
     const headerBtn = card.locator('[data-share="header"]');
     await headerBtn.click();
@@ -231,9 +214,7 @@ test.describe("Error states", () => {
 
   test("Share full file posts full_file base64 payload", async ({ page }) => {
     await page.goto("/ithmb-decoder/");
-    const corruptBytes = fs
-      .readFileSync(path.join(FIXTURES, "test1.ithmb"))
-      .subarray(0, 100);
+    const corruptBytes = fs.readFileSync(path.join(FIXTURES, "test1.ithmb")).subarray(0, 100);
     const corruptFile = path.join(FIXTURES, "corrupt-full.ithmb");
     fs.writeFileSync(corruptFile, corruptBytes);
     const [fc] = await Promise.all([
@@ -248,20 +229,17 @@ test.describe("Error states", () => {
     });
 
     const posted: TelemetryPayload[] = [];
-    await page.route(
-      "**/ithmb-telemetry.ithmb-codec.workers.dev/**",
-      async (route) => {
-        if (route.request().method() === "POST") {
-          posted.push(JSON.parse(route.request().postData() || "{}"));
-        }
-        await route.fulfill({
-          status: 200,
-          contentType: "application/json",
-          headers: { "Access-Control-Allow-Origin": "*" },
-          body: '{"ok":true}',
-        });
-      },
-    );
+    await page.route("**/ithmb-telemetry.ithmb-codec.workers.dev/**", async (route) => {
+      if (route.request().method() === "POST") {
+        posted.push(JSON.parse(route.request().postData() || "{}"));
+      }
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        headers: { "Access-Control-Allow-Origin": "*" },
+        body: '{"ok":true}',
+      });
+    });
 
     await card.locator('[data-share="full"]').click();
     await expect.poll(() => posted.length, { timeout: 5000 }).toBe(1);
@@ -269,9 +247,7 @@ test.describe("Error states", () => {
     if (!body) throw new Error("no telemetry posted");
     expect(typeof body.full_file).toBe("string");
     // Round-trip: decoded base64 must equal the exact fixture bytes
-    expect(Buffer.from(body.full_file, "base64").length).toBe(
-      corruptBytes.length,
-    );
+    expect(Buffer.from(body.full_file, "base64").length).toBe(corruptBytes.length);
     expect(card.locator('[data-share="full"]')).toHaveText("Shared ✓");
     await expect(card.locator('[data-share="header"]')).toBeDisabled();
     await expect(card.locator('[data-share="header"]')).toHaveAttribute(
@@ -281,9 +257,7 @@ test.describe("Error states", () => {
     fs.rmSync(corruptFile, { force: true });
   });
 
-  test("double-clicking Share 16 bytes sends exactly one POST", async ({
-    page,
-  }) => {
+  test("double-clicking Share 16 bytes sends exactly one POST", async ({ page }) => {
     await page.goto("/ithmb-decoder/");
     const corruptFile = path.join(FIXTURES, "corrupt-dedup.ithmb");
     fs.writeFileSync(
@@ -302,20 +276,17 @@ test.describe("Error states", () => {
     });
 
     const posted: TelemetryPayload[] = [];
-    await page.route(
-      "**/ithmb-telemetry.ithmb-codec.workers.dev/**",
-      async (route) => {
-        if (route.request().method() === "POST") {
-          posted.push(JSON.parse(route.request().postData() || "{}"));
-        }
-        await route.fulfill({
-          status: 200,
-          contentType: "application/json",
-          headers: { "Access-Control-Allow-Origin": "*" },
-          body: '{"ok":true}',
-        });
-      },
-    );
+    await page.route("**/ithmb-telemetry.ithmb-codec.workers.dev/**", async (route) => {
+      if (route.request().method() === "POST") {
+        posted.push(JSON.parse(route.request().postData() || "{}"));
+      }
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        headers: { "Access-Control-Allow-Origin": "*" },
+        body: '{"ok":true}',
+      });
+    });
 
     const headerBtn = card.locator('[data-share="header"]');
     await headerBtn.click();
@@ -328,13 +299,9 @@ test.describe("Error states", () => {
     fs.rmSync(corruptFile, { force: true });
   });
 
-  test("sharing 16 bytes then full file sends both payloads", async ({
-    page,
-  }) => {
+  test("sharing 16 bytes then full file sends both payloads", async ({ page }) => {
     await page.goto("/ithmb-decoder/");
-    const corruptBytes = fs
-      .readFileSync(path.join(FIXTURES, "test1.ithmb"))
-      .subarray(0, 100);
+    const corruptBytes = fs.readFileSync(path.join(FIXTURES, "test1.ithmb")).subarray(0, 100);
     const corruptFile = path.join(FIXTURES, "corrupt-upgrade.ithmb");
     fs.writeFileSync(corruptFile, corruptBytes);
     const [fc] = await Promise.all([
@@ -349,20 +316,17 @@ test.describe("Error states", () => {
     });
 
     const posted: TelemetryPayload[] = [];
-    await page.route(
-      "**/ithmb-telemetry.ithmb-codec.workers.dev/**",
-      async (route) => {
-        if (route.request().method() === "POST") {
-          posted.push(JSON.parse(route.request().postData() || "{}"));
-        }
-        await route.fulfill({
-          status: 200,
-          contentType: "application/json",
-          headers: { "Access-Control-Allow-Origin": "*" },
-          body: '{"ok":true}',
-        });
-      },
-    );
+    await page.route("**/ithmb-telemetry.ithmb-codec.workers.dev/**", async (route) => {
+      if (route.request().method() === "POST") {
+        posted.push(JSON.parse(route.request().postData() || "{}"));
+      }
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        headers: { "Access-Control-Allow-Origin": "*" },
+        body: '{"ok":true}',
+      });
+    });
 
     const headerBtn = card.locator('[data-share="header"]');
     await headerBtn.click();
@@ -381,19 +345,14 @@ test.describe("Error states", () => {
     const second = posted[1];
     if (!second) throw new Error("no telemetry posted");
     expect(typeof second.full_file).toBe("string");
-    expect(Buffer.from(second.full_file, "base64").length).toBe(
-      corruptBytes.length,
-    );
+    expect(Buffer.from(second.full_file, "base64").length).toBe(corruptBytes.length);
     expect(second.header).toBe(first.header);
 
     // Full file includes the header — both buttons now locked
     await expect(fullBtn).toHaveText("Shared ✓");
     await expect(fullBtn).toBeDisabled();
     await expect(headerBtn).toBeDisabled();
-    await expect(headerBtn).toHaveAttribute(
-      "title",
-      /Full file already shared/,
-    );
+    await expect(headerBtn).toHaveAttribute("title", /Full file already shared/);
     fs.rmSync(corruptFile, { force: true });
   });
   test("dropzone shows hint text", async ({ page }) => {
@@ -402,9 +361,7 @@ test.describe("Error states", () => {
     await expect(hint).toContainText(/click|browse|drop/i);
   });
 
-  test("server rejection shows honest failure toast, button stays active", async ({
-    page,
-  }) => {
+  test("server rejection shows honest failure toast, button stays active", async ({ page }) => {
     await page.goto("/ithmb-decoder/");
     const corruptFile = path.join(FIXTURES, "corrupt-reject.ithmb");
     fs.writeFileSync(
@@ -423,21 +380,18 @@ test.describe("Error states", () => {
     });
 
     const posted: TelemetryPayload[] = [];
-    await page.route(
-      "**/ithmb-telemetry.ithmb-codec.workers.dev/**",
-      async (route) => {
-        if (route.request().method() === "POST") {
-          posted.push(JSON.parse(route.request().postData() || "{}"));
-        }
-        // Simulate the worker rejecting the payload (e.g. invalid prefix)
-        await route.fulfill({
-          status: 400,
-          contentType: "application/json",
-          headers: { "Access-Control-Allow-Origin": "*" },
-          body: '{"error":"invalid prefix"}',
-        });
-      },
-    );
+    await page.route("**/ithmb-telemetry.ithmb-codec.workers.dev/**", async (route) => {
+      if (route.request().method() === "POST") {
+        posted.push(JSON.parse(route.request().postData() || "{}"));
+      }
+      // Simulate the worker rejecting the payload (e.g. invalid prefix)
+      await route.fulfill({
+        status: 400,
+        contentType: "application/json",
+        headers: { "Access-Control-Allow-Origin": "*" },
+        body: '{"error":"invalid prefix"}',
+      });
+    });
 
     const headerBtn = card.locator('[data-share="header"]');
     await headerBtn.click();
@@ -453,9 +407,7 @@ test.describe("Error states", () => {
 // ─── Quiet-by-default (no contribution UI) ───────────────────────────────────
 
 test.describe("Quiet-by-default", () => {
-  test("success card has no contribute button, shows report link", async ({
-    page,
-  }) => {
+  test("success card has no contribute button, shows report link", async ({ page }) => {
     await page.goto("/ithmb-decoder/");
     const [fc] = await Promise.all([
       page.waitForEvent("filechooser"),
@@ -475,9 +427,7 @@ test.describe("Quiet-by-default", () => {
     await expect(reportLink).toHaveText(/Image looks wrong\?/);
   });
 
-  test("report link shares first 16 bytes and marks shared", async ({
-    page,
-  }) => {
+  test("report link shares first 16 bytes and marks shared", async ({ page }) => {
     await page.goto("/ithmb-decoder/");
     const [fc] = await Promise.all([
       page.waitForEvent("filechooser"),
@@ -489,20 +439,17 @@ test.describe("Quiet-by-default", () => {
     await expect(card.locator("[data-save]")).toBeVisible({ timeout: 10000 });
 
     const posted: TelemetryPayload[] = [];
-    await page.route(
-      "**/ithmb-telemetry.ithmb-codec.workers.dev/**",
-      async (route) => {
-        if (route.request().method() === "POST") {
-          posted.push(JSON.parse(route.request().postData() || "{}"));
-        }
-        await route.fulfill({
-          status: 200,
-          contentType: "application/json",
-          headers: { "Access-Control-Allow-Origin": "*" },
-          body: '{"ok":true}',
-        });
-      },
-    );
+    await page.route("**/ithmb-telemetry.ithmb-codec.workers.dev/**", async (route) => {
+      if (route.request().method() === "POST") {
+        posted.push(JSON.parse(route.request().postData() || "{}"));
+      }
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        headers: { "Access-Control-Allow-Origin": "*" },
+        body: '{"ok":true}',
+      });
+    });
 
     const reportLink = card.locator("[data-report]");
     await reportLink.click();
@@ -520,9 +467,7 @@ test.describe("Quiet-by-default", () => {
     await expect(page.locator(".toast")).toContainText(/shared/i);
   });
 
-  test("no legacy batch toggle, footer bar, or contribute modal", async ({
-    page,
-  }) => {
+  test("no legacy batch toggle, footer bar, or contribute modal", async ({ page }) => {
     await page.goto("/ithmb-decoder/");
     await expect(page.locator("#batchShareCheck")).toHaveCount(0);
     await expect(page.locator(".batch-toggle")).toHaveCount(0);
@@ -554,18 +499,12 @@ test.describe("Viewer contextual share/report", () => {
     await expect(card.locator(".share-box")).toBeVisible({ timeout: 10000 });
     // Viewer auto-opens for the first batch — stage mirrors the card's share box
     await expect(page.locator("#viewer-stage .share-box")).toBeVisible();
-    await expect(page.locator("#viewer-stage [data-share=header]")).toHaveText(
-      "Share 16 bytes",
-    );
-    await expect(page.locator("#viewer-stage [data-share=full]")).toHaveText(
-      "Share full file",
-    );
+    await expect(page.locator("#viewer-stage [data-share=header]")).toHaveText("Share 16 bytes");
+    await expect(page.locator("#viewer-stage [data-share=full]")).toHaveText("Share full file");
     fs.rmSync(corruptFile, { force: true });
   });
 
-  test("viewer stage report link posts header for a success card", async ({
-    page,
-  }) => {
+  test("viewer stage report link posts header for a success card", async ({ page }) => {
     await page.goto("/ithmb-decoder/");
     const [fc] = await Promise.all([
       page.waitForEvent("filechooser"),
@@ -577,20 +516,17 @@ test.describe("Viewer contextual share/report", () => {
     await expect(card.locator("[data-save]")).toBeVisible({ timeout: 10000 });
 
     const posted: TelemetryPayload[] = [];
-    await page.route(
-      "**/ithmb-telemetry.ithmb-codec.workers.dev/**",
-      async (route) => {
-        if (route.request().method() === "POST") {
-          posted.push(JSON.parse(route.request().postData() || "{}"));
-        }
-        await route.fulfill({
-          status: 200,
-          contentType: "application/json",
-          headers: { "Access-Control-Allow-Origin": "*" },
-          body: '{"ok":true}',
-        });
-      },
-    );
+    await page.route("**/ithmb-telemetry.ithmb-codec.workers.dev/**", async (route) => {
+      if (route.request().method() === "POST") {
+        posted.push(JSON.parse(route.request().postData() || "{}"));
+      }
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        headers: { "Access-Control-Allow-Origin": "*" },
+        body: '{"ok":true}',
+      });
+    });
 
     const viewerLink = page.locator("#viewer-stage [data-report]");
     await expect(viewerLink).toBeVisible();

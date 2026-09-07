@@ -1,10 +1,10 @@
 // Unit tests for workers/telemetry/src/crypto.ts — pure functions
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
   escapeHtml,
-  validBase64Payload,
-  tokensEqual,
   keyedPseudonym,
+  tokensEqual,
+  validBase64Payload,
 } from "../../workers/telemetry/src/crypto";
 
 describe("escapeHtml (worker)", () => {

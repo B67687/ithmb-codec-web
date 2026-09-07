@@ -12,7 +12,7 @@
 // location.replace() is used instead of assign() so the automatic redirect
 // does not pollute history: pressing Back after a language redirect goes to
 // the previous page instead of bouncing the visitor between locales.
-(function () {
+(() => {
   var path: string = window.location.pathname;
 
   // EN page path -> canonical zh page path (same map nav.ts uses, plus the
@@ -46,9 +46,7 @@
     "/zh/enterprise/index.html": "/enterprise/",
   };
 
-  var lang: string = (
-    document.documentElement.getAttribute("lang") || ""
-  ).toLowerCase();
+  var lang: string = (document.documentElement.getAttribute("lang") || "").toLowerCase();
   var current: string | null =
     lang.indexOf("zh") === 0 ? "zh" : lang.indexOf("en") === 0 ? "en" : null;
   if (!current) return; // page declares no supported language — nothing to do

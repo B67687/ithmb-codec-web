@@ -1,16 +1,16 @@
 // Unit tests for ithmb-decoder/cards.ts (pure store, no DOM)
-import { describe, it, expect, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import {
-  addSuccess,
   addFailure,
-  resetCards,
-  successCount,
-  successCards,
+  addSuccess,
   failedCards,
-  findSuccess,
   findFailure,
+  findSuccess,
+  resetCards,
+  successCards,
+  successCount,
 } from "../../ithmb-decoder/cards";
-import type { SuccessEntry, FailureEntry } from "../../ithmb-decoder/cards";
+import type { FailureEntry, SuccessEntry } from "../../ithmb-decoder/cards";
 
 const success = (cardId: string): SuccessEntry => ({
   cardId,

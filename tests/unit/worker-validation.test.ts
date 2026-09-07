@@ -1,7 +1,7 @@
 // Unit tests for workers/telemetry/src/validation.ts — entry validation
-import { describe, it, expect } from "vitest";
-import { validateEntry } from "../../workers/telemetry/src/validation";
+import { describe, expect, it } from "vitest";
 import type { TelemetryBody } from "../../workers/telemetry/src/types";
+import { validateEntry } from "../../workers/telemetry/src/validation";
 
 function makeBody(overrides: Partial<TelemetryBody> = {}): TelemetryBody {
   return { prefix: 1067, status: "success", ...overrides };
@@ -28,36 +28,24 @@ describe("validateEntry", () => {
   });
 
   it("accepts all valid statuses", () => {
-    for (const status of [
-      "success",
-      "known-failed",
-      "unknown",
-      "looks-good",
-      "looks-wrong",
-    ]) {
+    for (const status of ["success", "known-failed", "unknown", "looks-good", "looks-wrong"]) {
       const entry = validateEntry(makeBody({ status }));
       expect(entry.status).toBe(status);
     }
   });
 
   it("accepts valid known issues", () => {
-    const entry = validateEntry(
-      makeBody({ status: "looks-wrong", issue: "color_space" }),
-    );
+    const entry = validateEntry(makeBody({ status: "looks-wrong", issue: "color_space" }));
     expect(entry.issue).toBe("color_space");
   });
 
   it("nullifies unknown issue types", () => {
-    const entry = validateEntry(
-      makeBody({ status: "looks-wrong", issue: "unknown_type" }),
-    );
+    const entry = validateEntry(makeBody({ status: "looks-wrong", issue: "unknown_type" }));
     expect(entry.issue).toBeNull();
   });
 
   it("nullifies issues exceeding 40 chars", () => {
-    const entry = validateEntry(
-      makeBody({ status: "looks-wrong", issue: "a".repeat(41) }),
-    );
+    const entry = validateEntry(makeBody({ status: "looks-wrong", issue: "a".repeat(41) }));
     expect(entry.issue).toBeNull();
   });
 
@@ -84,9 +72,7 @@ describe("validateEntry", () => {
   });
 
   it("accepts valid extension", () => {
-    expect(validateEntry(makeBody({ extension: "ithmb" })).extension).toBe(
-      "ithmb",
-    );
+    expect(validateEntry(makeBody({ extension: "ithmb" })).extension).toBe("ithmb");
     expect(validateEntry(makeBody({ extension: "ipm" })).extension).toBe("ipm");
   });
 
@@ -95,23 +81,17 @@ describe("validateEntry", () => {
   });
 
   it("accepts valid full_file on non-success status", () => {
-    const entry = validateEntry(
-      makeBody({ status: "known-failed", full_file: "SGVsbG8=" }),
-    );
+    const entry = validateEntry(makeBody({ status: "known-failed", full_file: "SGVsbG8=" }));
     expect(entry.fullFile).toBe("SGVsbG8=");
   });
 
   it("nullifies full_file on success status", () => {
-    const entry = validateEntry(
-      makeBody({ status: "success", full_file: "SGVsbG8=" }),
-    );
+    const entry = validateEntry(makeBody({ status: "success", full_file: "SGVsbG8=" }));
     expect(entry.fullFile).toBeNull();
   });
 
   it("tracks hasFullFileInput even when full_file is rejected", () => {
-    const entry = validateEntry(
-      makeBody({ status: "success", full_file: "SGVsbG8=" }),
-    );
+    const entry = validateEntry(makeBody({ status: "success", full_file: "SGVsbG8=" }));
     expect(entry.hasFullFileInput).toBe(true);
     expect(entry.fullFile).toBeNull(); // rejected due to success status
   });

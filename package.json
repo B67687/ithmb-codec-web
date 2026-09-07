@@ -26,7 +26,8 @@
     "test:worker": "tsx workers/telemetry/test-worker.ts",
     "test:journey": "tsx scripts/real-user-journey.mts",
     "check:local": "bash scripts/check-local.sh",
-    "test:unit": "vitest run"
+    "test:unit": "vitest run",
+    "format:check": "npx --yes @biomejs/biome@1.9.4 format ."
   },
   "homepage": "https://ithmb-codec.dev",
   "keywords": [],

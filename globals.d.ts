@@ -19,4 +19,3 @@ interface Window {
     loaded: boolean;
   };
 }
-

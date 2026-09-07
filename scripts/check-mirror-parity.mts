@@ -58,8 +58,7 @@ for (const page of MIRRORED) {
   // html lang
   const enLang = en.match(/<html\s+lang="([^"]+)"/)?.[1];
   const zhLang = zh.match(/<html\s+lang="([^"]+)"/)?.[1];
-  if (enLang !== "en")
-    fail(`${page}: html lang expected "en", got "${enLang ?? "missing"}"`);
+  if (enLang !== "en") fail(`${page}: html lang expected "en", got "${enLang ?? "missing"}"`);
   if (zhLang !== "zh-CN")
     fail(`zh/${page}: html lang expected "zh-CN", got "${zhLang ?? "missing"}"`);
 
@@ -67,13 +66,9 @@ for (const page of MIRRORED) {
   const enCanonHref = en.match(/rel="canonical"\s+href="([^"]+)"/)?.[1];
   const zhCanonHref = zh.match(/rel="canonical"\s+href="([^"]+)"/)?.[1];
   if (enCanonHref !== enCanon)
-    fail(
-      `${page}: canonical expected "${enCanon}", got "${enCanonHref ?? "missing"}"`,
-    );
+    fail(`${page}: canonical expected "${enCanon}", got "${enCanonHref ?? "missing"}"`);
   if (zhCanonHref !== zhCanon)
-    fail(
-      `zh/${page}: canonical expected "${zhCanon}", got "${zhCanonHref ?? "missing"}"`,
-    );
+    fail(`zh/${page}: canonical expected "${zhCanon}", got "${zhCanonHref ?? "missing"}"`);
 
   // hreflang alternates (en + zh + x-default)
   // Intentional WARN: single-locale SEO not a priority; zh/ mirrors are
@@ -143,7 +138,8 @@ for (const f of allHtml) {
 }
 console.log("[ext] zero third-party resource check complete");
 
-if (warnings) console.warn(`\n${warnings} mirror-parity warning(s) (hreflang — intentional, see WNF-001).`);
+if (warnings)
+  console.warn(`\n${warnings} mirror-parity warning(s) (hreflang — intentional, see WNF-001).`);
 if (failures) {
   console.error(`\n${failures} mirror-parity failure(s).`);
   process.exit(1);

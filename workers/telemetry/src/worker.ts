@@ -1,10 +1,10 @@
 // Cloudflare Worker — Entry point and request router
 // Decomposed from monolithic worker.ts into: types, crypto, dashboard, validation, persistence.
 
-import type { Env, StoredRecord } from "./types";
 import { tokensEqual } from "./crypto";
 import { buildDashboardHtml } from "./dashboard";
 import { handlePostIngestion } from "./persistence";
+import type { Env, StoredRecord } from "./types";
 
 // ---- CORS preflight ----
 function handleOptions(corsHeaders: Record<string, string>): Response {
@@ -74,23 +74,15 @@ async function handleDashboardGet(
       if (r.fullFile || r.hasFullFile) fullFileCount++;
     }
     const uniquePrefixes = Object.keys(prefixCounts).length;
-    const unknownFailed =
-      (statuses["unknown"] || 0) + (statuses["known-failed"] || 0);
+    const unknownFailed = (statuses["unknown"] || 0) + (statuses["known-failed"] || 0);
 
     // Sort prefix counts descending
-    const prefixEntries = Object.entries(prefixCounts).sort(
-      (a, b) => b[1] - a[1],
-    );
+    const prefixEntries = Object.entries(prefixCounts).sort((a, b) => b[1] - a[1]);
 
     // Recent 50 sorted by timestamp descending
     const recent50 = allRecords
-      .filter((r): r is StoredRecord & { timestamp: string } =>
-        Boolean(r.timestamp),
-      )
-      .sort(
-        (a, b) =>
-          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
-      )
+      .filter((r): r is StoredRecord & { timestamp: string } => Boolean(r.timestamp))
+      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
       .slice(0, 50);
 
     const html = buildDashboardHtml({
@@ -142,8 +134,7 @@ export default {
     const corsHeaders = {
       "Access-Control-Allow-Origin":
         requestOrigin === "https://ithmb-codec.dev" ||
-        (requestOrigin &&
-          /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(requestOrigin))
+        (requestOrigin && /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(requestOrigin))
           ? requestOrigin
           : "https://ithmb-codec.dev",
       "Access-Control-Allow-Methods": "GET, POST, OPTIONS",

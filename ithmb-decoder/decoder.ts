@@ -1,10 +1,10 @@
+import { renderErrorCard, renderFailureCard } from "./card-failure-ui.js";
+import { renderSuccessCard } from "./card-success-ui.js";
 import { classifyResult, parsePixelHeader } from "./decode-pipeline.js";
+import { t } from "./i18n.js";
+import { decode_ithmb, peek_prefix } from "./ithmb_wasm.js";
 import { escapeHtml } from "./utils.js";
 import { updateToolbar } from "./viewer.js";
-import { decode_ithmb, peek_prefix } from "./ithmb_wasm.js";
-import { renderSuccessCard } from "./card-success-ui.js";
-import { renderFailureCard, renderErrorCard } from "./card-failure-ui.js";
-import { t } from "./i18n.js";
 
 export async function decodeFile(file: File, cardId: string): Promise<void> {
   const card = document.getElementById(cardId)!;
@@ -34,13 +34,7 @@ export async function decodeFile(file: File, cardId: string): Promise<void> {
       renderSuccessCard(cardId, file, canvas, prefix, width, height, bytes);
     } else {
       // Decode failed
-      renderFailureCard(
-        cardId,
-        file,
-        bytes,
-        prefix,
-        classifyResult(prefix, result),
-      );
+      renderFailureCard(cardId, file, bytes, prefix, classifyResult(prefix, result));
     }
   } catch (err) {
     const message = (err instanceof Error && err.message) || String(err);

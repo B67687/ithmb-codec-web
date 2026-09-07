@@ -6,7 +6,7 @@
 // /zh/ page tree (en ↔ zh real URLs plus x-default → English), replacing the
 // old ?lang= client-side swap URLs. The 404 page is noindexed and has no zh
 // counterpart, so it intentionally carries no hreflang links.
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 const PAGES = [
   ["home", "/"],
@@ -41,12 +41,7 @@ const CONTENT_PAGES = [
 ];
 
 const ZH_PAGES = [
-  [
-    "zh home",
-    "/zh/",
-    "https://ithmb-codec.dev/",
-    "https://ithmb-codec.dev/zh/",
-  ],
+  ["zh home", "/zh/", "https://ithmb-codec.dev/", "https://ithmb-codec.dev/zh/"],
   [
     "zh decoder",
     "/zh/ithmb-decoder/",
@@ -72,9 +67,7 @@ for (const [name, path] of PAGES) {
   test.describe(`${name} SEO metadata`, () => {
     test("has a meta description", async ({ page }) => {
       await page.goto(path, { waitUntil: "domcontentloaded" });
-      const content = await page
-        .locator('meta[name="description"]')
-        .getAttribute("content");
+      const content = await page.locator('meta[name="description"]').getAttribute("content");
       if (!content) throw new Error("missing meta description");
       expect(content.length).toBeGreaterThan(30);
     });
@@ -84,62 +77,44 @@ for (const [name, path] of PAGES) {
 test.describe("language preference redirect", () => {
   const baseURL = process.env.BASE_URL || "https://ithmb-codec.dev";
 
-  test("stored zh preference redirects an EN page to its /zh/ counterpart", async ({
-    page,
-  }) => {
+  test("stored zh preference redirects an EN page to its /zh/ counterpart", async ({ page }) => {
     await page.addInitScript(() => localStorage.setItem("ithmbLang", "zh"));
     await page.goto("/", { waitUntil: "domcontentloaded" });
     await page.waitForFunction(() => location.pathname === "/zh/");
     await expect(page.locator("html")).toHaveAttribute("lang", /^zh/i);
-    const desc = await page
-      .locator('meta[name="description"]')
-      .getAttribute("content");
+    const desc = await page.locator('meta[name="description"]').getAttribute("content");
     expect(/[\u4e00-\u9fff]/.test(desc!)).toBe(true);
   });
 
-  test("stored zh preference redirects the guide .html URL to the zh guide", async ({
-    page,
-  }) => {
+  test("stored zh preference redirects the guide .html URL to the zh guide", async ({ page }) => {
     await page.addInitScript(() => localStorage.setItem("ithmbLang", "zh"));
     await page.goto("/guide/how-to-open-ithmb-files.html", {
       waitUntil: "domcontentloaded",
     });
-    await page.waitForFunction(
-      () => location.pathname === "/zh/guide/how-to-open-ithmb-files",
-    );
+    await page.waitForFunction(() => location.pathname === "/zh/guide/how-to-open-ithmb-files");
     await expect(page.locator("html")).toHaveAttribute("lang", /^zh/i);
   });
 
-  test("stored en preference redirects a /zh/ page to its EN counterpart", async ({
-    page,
-  }) => {
+  test("stored en preference redirects a /zh/ page to its EN counterpart", async ({ page }) => {
     await page.addInitScript(() => localStorage.setItem("ithmbLang", "en"));
     await page.goto("/zh/", { waitUntil: "domcontentloaded" });
     await page.waitForFunction(() => location.pathname === "/");
     await expect(page.locator("html")).toHaveAttribute("lang", /^en/i);
-    const desc = await page
-      .locator('meta[name="description"]')
-      .getAttribute("content");
+    const desc = await page.locator('meta[name="description"]').getAttribute("content");
     expect(/[\u4e00-\u9fff]/.test(desc!)).toBe(false);
   });
 
-  test("no preference + non-zh browser keeps an EN page in place", async ({
-    page,
-  }) => {
+  test("no preference + non-zh browser keeps an EN page in place", async ({ page }) => {
     await page.addInitScript(() => localStorage.removeItem("ithmbLang"));
     await page.goto("/", { waitUntil: "domcontentloaded" });
     expect(new URL(page.url()).pathname).toBe("/");
     const htmlLang = await page.locator("html").getAttribute("lang");
     expect(htmlLang!.toLowerCase().startsWith("en")).toBe(true);
-    const desc = await page
-      .locator('meta[name="description"]')
-      .getAttribute("content");
+    const desc = await page.locator('meta[name="description"]').getAttribute("content");
     expect(/[\u4e00-\u9fff]/.test(desc!)).toBe(false);
   });
 
-  test("no preference + zh browser redirects an EN page to /zh/", async ({
-    browser,
-  }) => {
+  test("no preference + zh browser redirects an EN page to /zh/", async ({ browser }) => {
     const context = await browser.newContext({ locale: "zh-CN", baseURL });
     const page = await context.newPage();
     await page.goto("/", { waitUntil: "domcontentloaded" });
@@ -161,9 +136,7 @@ test.describe("language preference redirect", () => {
     await context.close();
   });
 
-  test("an unmapped path is never redirected (404 stays put)", async ({
-    page,
-  }) => {
+  test("an unmapped path is never redirected (404 stays put)", async ({ page }) => {
     await page.addInitScript(() => localStorage.setItem("ithmbLang", "zh"));
     await page.goto("/404.html", { waitUntil: "domcontentloaded" });
     expect(new URL(page.url()).pathname).toBe("/404.html");
@@ -173,23 +146,17 @@ test.describe("language preference redirect", () => {
 test.describe("hreflang + canonical (real /zh/ URLs)", () => {
   for (const [name, path, enUrl, zhUrl] of CONTENT_PAGES) {
     if (path === undefined) throw new Error("bad page tuple");
-    test(`${name}: en ↔ zh alternates with x-default to the English URL`, async ({
-      page,
-    }) => {
+    test(`${name}: en ↔ zh alternates with x-default to the English URL`, async ({ page }) => {
       await page.goto(path, { waitUntil: "domcontentloaded" });
-      const canonical = await page
-        .locator('link[rel="canonical"]')
-        .getAttribute("href");
+      const canonical = await page.locator('link[rel="canonical"]').getAttribute("href");
       if (canonical === null) throw new Error("missing canonical link");
       expect(canonical).toBe(enUrl);
-      const links = await page
-        .locator('link[rel="alternate"][hreflang]')
-        .evaluateAll((els) =>
-          els.map((el) => ({
-            lang: el.getAttribute("hreflang"),
-            href: el.getAttribute("href"),
-          })),
-        );
+      const links = await page.locator('link[rel="alternate"][hreflang]').evaluateAll((els) =>
+        els.map((el) => ({
+          lang: el.getAttribute("hreflang"),
+          href: el.getAttribute("href"),
+        })),
+      );
       expect(links).toContainEqual({ lang: "en", href: enUrl });
       expect(links).toContainEqual({ lang: "zh", href: zhUrl });
       expect(links).toContainEqual({ lang: "x-default", href: enUrl });
@@ -202,31 +169,23 @@ test.describe("hreflang + canonical (real /zh/ URLs)", () => {
 test.describe("Chinese /zh/ pages (server-rendered)", () => {
   for (const [name, path, enUrl, zhUrl] of ZH_PAGES) {
     if (path === undefined) throw new Error("bad page tuple");
-    test(`${name}: fully Chinese HTML with real en ↔ zh hreflang`, async ({
-      page,
-    }) => {
+    test(`${name}: fully Chinese HTML with real en ↔ zh hreflang`, async ({ page }) => {
       await page.goto(path, { waitUntil: "domcontentloaded" });
       const htmlLang = await page.locator("html").getAttribute("lang");
       if (htmlLang === null) throw new Error("missing html lang");
       expect(htmlLang.toLowerCase().startsWith("zh")).toBe(true);
       const title = await page.title();
       expect(/[\u4e00-\u9fff]/.test(title)).toBe(true);
-      const desc = await page
-        .locator('meta[name="description"]')
-        .getAttribute("content");
+      const desc = await page.locator('meta[name="description"]').getAttribute("content");
       expect(/[\u4e00-\u9fff]/.test(desc!)).toBe(true);
-      const canonical = await page
-        .locator('link[rel="canonical"]')
-        .getAttribute("href");
+      const canonical = await page.locator('link[rel="canonical"]').getAttribute("href");
       expect(canonical).toBe(zhUrl);
-      const links = await page
-        .locator('link[rel="alternate"][hreflang]')
-        .evaluateAll((els) =>
-          els.map((el) => ({
-            lang: el.getAttribute("hreflang"),
-            href: el.getAttribute("href"),
-          })),
-        );
+      const links = await page.locator('link[rel="alternate"][hreflang]').evaluateAll((els) =>
+        els.map((el) => ({
+          lang: el.getAttribute("hreflang"),
+          href: el.getAttribute("href"),
+        })),
+      );
       expect(links).toContainEqual({ lang: "en", href: enUrl });
       expect(links).toContainEqual({ lang: "zh", href: zhUrl });
       expect(links).toContainEqual({ lang: "x-default", href: enUrl });

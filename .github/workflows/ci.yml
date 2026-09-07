@@ -27,6 +27,8 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: biome format gate (1.9.4, format-only)
+        run: npx --yes @biomejs/biome@1.9.4 format .
       - name: lint:modules (typecheck + build + determinism)
         run: npm run lint:modules && git diff --exit-code # fail if the build mutated tracked files (uncommitted ?v= hashes)
       - name: unit tests (vitest)

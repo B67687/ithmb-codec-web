@@ -1,9 +1,9 @@
+import path from "path";
 // decode-failure.spec.ts — W3-cover: the two decoder branches ithmb-decoder.spec.ts
 // never exercises (null result -> failure card, exception -> error card).
 // Regression anchor: decoder.decodeFailed / decoder.unknownFormat keys were missing
 // from locales, so these branches rendered raw key text (t() falls back to key).
-import { test, expect } from "@playwright/test";
-import path from "path";
+import { expect, test } from "@playwright/test";
 
 async function upload(page: import("@playwright/test").Page, file: string) {
   const fp = path.resolve(__dirname, "./fixtures", file);
@@ -18,9 +18,7 @@ test.describe("decode failure paths", () => {
     await page.waitForSelector("#dropzone");
   });
 
-  test("truncated file shows failure card with human text", async ({
-    page,
-  }) => {
+  test("truncated file shows failure card with human text", async ({ page }) => {
     await upload(page, "truncated.ithmb");
     const card = page.locator(".file-card").first();
     await card.waitFor();
@@ -29,9 +27,7 @@ test.describe("decode failure paths", () => {
     await expect(card.getByText("decoder.decodeFailed")).toHaveCount(0);
   });
 
-  test("garbage file shows unknown-format card with human text", async ({
-    page,
-  }) => {
+  test("garbage file shows unknown-format card with human text", async ({ page }) => {
     await upload(page, "garbage.ithmb");
     const card = page.locator(".file-card").first();
     await card.waitFor();

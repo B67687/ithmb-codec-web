@@ -1,3 +1,5 @@
+import { fileURLToPath } from "node:url";
+import { build } from "esbuild";
 // test-worker.ts — committed integration test for the telemetry worker.
 //
 // Runs the worker inside miniflare (workerd) with IN-MEMORY KV: no external
@@ -21,8 +23,6 @@
 //
 // Run: npm run test:worker   (from the repo root)
 import { Miniflare } from "miniflare";
-import { build } from "esbuild";
-import { fileURLToPath } from "node:url";
 
 async function main(): Promise<void> {
   const WORKER_SRC = fileURLToPath(new URL("./src/worker.ts", import.meta.url));
@@ -52,16 +52,13 @@ async function main(): Promise<void> {
   let pass = 0;
   let fail = 0;
   const check = (name: string, ok: boolean, detail = "") => {
-    console.log(
-      `${ok ? "PASS" : "FAIL"}: ${name}${detail ? " — " + detail : ""}`,
-    );
+    console.log(`${ok ? "PASS" : "FAIL"}: ${name}${detail ? " — " + detail : ""}`);
     ok ? pass++ : fail++;
   };
 
   // miniflare's Response.json() is typed Promise<unknown>; read JSON through a
   // typed helper rather than working with `unknown` directly.
-  const json = async <T>(res: { json(): Promise<unknown> }): Promise<T> =>
-    (await res.json()) as T;
+  const json = async <T>(res: { json(): Promise<unknown> }): Promise<T> => (await res.json()) as T;
 
   const post = (body: unknown) =>
     mf.dispatchFetch("http://localhost/", {
@@ -88,10 +85,7 @@ async function main(): Promise<void> {
     status: "looks-wrong",
     full_file: "!!!!!not-base64-at-all!!!!!####$$$$",
   });
-  check(
-    "POST garbage base64 accepted as record",
-    (await json<{ ok: boolean }>(r)).ok === true,
-  );
+  check("POST garbage base64 accepted as record", (await json<{ ok: boolean }>(r)).ok === true);
 
   // 3. Valid 8 MiB full_file → stored (payload lands under a separate key)
   const b64 = Buffer.alloc(8 * 1024 * 1024, 0).toString("base64");
@@ -101,10 +95,7 @@ async function main(): Promise<void> {
   // 4. Auth: ?token= must NOT authenticate (public JSON fallback); Bearer → dashboard
   r = await mf.dispatchFetch("http://localhost/?token=smoke-test-token-0001");
   const tokenBody = await r.text();
-  check(
-    "?token= returns JSON (not dashboard)",
-    tokenBody.trimStart().startsWith("{"),
-  );
+  check("?token= returns JSON (not dashboard)", tokenBody.trimStart().startsWith("{"));
 
   r = await mf.dispatchFetch("http://localhost/", {
     headers: { Authorization: "Bearer smoke-test-token-0001" },
@@ -117,10 +108,7 @@ async function main(): Promise<void> {
   const keys = (await ns.list()).keys.map((k) => k.name).join("\n");
   check("no raw IP in KV keys", !keys.includes("203.0.113.99"));
   check("fullfile_ payload key separated", /^fullfile_/m.test(keys));
-  check(
-    "uuid record keys (no Date.now)",
-    /^fmt_1009_[0-9a-f-]{36}$/m.test(keys),
-  );
+  check("uuid record keys (no Date.now)", /^fmt_1009_[0-9a-f-]{36}$/m.test(keys));
 
   // 6. The entire GET surface is token-gated (was partially public; nothing in
   //    the app reads counts — the only telemetry call is the POST submit).
@@ -151,11 +139,7 @@ async function main(): Promise<void> {
     await r.json();
   }
   const rateKeys = (await ns.list({ prefix: "rate:" })).keys.length;
-  check(
-    "rate markers per request (5 POSTs, 5 markers)",
-    rateKeys >= 5,
-    "markers=" + rateKeys,
-  );
+  check("rate markers per request (5 POSTs, 5 markers)", rateKeys >= 5, "markers=" + rateKeys);
 
   console.log(`\n=== worker test: ${pass} passed, ${fail} failed ===`);
   process.exit(fail ? 1 : 0);

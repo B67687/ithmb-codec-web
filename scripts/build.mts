@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import { readdirSync } from "node:fs";
+import { join } from "node:path";
 // build.ts — esbuild transform-only build for Ithmb-Codec-Web.
 //
 // Strategy: the site is served as committed static assets with native browser
@@ -13,8 +15,6 @@
 // The generated wasm glue (ithmb_wasm.js / ithmb_wasm_bg.js) is never an
 // input or output of this build.
 import { build } from "esbuild";
-import { readdirSync } from "node:fs";
-import { join } from "node:path";
 
 const ROOT = join(import.meta.dirname, "..");
 process.chdir(ROOT);
@@ -68,7 +68,7 @@ await build({
 // → identical hashes, so a fresh clone + build produces no diff. CI enforces
 // this with `git diff --exit-code` after the build.
 import { createHash } from "node:crypto";
-import { writeFileSync, readFileSync, readdirSync, statSync } from "node:fs";
+import { readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 
 function assetHash(relPath: string): string {
   const buf = readFileSync(join(ROOT, relPath));
@@ -89,8 +89,7 @@ function bumpCacheVersions(): void {
   for (const d of htmlDirs) {
     try {
       for (const f of readdirSync(d))
-        if (f.endsWith(".html") && statSync(join(d, f)).isFile())
-          htmlFiles.push(join(d, f));
+        if (f.endsWith(".html") && statSync(join(d, f)).isFile()) htmlFiles.push(join(d, f));
     } catch {
       // dir absent
     }
@@ -98,14 +97,11 @@ function bumpCacheVersions(): void {
   let changed = 0;
   for (const f of htmlFiles) {
     const html = readFileSync(f, "utf8");
-    const next = html.replace(
-      /(src|href)="\/([^"?]+)\?v=[^"]*"/g,
-      (m, attr, asset) => {
-        const p = join(ROOT, asset);
-        if (!statSync(p, { throwIfNoEntry: false })) return m; // non-built asset
-        return `${attr}="/${asset}?v=${assetHash(asset)}"`;
-      },
-    );
+    const next = html.replace(/(src|href)="\/([^"?]+)\?v=[^"]*"/g, (m, attr, asset) => {
+      const p = join(ROOT, asset);
+      if (!statSync(p, { throwIfNoEntry: false })) return m; // non-built asset
+      return `${attr}="/${asset}?v=${assetHash(asset)}"`;
+    });
     if (next !== html) {
       writeFileSync(f, next);
       changed++;

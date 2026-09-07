@@ -1,18 +1,12 @@
+import { reRenderCards } from "./card-success-ui.js";
+import { downloadAll } from "./download.js";
+import { t } from "./i18n.js";
+import { setupHoldRepeat } from "./input.js";
 import init from "./ithmb_wasm.js";
 import { S } from "./state.js";
-import {
-  openViewer,
-  closeViewer,
-  prevViewer,
-  nextViewer,
-  updateToolbar,
-} from "./viewer.js";
 import { processFiles } from "./ui.js";
-import { downloadAll } from "./download.js";
 import { formatLabels, showToast } from "./utils.js";
-import { setupHoldRepeat } from "./input.js";
-import { t } from "./i18n.js";
-import { reRenderCards } from "./card-success-ui.js";
+import { closeViewer, nextViewer, openViewer, prevViewer, updateToolbar } from "./viewer.js";
 
 // Always start at top on (re)load
 if ("scrollRestoration" in history) {
@@ -81,9 +75,7 @@ setupHoldRepeat("viewerArrowRight", nextViewer);
 document.getElementById("helpBtn")!.addEventListener("click", () => {
   showToast(t("app.shortcuts"));
 });
-document
-  .getElementById("downloadAllBtn")!
-  .addEventListener("click", downloadAll);
+document.getElementById("downloadAllBtn")!.addEventListener("click", downloadAll);
 // Toggle the viewer between grid view and the single-image viewer.
 // Shared by the viewToggleBtn click AND the g/G keyboard shortcut.
 function toggleView(): void {
@@ -106,10 +98,8 @@ let touchStartY = 0;
 // Shared guard: only swipe when cards exist, the viewer is open, and the
 // touch began inside the viewer stage.
 function isViewerSwipeActive(e: TouchEvent): boolean {
-  if (document.querySelectorAll(".file-card").length === 0 || S.viewerIndex < 0)
-    return false;
-  if (!(e.target instanceof Element) || !e.target.closest("#viewer-stage"))
-    return false;
+  if (document.querySelectorAll(".file-card").length === 0 || S.viewerIndex < 0) return false;
+  if (!(e.target instanceof Element) || !e.target.closest("#viewer-stage")) return false;
   return true;
 }
 document.addEventListener(
@@ -151,8 +141,7 @@ document.addEventListener(
 );
 // Keyboard navigation in viewer mode
 document.addEventListener("keydown", (e) => {
-  if (document.querySelectorAll(".file-card").length === 0 || S.viewerIndex < 0)
-    return;
+  if (document.querySelectorAll(".file-card").length === 0 || S.viewerIndex < 0) return;
   if (e.key === "ArrowRight" || e.key === "ArrowDown") {
     e.preventDefault();
     nextViewer();
@@ -200,8 +189,7 @@ document.addEventListener(
     const viewerH = viewer ? viewer.offsetHeight : 600;
     const fileListTop = fileListEl ? fileListEl.offsetTop : 0;
     const threshold = Math.max(fileListTop + viewerH * 3, 1000);
-    const maxScroll =
-      document.documentElement.scrollHeight - window.innerHeight;
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
     const absThreshold = Math.min(threshold, maxScroll * 0.8);
     backToTop.style.display = window.scrollY > absThreshold ? "" : "none";
     // Hide back-to-position if user scrolls manually
@@ -305,10 +293,7 @@ window.addEventListener("languagechange", () => {
   // If the viewer is open, rebuild its stage + toolbar so the report link,
   // share box, header, and download button re-translate immediately (not
   // just on the next image navigation).
-  if (
-    S.viewerIndex >= 0 &&
-    document.getElementById("viewer-container")?.style.display !== "none"
-  ) {
+  if (S.viewerIndex >= 0 && document.getElementById("viewer-container")?.style.display !== "none") {
     openViewer(S.viewerIndex);
     updateToolbar();
   }

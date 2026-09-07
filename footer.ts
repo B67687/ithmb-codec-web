@@ -1,4 +1,4 @@
-(function () {
+(() => {
   // Footer text is i18n-aware: "Powered by" and "Buy me a coffee" come from
   // the locale tables. footer.ts is a classic script (not a module), so it
   // can't import i18n.ts — it reads the window-level hook (i18n.ts sets
@@ -34,17 +34,20 @@
       '<path fill-rule="evenodd" d="M7.5 5.25a3 3 0 0 1 3-3h3a3 3 0 0 1 3 3V6h1.5A4.5 4.5 0 0 1 22.5 10.5v6a4.5 4.5 0 0 1-4.5 4.5H6a4.5 4.5 0 0 1-4.5-4.5v-6A4.5 4.5 0 0 1 6 6h1.5v-.75ZM15 5.25a1.5 1.5 0 0 0-1.5-1.5h-3a1.5 1.5 0 0 0-1.5 1.5V6h6v-.75Z" clip-rule="evenodd"/>' +
       '<path d="M3 12.75a6 6 0 0 1 9-5.197V9.75a.75.75 0 0 0 1.5 0V7.553a6 6 0 0 1 9 5.197v4.05c0 1.824-1.479 3.3-3.3 3.3H6.3A3.3 3.3 0 0 1 3 16.8v-4.05Z"/>' +
       "</svg> " +
-      t("home.enterprise") + "</a>" +
+      t("home.enterprise") +
+      "</a>" +
       " \u00B7 " +
       '<a href="/privacy/" rel="noopener">' +
       '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;display:inline-block" aria-hidden="true">' +
       '<path d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"/>' +
       "</svg> " +
-      t("footer.privacy") + "</a>" +
+      t("footer.privacy") +
+      "</a>" +
       " \u00B7 " +
       '<a href="https://buymeacoffee.com/ThumbNami" target="_blank" rel="noopener">' +
       '<img src="/bmc-icon.svg" alt="" width="14" height="20" style="vertical-align:middle;display:inline-block">' +
-      " " + t("footer.buyCoffee") +
+      " " +
+      t("footer.buyCoffee") +
       "</a>" +
       "</div>" +
       "</footer>";
@@ -57,8 +60,8 @@
   // If i18n.js hasn't loaded yet (it's a deferred module on some pages),
   // re-render once it exposes window.t so the footer doesn't show raw keys.
   if (typeof window.t !== "function") {
-    var tries: number = 0;
-    var timer = setInterval(function () {
+    var tries = 0;
+    var timer = setInterval(() => {
       tries++;
       if (typeof window.t === "function" || tries > 50) {
         clearInterval(timer);

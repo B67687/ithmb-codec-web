@@ -1,12 +1,12 @@
+import path from "node:path";
 /**
  * Stress test suite for the ithmb-decoder WASM decoder page.
  * Tests full user flows: drop validation, viewer lifecycle,
  * navigation, modal interactions, deduplication, batching,
  * scroll behavior, and grid/viewer mode toggles.
  */
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import type { Page } from "@playwright/test";
-import path from "node:path";
 
 const PAGE_URL = "/ithmb-decoder/";
 const FIXTURES = path.resolve(__dirname, "fixtures");
@@ -15,15 +15,18 @@ const FIXTURES = path.resolve(__dirname, "fixtures");
 async function waitForDecode(page: Page) {
   for (let attempt = 0; attempt < 60; attempt++) {
     const statuses = await page.locator(".file-card .status").allTextContents();
-    if (statuses.length && statuses.every((s) => !s.includes("Decoding...")))
-      return;
+    if (statuses.length && statuses.every((s) => !s.includes("Decoding..."))) return;
     await page.waitForTimeout(1000);
   }
   throw new Error("Decode did not complete within 60s");
 }
 
 /** Drop files via the file-chooser triggered by clicking the dropzone. */
-interface DropFile { name: string; mimeType: string; buffer: Buffer; }
+interface DropFile {
+  name: string;
+  mimeType: string;
+  buffer: Buffer;
+}
 async function dropFiles(page: Page, filePaths: string[] | DropFile[]) {
   const fc = page.waitForEvent("filechooser");
   await page.locator("#dropzone").click();
@@ -135,7 +138,6 @@ test.describe("Stress: Full user flows", () => {
     await expect(page.locator("#viewer-container")).toBeVisible();
   });
 
-
   test("9: Escape closes viewer", async ({ page }) => {
     await dropFiles(page, [path.join(FIXTURES, "test1.ithmb")]);
     await page.waitForTimeout(12000);
@@ -171,9 +173,7 @@ test.describe("Stress: Full user flows", () => {
     await expect(page.locator(".file-card")).toHaveCount(2);
   });
 
-  test("12: Back-to-top appears on scroll and scrolls to top", async ({
-    page,
-  }) => {
+  test("12: Back-to-top appears on scroll and scrolls to top", async ({ page }) => {
     const files = Array.from({ length: 8 }, (_, i) =>
       path.join(FIXTURES, "test" + (i + 1) + ".ithmb"),
     );
@@ -214,4 +214,3 @@ test("13: Viewer arrows hidden in grid mode", async ({ page }) => {
   await expect(page.locator("#viewerArrowLeft")).toBeVisible();
   await expect(page.locator("#viewerArrowRight")).toBeVisible();
 });
-

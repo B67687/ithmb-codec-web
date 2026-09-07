@@ -1,9 +1,9 @@
+import path from "node:path";
 // Perf budgets (W1): Playwright-native, Chromium-only, zero new deps.
 // Asserts transfer-size + timing ceilings so perf (currently PSI 1.0)
 // cannot regress silently. Provisional budgets — tightened after first
 // local baseline run. Skipped on firefox/webkit (timing noise).
-import { test, expect, type Page, type Response } from "@playwright/test";
-import path from "node:path";
+import { type Page, type Response, expect, test } from "@playwright/test";
 
 test.skip(
   ({ browserName }) => browserName !== "chromium",
@@ -28,9 +28,7 @@ async function measure(page: Page, url: string) {
   await page.goto(url, { waitUntil: "networkidle" });
   const wall = Date.now() - t0;
   const timing = await page.evaluate(() => {
-    const entries = performance.getEntriesByType(
-      "navigation",
-    ) as PerformanceNavigationTiming[];
+    const entries = performance.getEntriesByType("navigation") as PerformanceNavigationTiming[];
     const nav = entries[0];
     if (!nav) throw new Error("no navigation entry");
     return {

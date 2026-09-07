@@ -1,7 +1,7 @@
 // Cloudflare Worker — Dashboard HTML builder
 
-import type { StoredRecord } from "./types";
 import { escapeHtml } from "./crypto";
+import type { StoredRecord } from "./types";
 
 export function buildDashboardHtml({
   total,
@@ -24,35 +24,24 @@ export function buildDashboardHtml({
   const esc = escapeHtml;
 
   const prefixRows = prefixEntries
-    .map(
-      ([prefix, count]) =>
-        `<tr><td>${esc(prefix)}</td><td>${esc(count)}</td></tr>`,
-    )
+    .map(([prefix, count]) => `<tr><td>${esc(prefix)}</td><td>${esc(count)}</td></tr>`)
     .join("");
 
   const recentRows = recent50
     .map((r) => {
       const status = r.status || "unknown";
       const cls = status;
-      const dims =
-        r.width && r.height
-          ? `${esc(r.width)} \u00d7 ${esc(r.height)}`
-          : "\u2014";
-      const fileSize =
-        r.fileSize != null ? `${esc(r.fileSize)}` : "\u2014";
+      const dims = r.width && r.height ? `${esc(r.width)} \u00d7 ${esc(r.height)}` : "\u2014";
+      const fileSize = r.fileSize != null ? `${esc(r.fileSize)}` : "\u2014";
       const header = r.header
         ? r.header.length > 32
           ? esc(r.header.slice(0, 32)) + "..."
           : esc(r.header)
         : "\u2014";
       const fullFile = r.fullFile || r.hasFullFile ? "Yes" : "No";
-      const time = r.timestamp
-        ? esc(new Date(r.timestamp).toLocaleString())
-        : "\u2014";
+      const time = r.timestamp ? esc(new Date(r.timestamp).toLocaleString()) : "\u2014";
       const highlight =
-        status === "unknown" || status === "known-failed"
-          ? ' class="warn-row"'
-          : "";
+        status === "unknown" || status === "known-failed" ? ' class="warn-row"' : "";
       const issueCell = r.issue
         ? `<span class="badge badge-${esc(r.issue)}">${esc(r.issue)}</span>`
         : "\u2014";

@@ -1,9 +1,9 @@
-import { S, KNOWN_PREFIXES } from "./state.js";
-import { findSuccess, findFailure, successCount } from "./cards.js";
-import { escapeHtml } from "./utils.js";
-import { createShareBox } from "./share-actions.js";
-import { createReportLink } from "./report-modal.js";
+import { findFailure, findSuccess, successCount } from "./cards.js";
 import { t } from "./i18n.js";
+import { createReportLink } from "./report-modal.js";
+import { createShareBox } from "./share-actions.js";
+import { KNOWN_PREFIXES, S } from "./state.js";
+import { escapeHtml } from "./utils.js";
 
 const fileList = document.getElementById("file-list")!;
 
@@ -128,16 +128,12 @@ export function openViewer(index: number): void {
       t.removeAttribute("aria-current");
     }
   });
-  const activeThumb = Array.from(thumbs).find(
-    (t) => t.dataset.filmstripCard === currentCardId,
-  );
+  const activeThumb = Array.from(thumbs).find((t) => t.dataset.filmstripCard === currentCardId);
   if (activeThumb) {
     const filmstripEl = document.getElementById("viewer-filmstrip");
     if (filmstripEl) {
       const scrollLeft =
-        activeThumb.offsetLeft -
-        filmstripEl.offsetWidth / 2 +
-        activeThumb.offsetWidth / 2;
+        activeThumb.offsetLeft - filmstripEl.offsetWidth / 2 + activeThumb.offsetWidth / 2;
       filmstripEl.scrollTo({ left: scrollLeft, behavior: "smooth" });
     }
   }
@@ -226,8 +222,7 @@ export function updateToolbar(): void {
   }
   const viewerNav = document.getElementById("viewerNav")!;
   const container = document.getElementById("viewer-container");
-  viewerNav.style.display =
-    container && container.style.display !== "none" ? "" : "none";
+  viewerNav.style.display = container && container.style.display !== "none" ? "" : "none";
   const pos = document.getElementById("viewerPos")!;
   const idx = S.viewerIndex >= 0 ? S.viewerIndex + 1 : 1;
   pos.textContent = idx + " / " + S.cardCount;

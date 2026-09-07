@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import { ACT_PORTS, resolveWebPort } from "../playwright.config";
 
 // REVIEW 5.1 regression defense: the act (nektos) port-collision fix (VALIDATION

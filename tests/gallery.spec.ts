@@ -1,10 +1,10 @@
+import fs from "node:fs";
+import path from "node:path";
 /**
  * Playwright test suite for ImageGlass-style viewer mode (6+ files).
  * Tests viewer container, filmstrip thumbnails, navigation.
  */
-import { test, expect } from "@playwright/test";
-import fs from "node:fs";
-import path from "node:path";
+import { expect, test } from "@playwright/test";
 
 const PAGE_URL = "/ithmb-decoder/";
 const FIXTURES = path.resolve(__dirname, "fixtures");
@@ -37,9 +37,7 @@ test.describe("Viewer Mode (6+ files)", () => {
     await fileChooser.setFiles(files);
 
     await expect(async () => {
-      const statuses = await page
-        .locator(".file-card .status")
-        .allTextContents();
+      const statuses = await page.locator(".file-card .status").allTextContents();
       expect(statuses.every((s) => !s.includes("Decoding..."))).toBe(true);
     }).toPass({ timeout: 60000 });
 
@@ -57,9 +55,7 @@ test.describe("Viewer Mode (6+ files)", () => {
     await fileChooser.setFiles(files);
 
     await expect(async () => {
-      const statuses = await page
-        .locator(".file-card .status")
-        .allTextContents();
+      const statuses = await page.locator(".file-card .status").allTextContents();
       expect(statuses.every((s) => !s.includes("Decoding..."))).toBe(true);
     }).toPass({ timeout: 60000 });
 
@@ -76,9 +72,7 @@ test.describe("Viewer Mode (6+ files)", () => {
       const target = Array.from(cards).find((c) => c.dataset.cardId === cardId);
       return target ? Array.from(cards).indexOf(target) + 1 : -1;
     }, clickedCardId);
-    await expect(page.locator("#viewerPos")).toContainText(
-      new RegExp(`${expectedPos} \\/ 8`),
-    );
+    await expect(page.locator("#viewerPos")).toContainText(new RegExp(`${expectedPos} \\/ 8`));
   });
 
   test("viewer stage stays fixed when navigating between different-sized images", async ({
@@ -95,9 +89,7 @@ test.describe("Viewer Mode (6+ files)", () => {
     ]);
 
     await expect(async () => {
-      const statuses = await page
-        .locator(".file-card .status")
-        .allTextContents();
+      const statuses = await page.locator(".file-card .status").allTextContents();
       expect(statuses.every((s) => !s.includes("Decoding..."))).toBe(true);
     }).toPass({ timeout: 60000 });
 
@@ -128,9 +120,7 @@ test.describe("Viewer Mode (6+ files)", () => {
     await fileChooser.setFiles(files);
 
     await expect(async () => {
-      const statuses = await page
-        .locator(".file-card .status")
-        .allTextContents();
+      const statuses = await page.locator(".file-card .status").allTextContents();
       expect(statuses.every((s) => !s.includes("Decoding..."))).toBe(true);
     }).toPass({ timeout: 60000 });
 
@@ -147,9 +137,7 @@ test.describe("Viewer Mode (6+ files)", () => {
     await expect(page.locator("#viewerPos")).toContainText(/1 \/ 8/);
   });
 
-  test("filmstrip thumbs appear in file order as placeholders", async ({
-    page,
-  }) => {
+  test("filmstrip thumbs appear in file order as placeholders", async ({ page }) => {
     const fc = page.waitForEvent("filechooser");
     await page.locator("#dropzone").click();
     const fileChooser = await fc;
@@ -162,23 +150,16 @@ test.describe("Viewer Mode (6+ files)", () => {
     // decode completes — filmstrip order must equal file-card order.
     await expect(page.locator(".filmstrip-thumb")).toHaveCount(8);
     const order = await page.evaluate(() => {
-      const thumbs = Array.from(
-        document.querySelectorAll<HTMLElement>(".filmstrip-thumb"),
-      );
-      const cards = Array.from(
-        document.querySelectorAll<HTMLElement>(".file-card"),
-      );
+      const thumbs = Array.from(document.querySelectorAll<HTMLElement>(".filmstrip-thumb"));
+      const cards = Array.from(document.querySelectorAll<HTMLElement>(".file-card"));
       return thumbs.every(
-        (t, i) =>
-          cards[i] && t.dataset.filmstripCard === cards[i].dataset.cardId,
+        (t, i) => cards[i] && t.dataset.filmstripCard === cards[i].dataset.cardId,
       );
     });
     expect(order).toBe(true);
 
     await expect(async () => {
-      const statuses = await page
-        .locator(".file-card .status")
-        .allTextContents();
+      const statuses = await page.locator(".file-card .status").allTextContents();
       expect(statuses.every((s) => !s.includes("Decoding..."))).toBe(true);
     }).toPass({ timeout: 60000 });
 
@@ -198,9 +179,7 @@ test.describe("Viewer Mode (6+ files)", () => {
     await fileChooser.setFiles(files);
 
     await expect(async () => {
-      const statuses = await page
-        .locator(".file-card .status")
-        .allTextContents();
+      const statuses = await page.locator(".file-card .status").allTextContents();
       expect(statuses.every((s) => !s.includes("Decoding..."))).toBe(true);
     }).toPass({ timeout: 60000 });
 
@@ -222,15 +201,11 @@ test.describe("Regression: Viewer pixel content", () => {
     await fileChooser.setFiles(files);
     // Wait for all decodes to finish AND stage canvas to be populated
     await expect(async () => {
-      const statuses = await page
-        .locator(".file-card .status")
-        .allTextContents();
+      const statuses = await page.locator(".file-card .status").allTextContents();
       expect(statuses.every((s) => !s.includes("Decoding..."))).toBe(true);
       // Ensure the stage has a canvas (not just the viewer open)
       const hasCanvas = await page.evaluate(
-        () =>
-          document.querySelector<HTMLCanvasElement>("#viewer-stage canvas") !==
-          null,
+        () => document.querySelector<HTMLCanvasElement>("#viewer-stage canvas") !== null,
       );
       expect(hasCanvas).toBe(true);
     }).toPass({ timeout: 60000 });
@@ -240,9 +215,7 @@ test.describe("Regression: Viewer pixel content", () => {
     // Regression: cloneNode(true) loses canvas pixel data
     // The stage canvas must have actual image content, not be blank
     const hasPixels = await page.evaluate(() => {
-      const canvas = document.querySelector<HTMLCanvasElement>(
-        "#viewer-stage canvas",
-      );
+      const canvas = document.querySelector<HTMLCanvasElement>("#viewer-stage canvas");
       if (!canvas) return false;
       const ctx = canvas.getContext("2d");
       if (!ctx) return false;
@@ -259,9 +232,7 @@ test.describe("Regression: Viewer pixel content", () => {
     // Regression: filmstripIndex was always -1, clicking thumbnails did nothing
     // Verify stage canvas exists
     const hasCanvas = await page.evaluate(() => {
-      const canvas = document.querySelector<HTMLCanvasElement>(
-        "#viewer-stage canvas",
-      );
+      const canvas = document.querySelector<HTMLCanvasElement>("#viewer-stage canvas");
       return !!canvas && canvas.toDataURL().length > 0;
     });
     expect(hasCanvas).toBe(true);
@@ -276,9 +247,7 @@ test.describe("Regression: Viewer pixel content", () => {
 
     // Verify canvas still rendered after switching
     const stillHasCanvas = await page.evaluate(() => {
-      const canvas = document.querySelector<HTMLCanvasElement>(
-        "#viewer-stage canvas",
-      );
+      const canvas = document.querySelector<HTMLCanvasElement>("#viewer-stage canvas");
       return !!canvas && canvas.toDataURL().length > 0;
     });
     expect(stillHasCanvas).toBe(true);
@@ -290,9 +259,7 @@ test.describe("Regression: Viewer pixel content", () => {
 
   test("arrow key navigation switches the viewer image", async ({ page }) => {
     const hasCanvas = await page.evaluate(() => {
-      const canvas = document.querySelector<HTMLCanvasElement>(
-        "#viewer-stage canvas",
-      );
+      const canvas = document.querySelector<HTMLCanvasElement>("#viewer-stage canvas");
       return !!canvas && canvas.toDataURL().length > 0;
     });
     expect(hasCanvas).toBe(true);
@@ -301,33 +268,21 @@ test.describe("Regression: Viewer pixel content", () => {
     // so derive the expected position from the thumb adjacent to the active one
     // BEFORE pressing the key (the press moves the active thumb).
     const expectedPos = await page.evaluate(() => {
-      const thumbs = Array.from(
-        document.querySelectorAll<HTMLElement>(".filmstrip-thumb"),
-      );
-      const active = document.querySelector<HTMLElement>(
-        ".filmstrip-thumb.active",
-      );
+      const thumbs = Array.from(document.querySelectorAll<HTMLElement>(".filmstrip-thumb"));
+      const active = document.querySelector<HTMLElement>(".filmstrip-thumb.active");
       const idx = active ? thumbs.indexOf(active) : 0;
       const next = thumbs[(idx + 1) % thumbs.length];
       if (!next) return -1;
-      const cards = Array.from(
-        document.querySelectorAll<HTMLElement>(".file-card"),
-      );
-      const target = cards.find(
-        (c) => c.dataset.cardId === next.dataset.filmstripCard,
-      );
+      const cards = Array.from(document.querySelectorAll<HTMLElement>(".file-card"));
+      const target = cards.find((c) => c.dataset.cardId === next.dataset.filmstripCard);
       return target ? cards.indexOf(target) + 1 : -1;
     });
     await page.keyboard.press("ArrowRight");
-    await expect(page.locator("#viewerPos")).toContainText(
-      new RegExp(`${expectedPos} \\/ 8`),
-    );
+    await expect(page.locator("#viewerPos")).toContainText(new RegExp(`${expectedPos} \\/ 8`));
 
     // Verify canvas still rendered after navigation
     const stillHasCanvas = await page.evaluate(() => {
-      const canvas = document.querySelector<HTMLCanvasElement>(
-        "#viewer-stage canvas",
-      );
+      const canvas = document.querySelector<HTMLCanvasElement>("#viewer-stage canvas");
       return !!canvas && canvas.toDataURL().length > 0;
     });
     expect(stillHasCanvas).toBe(true);
@@ -351,12 +306,8 @@ test.describe("Regression: Viewer pixel content", () => {
       });
 
       // Viewer auto-opens and shows failed placeholder
-      await expect(
-        page.locator("#viewer-stage .viewer-placeholder.failed"),
-      ).toBeVisible();
-      await expect(
-        page.locator("#viewer-stage .placeholder-title"),
-      ).toContainText("Decode Failed");
+      await expect(page.locator("#viewer-stage .viewer-placeholder.failed")).toBeVisible();
+      await expect(page.locator("#viewer-stage .placeholder-title")).toContainText("Decode Failed");
     } finally {
       fs.rmSync(corruptFile, { force: true });
     }
@@ -408,19 +359,13 @@ test.describe("Regression: Batch behavior", () => {
     const fc1 = page.waitForEvent("filechooser");
     await page.locator("#dropzone").click();
     const f1 = await fc1;
-    await f1.setFiles([
-      path.join(FIXTURES, "test1.ithmb"),
-      path.join(FIXTURES, "test2.ithmb"),
-    ]);
+    await f1.setFiles([path.join(FIXTURES, "test1.ithmb"), path.join(FIXTURES, "test2.ithmb")]);
     await page.waitForTimeout(12000);
     await expect(page.locator(".file-card")).toHaveCount(2);
     const fc2 = page.waitForEvent("filechooser");
     await page.locator("#dropzone").click();
     const f2 = await fc2;
-    await f2.setFiles([
-      path.join(FIXTURES, "test1.ithmb"),
-      path.join(FIXTURES, "test2.ithmb"),
-    ]);
+    await f2.setFiles([path.join(FIXTURES, "test1.ithmb"), path.join(FIXTURES, "test2.ithmb")]);
     await page.waitForTimeout(2000);
     await expect(page.locator(".file-card")).toHaveCount(2);
   });
@@ -464,9 +409,7 @@ test.describe("Regression: Batch behavior", () => {
     await btn.click();
     await expect(page.locator("#viewer-container")).toBeVisible();
   });
-  test("toggle button text switches between Grid view and Gallery", async ({
-    page,
-  }) => {
+  test("toggle button text switches between Grid view and Gallery", async ({ page }) => {
     const fc = page.waitForEvent("filechooser");
     await page.locator("#dropzone").click();
     const fileChooser = await fc;
@@ -498,9 +441,7 @@ test.describe("Regression: Batch behavior", () => {
     );
     await fileChooser.setFiles(files);
     await expect(async () => {
-      const statuses = await page
-        .locator(".file-card .status")
-        .allTextContents();
+      const statuses = await page.locator(".file-card .status").allTextContents();
       expect(statuses.every((s) => !s.includes("Decoding..."))).toBe(true);
     }).toPass({ timeout: 60000 });
     // Click the 2nd thumbnail; the position indicator should show the
@@ -515,9 +456,7 @@ test.describe("Regression: Batch behavior", () => {
       return t ? Array.from(cards).indexOf(t) + 1 : -1;
     }, cardId);
     await thumb.click();
-    await expect(page.locator("#viewerPos")).toContainText(
-      new RegExp(`${expectedPos} \\/ 8`),
-    );
+    await expect(page.locator("#viewerPos")).toContainText(new RegExp(`${expectedPos} \\/ 8`));
   });
 
   test("download format dropdown changes button text", async ({ page }) => {
@@ -528,9 +467,7 @@ test.describe("Regression: Batch behavior", () => {
 
     // Wait for decode by checking status
     await expect(async () => {
-      const statuses = await page
-        .locator(".file-card .status")
-        .allTextContents();
+      const statuses = await page.locator(".file-card .status").allTextContents();
       expect(statuses.every((s) => !s.includes("Decoding..."))).toBe(true);
     }).toPass({ timeout: 60000 });
 
@@ -540,16 +477,10 @@ test.describe("Regression: Batch behavior", () => {
 
     // Changing format should update the Download All button text
     await fmtSelect.selectOption("image/png");
-    await expect(page.locator("#downloadAllBtn")).toHaveAttribute(
-      "title",
-      /PNG/,
-    );
+    await expect(page.locator("#downloadAllBtn")).toHaveAttribute("title", /PNG/);
 
     await fmtSelect.selectOption("image/bmp");
-    await expect(page.locator("#downloadAllBtn")).toHaveAttribute(
-      "title",
-      /BMP/,
-    );
+    await expect(page.locator("#downloadAllBtn")).toHaveAttribute("title", /BMP/);
   });
 
   test("holding ArrowRight advances viewer repeatedly", async ({ page }) => {
@@ -563,17 +494,13 @@ test.describe("Regression: Batch behavior", () => {
 
     // Wait for decode
     await expect(async () => {
-      const statuses = await page
-        .locator(".file-card .status")
-        .allTextContents();
+      const statuses = await page.locator(".file-card .status").allTextContents();
       expect(statuses.every((s) => !s.includes("Decoding..."))).toBe(true);
     }).toPass({ timeout: 60000 });
 
     // Capture which thumb is active before holding
     const before = await page.evaluate(() => {
-      const active = document.querySelector<HTMLElement>(
-        ".filmstrip-thumb.active",
-      );
+      const active = document.querySelector<HTMLElement>(".filmstrip-thumb.active");
       return active ? active.dataset.filmstripCard : null;
     });
 
@@ -588,9 +515,7 @@ test.describe("Regression: Batch behavior", () => {
 
     // The active thumb must have changed from the starting one
     const after = await page.evaluate(() => {
-      const active = document.querySelector<HTMLElement>(
-        ".filmstrip-thumb.active",
-      );
+      const active = document.querySelector<HTMLElement>(".filmstrip-thumb.active");
       return active ? active.dataset.filmstripCard : null;
     });
     expect(after).not.toBe(before);
@@ -606,9 +531,7 @@ test.describe("Regression: Batch behavior", () => {
 
     // Wait for decode
     await expect(async () => {
-      const statuses = await page
-        .locator(".file-card .status")
-        .allTextContents();
+      const statuses = await page.locator(".file-card .status").allTextContents();
       expect(statuses.every((s) => !s.includes("Decoding..."))).toBe(true);
     }).toPass({ timeout: 60000 });
 
@@ -636,9 +559,7 @@ test.describe("New: Additional functionality", () => {
     await fileChooser.setFiles(files);
 
     await expect(async () => {
-      const statuses = await page
-        .locator(".file-card .status")
-        .allTextContents();
+      const statuses = await page.locator(".file-card .status").allTextContents();
       expect(statuses.every((s) => !s.includes("Decoding..."))).toBe(true);
     }).toPass({ timeout: 60000 });
 
@@ -650,9 +571,7 @@ test.describe("New: Additional functionality", () => {
     expect(download.suggestedFilename()).toMatch(/\.zip$/i);
   });
 
-  test("holding ArrowRight advances through multiple images", async ({
-    page,
-  }) => {
+  test("holding ArrowRight advances through multiple images", async ({ page }) => {
     const fc = page.waitForEvent("filechooser");
     await page.locator("#dropzone").click();
     const fileChooser = await fc;
@@ -662,9 +581,7 @@ test.describe("New: Additional functionality", () => {
     await fileChooser.setFiles(files);
 
     await expect(async () => {
-      const statuses = await page
-        .locator(".file-card .status")
-        .allTextContents();
+      const statuses = await page.locator(".file-card .status").allTextContents();
       expect(statuses.every((s) => !s.includes("Decoding..."))).toBe(true);
     }).toPass({ timeout: 60000 });
 
@@ -682,10 +599,7 @@ test.describe("New: Additional functionality", () => {
       for (const sheet of sheets) {
         try {
           for (const rule of sheet.cssRules || sheet.rules) {
-            if (
-              rule instanceof CSSStyleRule &&
-              rule.selectorText?.includes("viewer-placeholder")
-            )
+            if (rule instanceof CSSStyleRule && rule.selectorText?.includes("viewer-placeholder"))
               return true;
           }
         } catch (e) {}
@@ -702,9 +616,7 @@ test.describe("New: Additional functionality", () => {
     await fileChooser.setFiles([path.join(FIXTURES, "test1.ithmb")]);
 
     await expect(async () => {
-      const statuses = await page
-        .locator(".file-card .status")
-        .allTextContents();
+      const statuses = await page.locator(".file-card .status").allTextContents();
       expect(statuses.every((s) => !s.includes("Decoding..."))).toBe(true);
     }).toPass({ timeout: 60000 });
 
@@ -717,9 +629,7 @@ test.describe("New: Additional functionality", () => {
     await expect(page.locator("#viewer-container")).toBeVisible();
   });
 
-  test("mobile viewport hides arrows and adapts filmstrip", async ({
-    page,
-  }) => {
+  test("mobile viewport hides arrows and adapts filmstrip", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
     await page.goto(PAGE_URL, { waitUntil: "networkidle" });
 
@@ -732,9 +642,7 @@ test.describe("New: Additional functionality", () => {
     await fileChooser.setFiles(files);
 
     await expect(async () => {
-      const statuses = await page
-        .locator(".file-card .status")
-        .allTextContents();
+      const statuses = await page.locator(".file-card .status").allTextContents();
       expect(statuses.every((s) => !s.includes("Decoding..."))).toBe(true);
     }).toPass({ timeout: 60000 });
 
@@ -784,9 +692,7 @@ test.describe("New: Additional functionality", () => {
 
     // Wait for all decodes
     await expect(async () => {
-      const statuses = await page
-        .locator(".file-card .status")
-        .allTextContents();
+      const statuses = await page.locator(".file-card .status").allTextContents();
       expect(statuses.every((s) => !s.includes("Decoding..."))).toBe(true);
     }).toPass({ timeout: 60000 });
 
@@ -794,9 +700,7 @@ test.describe("New: Additional functionality", () => {
     await expect(filmstrip).toBeVisible();
 
     // Verify filmstrip is scrollable (overflow-x: auto)
-    const overflowX = await filmstrip.evaluate(
-      (el) => getComputedStyle(el).overflowX,
-    );
+    const overflowX = await filmstrip.evaluate((el) => getComputedStyle(el).overflowX);
     expect(["auto", "scroll"]).toContain(overflowX);
   });
 
@@ -808,9 +712,7 @@ test.describe("New: Additional functionality", () => {
     await fileChooser.setFiles([path.join(FIXTURES, "test1.ithmb")]);
 
     await expect(async () => {
-      const statuses = await page
-        .locator(".file-card .status")
-        .allTextContents();
+      const statuses = await page.locator(".file-card .status").allTextContents();
       expect(statuses.every((s) => !s.includes("Decoding..."))).toBe(true);
     }).toPass({ timeout: 60000 });
 
@@ -825,18 +727,14 @@ test.describe("New: Additional functionality", () => {
     await expect(page.locator("#viewer-container")).toBeVisible();
   });
 
-  test("global download-format select does not override per-card formats", async ({
-    page,
-  }) => {
+  test("global download-format select does not override per-card formats", async ({ page }) => {
     const fc = page.waitForEvent("filechooser");
     await page.locator("#dropzone").click();
     const fileChooser = await fc;
     await fileChooser.setFiles([path.join(FIXTURES, "test1.ithmb")]);
 
     await expect(async () => {
-      const statuses = await page
-        .locator(".file-card .status")
-        .allTextContents();
+      const statuses = await page.locator(".file-card .status").allTextContents();
       expect(statuses.every((s) => !s.includes("Decoding..."))).toBe(true);
     }).toPass({ timeout: 60000 });
 
@@ -848,22 +746,14 @@ test.describe("New: Additional functionality", () => {
 
     // Changing the GLOBAL selector must NOT touch the per-card select/save button
     await page.locator("#downloadFormatSelect").selectOption("image/png");
-    await expect(page.locator("#downloadAllBtn")).toHaveAttribute(
-      "title",
-      /PNG/,
-    );
+    await expect(page.locator("#downloadAllBtn")).toHaveAttribute("title", /PNG/);
     await expect(cardSelect).toHaveValue("image/jpeg");
     await expect(saveBtn).toHaveText("Save JPEG");
 
     // Changing the PER-CARD select must NOT touch the global selector/button
     await cardSelect.selectOption("image/bmp");
     await expect(saveBtn).toHaveText("Save BMP");
-    await expect(page.locator("#downloadFormatSelect")).toHaveValue(
-      "image/png",
-    );
-    await expect(page.locator("#downloadAllBtn")).toHaveAttribute(
-      "title",
-      /PNG/,
-    );
+    await expect(page.locator("#downloadFormatSelect")).toHaveValue("image/png");
+    await expect(page.locator("#downloadAllBtn")).toHaveAttribute("title", /PNG/);
   });
 });
