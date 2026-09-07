@@ -1,5 +1,5 @@
 // Unit tests for uniqueZipName (ithmb-decoder/download.ts filename policy)
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { uniqueZipName } from "../../ithmb-decoder/download";
 
 const taken = (...names: string[]): Record<string, Uint8Array> =>

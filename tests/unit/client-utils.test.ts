@@ -1,5 +1,5 @@
 // Unit tests for ithmb-decoder pure utility functions
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { KNOWN_PREFIXES } from "../../ithmb-decoder/state";
 import {
   bytesToBase64,

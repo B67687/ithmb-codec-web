@@ -1,5 +1,5 @@
 // Unit tests for workers/telemetry/src/validation.ts — entry validation
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import type { TelemetryBody } from "../../workers/telemetry/src/types";
 import { validateEntry } from "../../workers/telemetry/src/validation";
 

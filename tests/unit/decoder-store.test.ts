@@ -1,5 +1,5 @@
 // Unit tests for ithmb-decoder/cards.ts (pure store, no DOM)
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "bun:test";
 import {
   addFailure,
   addSuccess,

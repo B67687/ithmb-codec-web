@@ -1,5 +1,5 @@
 // Unit tests for workers/telemetry/src/crypto.ts — pure functions
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import {
   escapeHtml,
   keyedPseudonym,

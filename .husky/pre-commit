@@ -13,7 +13,7 @@ else
 fi
 # i18n integrity gate — fail fast before tests if key parity / raw literals / t() refs broken
 echo "=== Running i18n integrity gate ==="
-npx tsx scripts/check-i18n.mts
+bun scripts/check-i18n.mts
 i18n_result=$?
 if [ $i18n_result -ne 0 ]; then
   echo "i18n integrity gate FAILED — aborting commit"

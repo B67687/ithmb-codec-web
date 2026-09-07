@@ -25,14 +25,21 @@ jobs:
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: 22
-          cache: npm
-      - run: npm ci
+      - uses: oven-sh/setup-bun@v2 # Phase 1: npm scripts invoke bun (build, i18n)
+        with:
+          bun-version: "1.3.14"
+      - name: Cache bun install
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+      - run: bun install --frozen-lockfile
       - name: biome format gate (1.9.4, format-only)
         run: npx --yes @biomejs/biome@1.9.4 format .
       - name: lint:modules (typecheck + build + determinism)
-        run: npm run lint:modules && git diff --exit-code # fail if the build mutated tracked files (uncommitted ?v= hashes)
-      - name: unit tests (vitest)
-        run: npm run test:unit
+        run: bun run lint:modules && git diff --exit-code # fail if the build mutated tracked files (uncommitted ?v= hashes)
+      - name: unit tests (bun test)
+        run: bun run test:unit
 
   test:
     runs-on: ubuntu-latest
@@ -46,8 +53,15 @@ jobs:
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: 22
-          cache: npm
-      - run: npm ci
+      - uses: oven-sh/setup-bun@v2 # Phase 1: Build step runs on bun
+        with:
+          bun-version: "1.3.14"
+      - name: Cache bun install
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+      - run: bun install --frozen-lockfile
       - name: Cache Playwright browsers
         id: pw-cache
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
@@ -67,7 +81,7 @@ jobs:
         if: steps.pw-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps ${{ matrix.browser }}
       - name: Build (TS -> JS)
-        run: npm run build
+        run: bun run build
       - name: Playwright (${{ matrix.browser }}, local server)
         env:
           # Pass the matrix browser so the config can pick a distinct
