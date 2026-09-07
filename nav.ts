@@ -22,7 +22,10 @@
     "/enterprise/index.html": "/zh/enterprise/",
   };
   var enPages: Record<string, string> = {};
-  for (var en in zhPages) enPages[zhPages[en]] = en;
+  for (var en in zhPages) {
+    var zh = zhPages[en];
+    if (zh !== undefined) enPages[zh] = en;
+  }
 
   // The page this path translates to in the OTHER locale. Falls back to the
   // other locale's home for paths outside the map (e.g. /404.html).
@@ -53,13 +56,37 @@
   )
     active = "enterprise";
 
-  var links: Array<{ id: string; href: string; text: string; zhText: string; i18n: string }> = [
+  var links: Array<{
+    id: string;
+    href: string;
+    text: string;
+    zhText: string;
+    i18n: string;
+  }> = [
     { id: "home", href: "/", text: "Home", zhText: "首页", i18n: "nav.home" },
-    { id: "decoder", href: "/ithmb-decoder/", text: "Decoder", zhText: "解码器", i18n: "nav.decoder" },
-    { id: "guide", href: "/guide/how-to-open-ithmb-files", text: "Guide", zhText: "指南", i18n: "nav.guide" },
+    {
+      id: "decoder",
+      href: "/ithmb-decoder/",
+      text: "Decoder",
+      zhText: "解码器",
+      i18n: "nav.decoder",
+    },
+    {
+      id: "guide",
+      href: "/guide/how-to-open-ithmb-files",
+      text: "Guide",
+      zhText: "指南",
+      i18n: "nav.guide",
+    },
   ];
 
-  function linkHTML(item: { id: string; href: string; text: string; zhText: string; i18n: string }): string {
+  function linkHTML(item: {
+    id: string;
+    href: string;
+    text: string;
+    zhText: string;
+    i18n: string;
+  }): string {
     var isActive = item.id === active;
     var cls = "top-nav-link" + (isActive ? " active" : "");
     var href = isZh && zhPages[item.href] ? zhPages[item.href] : item.href;
@@ -68,7 +95,13 @@
     // data-i18n stays so i18n re-applies the authoritative text on activation.
     var text = isZh ? item.zhText : item.text;
     var html =
-      '<a href="' + href + '" class="' + cls + '" data-i18n="' + item.i18n + '">';
+      '<a href="' +
+      href +
+      '" class="' +
+      cls +
+      '" data-i18n="' +
+      item.i18n +
+      '">';
     html += text + "</a>";
     return html;
   }
@@ -85,9 +118,15 @@
   // i18n); data-i18n-aria-label/title stay for the authoritative strings.
   var toggleLabel: string = isZh ? "切换语言" : "Switch language";
   var langToggle: string =
-    '<a href="' + counterpart(path) + '" id="langToggle" class="lang-toggle" ' +
+    '<a href="' +
+    counterpart(path) +
+    '" id="langToggle" class="lang-toggle" ' +
     'data-i18n-aria-label="nav.toggleLabel" data-i18n-title="nav.toggleLabel" ' +
-    'aria-label="' + toggleLabel + '" title="' + toggleLabel + '" ' +
+    'aria-label="' +
+    toggleLabel +
+    '" title="' +
+    toggleLabel +
+    '" ' +
     'style="background:transparent;border:1px solid var(--border,#d2d2d7);border-radius:999px;color:var(--text,#1d1d1f);font-size:0.8125rem;line-height:1;padding:5px 11px;display:inline-flex;align-items:center;gap:5px;vertical-align:middle;font-family:inherit;margin-right:8px;text-decoration:none;cursor:pointer">' +
     '<span class="lang-opt" data-lang="en">EN</span>' +
     '<span style="color:var(--muted,#86868b)">/</span>' +
@@ -97,12 +136,18 @@
   var navHtml: string =
     '<nav class="top-nav">' +
     '<div class="top-nav-left">' +
-    '<a href="' + (isZh ? "/zh/" : "/") + '" class="top-nav-brand"><span class="brand-mark">iT</span>ITHMB Codec</a>' +
-    '<button id="themeToggle" class="theme-toggle" data-i18n-aria-label="nav.themeToggle" data-i18n-title="nav.themeToggle" aria-label="' + (isZh ? "切换主题" : "Toggle theme") + '" title="' + (isZh ? "切换主题" : "Toggle theme") + '">' +
+    '<a href="' +
+    (isZh ? "/zh/" : "/") +
+    '" class="top-nav-brand"><span class="brand-mark">iT</span>ITHMB Codec</a>' +
+    '<button id="themeToggle" class="theme-toggle" data-i18n-aria-label="nav.themeToggle" data-i18n-title="nav.themeToggle" aria-label="' +
+    (isZh ? "切换主题" : "Toggle theme") +
+    '" title="' +
+    (isZh ? "切换主题" : "Toggle theme") +
+    '">' +
     '<svg class="moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z"/></svg>' +
     '<svg class="sun" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"/></svg>' +
-    '</button>' +
-    '</div>' +
+    "</button>" +
+    "</div>" +
     '<div class="top-nav-links">' +
     links.map(linkHTML).join("") +
     "</div>" +
@@ -149,7 +194,8 @@
   var themeBtn = document.getElementById("themeToggle");
   if (themeBtn) {
     themeBtn.addEventListener("click", function () {
-      if (typeof window.IthmbTheme === "object" && window.IthmbTheme) window.IthmbTheme.toggle();
+      if (typeof window.IthmbTheme === "object" && window.IthmbTheme)
+        window.IthmbTheme.toggle();
     });
   }
 })();

@@ -116,8 +116,10 @@ document.addEventListener(
   "touchstart",
   (e) => {
     if (!isViewerSwipeActive(e)) return;
-    touchStartX = e.changedTouches[0].screenX;
-    touchStartY = e.changedTouches[0].screenY;
+    const t0 = e.changedTouches[0];
+    if (!t0) return;
+    touchStartX = t0.screenX;
+    touchStartY = t0.screenY;
   },
   { passive: true },
 );
@@ -125,8 +127,10 @@ document.addEventListener(
   "touchmove",
   (e) => {
     if (!isViewerSwipeActive(e)) return;
-    const deltaX = Math.abs(e.changedTouches[0].screenX - touchStartX);
-    const deltaY = Math.abs(e.changedTouches[0].screenY - touchStartY);
+    const t0 = e.changedTouches[0];
+    if (!t0) return;
+    const deltaX = Math.abs(t0.screenX - touchStartX);
+    const deltaY = Math.abs(t0.screenY - touchStartY);
     if (deltaX > deltaY && deltaX > 10) e.preventDefault();
   },
   { passive: false },
@@ -135,7 +139,9 @@ document.addEventListener(
   "touchend",
   (e) => {
     if (!isViewerSwipeActive(e)) return;
-    const deltaX = e.changedTouches[0].screenX - touchStartX;
+    const t0 = e.changedTouches[0];
+    if (!t0) return;
+    const deltaX = t0.screenX - touchStartX;
     if (Math.abs(deltaX) > 50) {
       if (deltaX < 0) nextViewer();
       else prevViewer();

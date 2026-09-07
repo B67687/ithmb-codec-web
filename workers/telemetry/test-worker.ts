@@ -36,9 +36,11 @@ async function main(): Promise<void> {
     logLevel: "silent",
   });
 
+  const first = outputFiles[0];
+  if (!first) throw new Error("esbuild produced no output");
   const mf = new Miniflare({
     modules: true,
-    script: outputFiles[0].text,
+    script: first.text,
     scriptPath: WORKER_SRC,
     kvNamespaces: ["FORMAT_TELEMETRY"],
     // REVIEW 4.3: intentional non-secret test fixture (miniflare in-memory binding only;
@@ -50,7 +52,9 @@ async function main(): Promise<void> {
   let pass = 0;
   let fail = 0;
   const check = (name: string, ok: boolean, detail = "") => {
-    console.log(`${ok ? "PASS" : "FAIL"}: ${name}${detail ? " — " + detail : ""}`);
+    console.log(
+      `${ok ? "PASS" : "FAIL"}: ${name}${detail ? " — " + detail : ""}`,
+    );
     ok ? pass++ : fail++;
   };
 
@@ -79,8 +83,15 @@ async function main(): Promise<void> {
   check("POST valid record", (await json<{ ok: boolean }>(r)).ok === true);
 
   // 2. Garbage base64 full_file → record stored, payload rejected (hasFullFile:false)
-  r = await post({ prefix: 1009, status: "looks-wrong", full_file: "!!!!!not-base64-at-all!!!!!####$$$$" });
-  check("POST garbage base64 accepted as record", (await json<{ ok: boolean }>(r)).ok === true);
+  r = await post({
+    prefix: 1009,
+    status: "looks-wrong",
+    full_file: "!!!!!not-base64-at-all!!!!!####$$$$",
+  });
+  check(
+    "POST garbage base64 accepted as record",
+    (await json<{ ok: boolean }>(r)).ok === true,
+  );
 
   // 3. Valid 8 MiB full_file → stored (payload lands under a separate key)
   const b64 = Buffer.alloc(8 * 1024 * 1024, 0).toString("base64");
@@ -90,7 +101,10 @@ async function main(): Promise<void> {
   // 4. Auth: ?token= must NOT authenticate (public JSON fallback); Bearer → dashboard
   r = await mf.dispatchFetch("http://localhost/?token=smoke-test-token-0001");
   const tokenBody = await r.text();
-  check("?token= returns JSON (not dashboard)", tokenBody.trimStart().startsWith("{"));
+  check(
+    "?token= returns JSON (not dashboard)",
+    tokenBody.trimStart().startsWith("{"),
+  );
 
   r = await mf.dispatchFetch("http://localhost/", {
     headers: { Authorization: "Bearer smoke-test-token-0001" },
@@ -103,7 +117,10 @@ async function main(): Promise<void> {
   const keys = (await ns.list()).keys.map((k) => k.name).join("\n");
   check("no raw IP in KV keys", !keys.includes("203.0.113.99"));
   check("fullfile_ payload key separated", /^fullfile_/m.test(keys));
-  check("uuid record keys (no Date.now)", /^fmt_1009_[0-9a-f-]{36}$/m.test(keys));
+  check(
+    "uuid record keys (no Date.now)",
+    /^fmt_1009_[0-9a-f-]{36}$/m.test(keys),
+  );
 
   // 6. The entire GET surface is token-gated (was partially public; nothing in
   //    the app reads counts — the only telemetry call is the POST submit).
@@ -118,17 +135,27 @@ async function main(): Promise<void> {
   check("GET / with token returns dashboard HTML", /<html|<!doctype/i.test(j));
 
   // 7. Dashboard tracks the full-file record (separation)
-  check("dashboard Full File Uploads == 1", /Full File Uploads<\/h3><div class="value">1<\/div>/.test(dashBody));
-
+  check(
+    "dashboard Full File Uploads == 1",
+    /Full File Uploads<\/h3><div class="value">1<\/div>/.test(dashBody),
+  );
 
   // 8. Rate markers cover EVERY accepted request (C2 regression): dedup'd
   //    resubmissions must consume the per-day budget, not replay for free.
   for (let i = 0; i < 5; i++) {
-    r = await post({ prefix: 3004, status: "unknown", header: "4d4d0042000000000000000000000000" });
+    r = await post({
+      prefix: 3004,
+      status: "unknown",
+      header: "4d4d0042000000000000000000000000",
+    });
     await r.json();
   }
   const rateKeys = (await ns.list({ prefix: "rate:" })).keys.length;
-  check("rate markers per request (5 POSTs, 5 markers)", rateKeys >= 5, "markers=" + rateKeys);
+  check(
+    "rate markers per request (5 POSTs, 5 markers)",
+    rateKeys >= 5,
+    "markers=" + rateKeys,
+  );
 
   console.log(`\n=== worker test: ${pass} passed, ${fail} failed ===`);
   process.exit(fail ? 1 : 0);

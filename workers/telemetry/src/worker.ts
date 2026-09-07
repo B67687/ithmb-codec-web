@@ -21,9 +21,7 @@ async function handleDashboardGet(
   // ?token=<ADMIN_TOKEN> query path is gone — a bearer credential must
   // never ride in URLs (browser history, access logs, Referer) (CWE-200).
   const authHeader = request.headers.get("Authorization") || "";
-  const token = authHeader.startsWith("Bearer ")
-    ? authHeader.slice(7)
-    : "";
+  const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
   if (token && (await tokensEqual(token, env.ADMIN_TOKEN))) {
     // ---- HTML dashboard ----
     const allRecords: StoredRecord[] = [];
@@ -36,7 +34,7 @@ async function handleDashboardGet(
     do {
       const list = await env.FORMAT_TELEMETRY.list({
         prefix: "fmt_",
-        cursor,
+        ...(cursor !== undefined ? { cursor } : {}),
         limit: 1000,
       });
       for (const key of list.keys) {
@@ -86,9 +84,8 @@ async function handleDashboardGet(
 
     // Recent 50 sorted by timestamp descending
     const recent50 = allRecords
-      .filter(
-        (r): r is StoredRecord & { timestamp: string } =>
-          Boolean(r.timestamp),
+      .filter((r): r is StoredRecord & { timestamp: string } =>
+        Boolean(r.timestamp),
       )
       .sort(
         (a, b) =>
@@ -128,13 +125,10 @@ async function handleDashboardGet(
   // ithmb-decoder/*.ts is the POST submit), and the worker promises
   // "No public exposure". Without a valid bearer token everything else
   // returns 401 (CWE-200: bearer never rides in URLs).
-  return new Response(
-    JSON.stringify({ ok: false, error: "unauthorized" }),
-    {
-      status: 401,
-      headers: { "Content-Type": "application/json", ...corsHeaders },
-    },
-  );
+  return new Response(JSON.stringify({ ok: false, error: "unauthorized" }), {
+    status: 401,
+    headers: { "Content-Type": "application/json", ...corsHeaders },
+  });
 }
 
 export default {

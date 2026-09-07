@@ -28,9 +28,11 @@ async function measure(page: Page, url: string) {
   await page.goto(url, { waitUntil: "networkidle" });
   const wall = Date.now() - t0;
   const timing = await page.evaluate(() => {
-    const [nav] = performance.getEntriesByType(
+    const entries = performance.getEntriesByType(
       "navigation",
     ) as PerformanceNavigationTiming[];
+    const nav = entries[0];
+    if (!nav) throw new Error("no navigation entry");
     return {
       domContentLoaded: nav.domContentLoadedEventEnd,
       load: nav.loadEventEnd,

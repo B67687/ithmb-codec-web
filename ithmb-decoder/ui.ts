@@ -1,7 +1,4 @@
-import {
-  S,
-  processedFileIds,
-} from "./state.js";
+import { S, processedFileIds } from "./state.js";
 import { resetCards } from "./cards.js";
 import { bytesToHex, escapeHtml, formatSize, showToast } from "./utils.js";
 import { decodeFile } from "./decoder.js";
@@ -81,8 +78,7 @@ export async function processFiles(files: File[]): Promise<void> {
     valid.push(f);
   }
 
-  if (nonIthmb > 0)
-    showToast(t("ui.skipped", { n: nonIthmb }));
+  if (nonIthmb > 0) showToast(t("ui.skipped", { n: nonIthmb }));
   if (tooLarge > 0) showToast(t("ui.tooLarge", { n: tooLarge }));
 
   S.totalFiles += valid.length;
@@ -106,7 +102,13 @@ export async function processFiles(files: File[]): Promise<void> {
       openViewer(isFirstBatch ? 0 : cardCountBefore + i);
       viewerOpened = true;
     }
-    await Promise.all(batch.map((file, j) => decodeFile(file, cardIds[j])));
+    await Promise.all(
+      batch.map((file, j) => {
+        const id = cardIds[j];
+        if (id === undefined) return Promise.resolve();
+        return decodeFile(file, id);
+      }),
+    );
     await new Promise((resolve) => setTimeout(resolve, 0));
   }
   updateToolbar();

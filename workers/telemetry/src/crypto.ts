@@ -12,10 +12,7 @@ import type { Env } from "./types";
 // reveals nothing. 128-bit truncation also makes cross-IP collisions
 // negligible (the old 64-bit truncation had ~40% collision over the full
 // IPv4 space, contaminating rate-limit keys).
-export async function keyedPseudonym(
-  env: Env,
-  data: string,
-): Promise<string> {
+export async function keyedPseudonym(env: Env, data: string): Promise<string> {
   const secret = env.IP_HMAC_SECRET || env.ADMIN_TOKEN || "unset";
   const key = await crypto.subtle.importKey(
     "raw",
@@ -37,10 +34,7 @@ export async function keyedPseudonym(
 
 // Simple fingerprint from IP + User-Agent hash. Keyed (see keyedPseudonym):
 // the fingerprint in stored records must not be reversible to the raw IP.
-export async function fingerprint(
-  request: Request,
-  env: Env,
-): Promise<string> {
+export async function fingerprint(request: Request, env: Env): Promise<string> {
   const ip = request.headers.get("CF-Connecting-IP") || "unknown";
   const ua = request.headers.get("User-Agent") || "";
   return keyedPseudonym(env, `${ip}:${ua}`);
@@ -70,7 +64,7 @@ export async function countKeys(
   do {
     const res = await env.FORMAT_TELEMETRY.list({
       prefix,
-      cursor,
+      ...(cursor !== undefined ? { cursor } : {}),
       limit: 1000,
     });
     count += res.keys.length;
@@ -94,10 +88,7 @@ export function validBase64Payload(s: string): boolean {
 // Constant-time token comparison (CWE-208): hash both sides to a fixed 32
 // bytes first so an early length mismatch cannot leak via timing, then
 // XOR-compare every byte.
-export async function tokensEqual(
-  a: string,
-  b: string,
-): Promise<boolean> {
+export async function tokensEqual(a: string, b: string): Promise<boolean> {
   const [ha, hb] = await Promise.all([
     crypto.subtle.digest("SHA-256", new TextEncoder().encode(a)),
     crypto.subtle.digest("SHA-256", new TextEncoder().encode(b)),
@@ -105,7 +96,12 @@ export async function tokensEqual(
   const av = new Uint8Array(ha);
   const bv = new Uint8Array(hb);
   let diff = 0;
-  for (let i = 0; i < av.length; i++) diff |= av[i] ^ bv[i];
+  for (let i = 0; i < av.length; i++) {
+    const x = av[i];
+    const y = bv[i];
+    if (x === undefined || y === undefined) return false;
+    diff |= x ^ y;
+  }
   return diff === 0;
 }
 

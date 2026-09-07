@@ -68,14 +68,15 @@ const ZH_PAGES = [
 ];
 
 for (const [name, path] of PAGES) {
+  if (path === undefined) throw new Error("bad page tuple");
   test.describe(`${name} SEO metadata`, () => {
     test("has a meta description", async ({ page }) => {
       await page.goto(path, { waitUntil: "domcontentloaded" });
       const content = await page
         .locator('meta[name="description"]')
         .getAttribute("content");
-      expect(content).toBeTruthy();
-      expect(content!.length).toBeGreaterThan(30);
+      if (!content) throw new Error("missing meta description");
+      expect(content.length).toBeGreaterThan(30);
     });
   });
 }
@@ -171,6 +172,7 @@ test.describe("language preference redirect", () => {
 
 test.describe("hreflang + canonical (real /zh/ URLs)", () => {
   for (const [name, path, enUrl, zhUrl] of CONTENT_PAGES) {
+    if (path === undefined) throw new Error("bad page tuple");
     test(`${name}: en ↔ zh alternates with x-default to the English URL`, async ({
       page,
     }) => {
@@ -178,6 +180,7 @@ test.describe("hreflang + canonical (real /zh/ URLs)", () => {
       const canonical = await page
         .locator('link[rel="canonical"]')
         .getAttribute("href");
+      if (canonical === null) throw new Error("missing canonical link");
       expect(canonical).toBe(enUrl);
       const links = await page
         .locator('link[rel="alternate"][hreflang]')
@@ -198,12 +201,14 @@ test.describe("hreflang + canonical (real /zh/ URLs)", () => {
 
 test.describe("Chinese /zh/ pages (server-rendered)", () => {
   for (const [name, path, enUrl, zhUrl] of ZH_PAGES) {
+    if (path === undefined) throw new Error("bad page tuple");
     test(`${name}: fully Chinese HTML with real en ↔ zh hreflang`, async ({
       page,
     }) => {
       await page.goto(path, { waitUntil: "domcontentloaded" });
       const htmlLang = await page.locator("html").getAttribute("lang");
-      expect(htmlLang!.toLowerCase().startsWith("zh")).toBe(true);
+      if (htmlLang === null) throw new Error("missing html lang");
+      expect(htmlLang.toLowerCase().startsWith("zh")).toBe(true);
       const title = await page.title();
       expect(/[\u4e00-\u9fff]/.test(title)).toBe(true);
       const desc = await page
@@ -244,6 +249,7 @@ test.describe("Content Security Policy", () => {
       return;
     }
     for (const [, path] of PAGES.concat(ZH_PAGES)) {
+      if (path === undefined) throw new Error("bad page tuple");
       const res = await request.get(path);
       const csp = res.headers()["content-security-policy"] || "";
       expect(csp, `${path} missing CSP header`).toContain("default-src 'self'");

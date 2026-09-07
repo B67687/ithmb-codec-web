@@ -162,10 +162,15 @@ test.describe("Viewer Mode (6+ files)", () => {
     // decode completes — filmstrip order must equal file-card order.
     await expect(page.locator(".filmstrip-thumb")).toHaveCount(8);
     const order = await page.evaluate(() => {
-      const thumbs = Array.from(document.querySelectorAll<HTMLElement>(".filmstrip-thumb"));
-      const cards = Array.from(document.querySelectorAll<HTMLElement>(".file-card"));
-      return thumbs.every((t, i) =>
-        cards[i] && t.dataset.filmstripCard === cards[i].dataset.cardId,
+      const thumbs = Array.from(
+        document.querySelectorAll<HTMLElement>(".filmstrip-thumb"),
+      );
+      const cards = Array.from(
+        document.querySelectorAll<HTMLElement>(".file-card"),
+      );
+      return thumbs.every(
+        (t, i) =>
+          cards[i] && t.dataset.filmstripCard === cards[i].dataset.cardId,
       );
     });
     expect(order).toBe(true);
@@ -223,7 +228,9 @@ test.describe("Regression: Viewer pixel content", () => {
       expect(statuses.every((s) => !s.includes("Decoding..."))).toBe(true);
       // Ensure the stage has a canvas (not just the viewer open)
       const hasCanvas = await page.evaluate(
-        () => document.querySelector<HTMLCanvasElement>("#viewer-stage canvas") !== null,
+        () =>
+          document.querySelector<HTMLCanvasElement>("#viewer-stage canvas") !==
+          null,
       );
       expect(hasCanvas).toBe(true);
     }).toPass({ timeout: 60000 });
@@ -233,7 +240,9 @@ test.describe("Regression: Viewer pixel content", () => {
     // Regression: cloneNode(true) loses canvas pixel data
     // The stage canvas must have actual image content, not be blank
     const hasPixels = await page.evaluate(() => {
-      const canvas = document.querySelector<HTMLCanvasElement>("#viewer-stage canvas");
+      const canvas = document.querySelector<HTMLCanvasElement>(
+        "#viewer-stage canvas",
+      );
       if (!canvas) return false;
       const ctx = canvas.getContext("2d");
       if (!ctx) return false;
@@ -241,7 +250,7 @@ test.describe("Regression: Viewer pixel content", () => {
       const cx = Math.floor(canvas.width / 2);
       const cy = Math.floor(canvas.height / 2);
       const pixel = ctx.getImageData(cx, cy, 1, 1);
-      return pixel.data[3] > 0;
+      return (pixel.data[3] ?? 0) > 0;
     });
     expect(hasPixels).toBe(true);
   });
@@ -250,7 +259,9 @@ test.describe("Regression: Viewer pixel content", () => {
     // Regression: filmstripIndex was always -1, clicking thumbnails did nothing
     // Verify stage canvas exists
     const hasCanvas = await page.evaluate(() => {
-      const canvas = document.querySelector<HTMLCanvasElement>("#viewer-stage canvas");
+      const canvas = document.querySelector<HTMLCanvasElement>(
+        "#viewer-stage canvas",
+      );
       return !!canvas && canvas.toDataURL().length > 0;
     });
     expect(hasCanvas).toBe(true);
@@ -258,11 +269,16 @@ test.describe("Regression: Viewer pixel content", () => {
     // Click a non-first thumbnail (any will do — thumbnails may not be in card
     // order on all browsers due to non-deterministic WASM decode order)
     const thumbCount = await page.locator(".filmstrip-thumb").count();
-    await page.locator(".filmstrip-thumb").nth(thumbCount > 1 ? 1 : 0).click();
+    await page
+      .locator(".filmstrip-thumb")
+      .nth(thumbCount > 1 ? 1 : 0)
+      .click();
 
     // Verify canvas still rendered after switching
     const stillHasCanvas = await page.evaluate(() => {
-      const canvas = document.querySelector<HTMLCanvasElement>("#viewer-stage canvas");
+      const canvas = document.querySelector<HTMLCanvasElement>(
+        "#viewer-stage canvas",
+      );
       return !!canvas && canvas.toDataURL().length > 0;
     });
     expect(stillHasCanvas).toBe(true);
@@ -274,7 +290,9 @@ test.describe("Regression: Viewer pixel content", () => {
 
   test("arrow key navigation switches the viewer image", async ({ page }) => {
     const hasCanvas = await page.evaluate(() => {
-      const canvas = document.querySelector<HTMLCanvasElement>("#viewer-stage canvas");
+      const canvas = document.querySelector<HTMLCanvasElement>(
+        "#viewer-stage canvas",
+      );
       return !!canvas && canvas.toDataURL().length > 0;
     });
     expect(hasCanvas).toBe(true);
@@ -283,11 +301,18 @@ test.describe("Regression: Viewer pixel content", () => {
     // so derive the expected position from the thumb adjacent to the active one
     // BEFORE pressing the key (the press moves the active thumb).
     const expectedPos = await page.evaluate(() => {
-      const thumbs = Array.from(document.querySelectorAll<HTMLElement>(".filmstrip-thumb"));
-      const active = document.querySelector<HTMLElement>(".filmstrip-thumb.active");
+      const thumbs = Array.from(
+        document.querySelectorAll<HTMLElement>(".filmstrip-thumb"),
+      );
+      const active = document.querySelector<HTMLElement>(
+        ".filmstrip-thumb.active",
+      );
       const idx = active ? thumbs.indexOf(active) : 0;
       const next = thumbs[(idx + 1) % thumbs.length];
-      const cards = Array.from(document.querySelectorAll<HTMLElement>(".file-card"));
+      if (!next) return -1;
+      const cards = Array.from(
+        document.querySelectorAll<HTMLElement>(".file-card"),
+      );
       const target = cards.find(
         (c) => c.dataset.cardId === next.dataset.filmstripCard,
       );
@@ -300,7 +325,9 @@ test.describe("Regression: Viewer pixel content", () => {
 
     // Verify canvas still rendered after navigation
     const stillHasCanvas = await page.evaluate(() => {
-      const canvas = document.querySelector<HTMLCanvasElement>("#viewer-stage canvas");
+      const canvas = document.querySelector<HTMLCanvasElement>(
+        "#viewer-stage canvas",
+      );
       return !!canvas && canvas.toDataURL().length > 0;
     });
     expect(stillHasCanvas).toBe(true);
@@ -371,7 +398,6 @@ test.describe("Regression: Viewer pixel content", () => {
     });
     expect(mainPos).toBe("relative");
   });
-
 });
 test.describe("Regression: Batch behavior", () => {
   test.beforeEach(async ({ page }) => {
@@ -473,8 +499,8 @@ test.describe("Regression: Batch behavior", () => {
     await fileChooser.setFiles(files);
     await expect(async () => {
       const statuses = await page
-.locator(".file-card .status")
-.allTextContents();
+        .locator(".file-card .status")
+        .allTextContents();
       expect(statuses.every((s) => !s.includes("Decoding..."))).toBe(true);
     }).toPass({ timeout: 60000 });
     // Click the 2nd thumbnail; the position indicator should show the
@@ -514,10 +540,16 @@ test.describe("Regression: Batch behavior", () => {
 
     // Changing format should update the Download All button text
     await fmtSelect.selectOption("image/png");
-    await expect(page.locator("#downloadAllBtn")).toHaveAttribute("title", /PNG/);
+    await expect(page.locator("#downloadAllBtn")).toHaveAttribute(
+      "title",
+      /PNG/,
+    );
 
     await fmtSelect.selectOption("image/bmp");
-    await expect(page.locator("#downloadAllBtn")).toHaveAttribute("title", /BMP/);
+    await expect(page.locator("#downloadAllBtn")).toHaveAttribute(
+      "title",
+      /BMP/,
+    );
   });
 
   test("holding ArrowRight advances viewer repeatedly", async ({ page }) => {
@@ -539,7 +571,9 @@ test.describe("Regression: Batch behavior", () => {
 
     // Capture which thumb is active before holding
     const before = await page.evaluate(() => {
-      const active = document.querySelector<HTMLElement>(".filmstrip-thumb.active");
+      const active = document.querySelector<HTMLElement>(
+        ".filmstrip-thumb.active",
+      );
       return active ? active.dataset.filmstripCard : null;
     });
 
@@ -554,7 +588,9 @@ test.describe("Regression: Batch behavior", () => {
 
     // The active thumb must have changed from the starting one
     const after = await page.evaluate(() => {
-      const active = document.querySelector<HTMLElement>(".filmstrip-thumb.active");
+      const active = document.querySelector<HTMLElement>(
+        ".filmstrip-thumb.active",
+      );
       return active ? active.dataset.filmstripCard : null;
     });
     expect(after).not.toBe(before);
@@ -589,7 +625,6 @@ test.describe("New: Additional functionality", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(PAGE_URL, { waitUntil: "networkidle" });
   });
-
 
   test("download all creates a zip file", async ({ page }) => {
     const fc = page.waitForEvent("filechooser");
@@ -647,7 +682,11 @@ test.describe("New: Additional functionality", () => {
       for (const sheet of sheets) {
         try {
           for (const rule of sheet.cssRules || sheet.rules) {
-            if (rule instanceof CSSStyleRule && rule.selectorText?.includes("viewer-placeholder")) return true;
+            if (
+              rule instanceof CSSStyleRule &&
+              rule.selectorText?.includes("viewer-placeholder")
+            )
+              return true;
           }
         } catch (e) {}
       }
@@ -809,14 +848,22 @@ test.describe("New: Additional functionality", () => {
 
     // Changing the GLOBAL selector must NOT touch the per-card select/save button
     await page.locator("#downloadFormatSelect").selectOption("image/png");
-    await expect(page.locator("#downloadAllBtn")).toHaveAttribute("title", /PNG/);
+    await expect(page.locator("#downloadAllBtn")).toHaveAttribute(
+      "title",
+      /PNG/,
+    );
     await expect(cardSelect).toHaveValue("image/jpeg");
     await expect(saveBtn).toHaveText("Save JPEG");
 
     // Changing the PER-CARD select must NOT touch the global selector/button
     await cardSelect.selectOption("image/bmp");
     await expect(saveBtn).toHaveText("Save BMP");
-    await expect(page.locator("#downloadFormatSelect")).toHaveValue("image/png");
-    await expect(page.locator("#downloadAllBtn")).toHaveAttribute("title", /PNG/);
+    await expect(page.locator("#downloadFormatSelect")).toHaveValue(
+      "image/png",
+    );
+    await expect(page.locator("#downloadAllBtn")).toHaveAttribute(
+      "title",
+      /PNG/,
+    );
   });
 });

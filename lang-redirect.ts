@@ -46,8 +46,11 @@
     "/zh/enterprise/index.html": "/enterprise/",
   };
 
-  var lang: string = (document.documentElement.getAttribute("lang") || "").toLowerCase();
-  var current: string | null = lang.indexOf("zh") === 0 ? "zh" : lang.indexOf("en") === 0 ? "en" : null;
+  var lang: string = (
+    document.documentElement.getAttribute("lang") || ""
+  ).toLowerCase();
+  var current: string | null =
+    lang.indexOf("zh") === 0 ? "zh" : lang.indexOf("en") === 0 ? "en" : null;
   if (!current) return; // page declares no supported language — nothing to do
 
   var saved: string | null = null;
@@ -63,12 +66,12 @@
     // Stored preference beats everything: redirect to the counterpart page
     // in the preferred language (a stored "en" preference redirects a /zh/
     // page to its English counterpart too).
-    target = saved === "zh" ? zhPages[path] : enPages[path];
+    target = (saved === "zh" ? zhPages[path] : enPages[path]) ?? null;
   } else if (!saved && current === "en") {
     // No preference yet: zh browsers land on the Chinese pages. /zh/ pages
     // are never bounced to English.
     var nav = (navigator.language || "").toLowerCase();
-    if (nav.indexOf("zh") === 0) target = zhPages[path];
+    if (nav.indexOf("zh") === 0) target = zhPages[path] ?? null;
   }
   if (target) location.replace(target);
 })();

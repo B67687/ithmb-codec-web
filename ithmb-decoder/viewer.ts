@@ -34,6 +34,7 @@ export function openViewer(index: number): void {
   // Clone canvas from the active card into the viewer stage
   const stage = document.getElementById("viewer-stage")!;
   const card = cards[index];
+  if (!card) return;
   // Populate header immediately with filename+size (dimensions update on decode)
   populateViewerHeader(card);
   const srcCanvas = card.querySelector<HTMLCanvasElement>(".preview canvas");
