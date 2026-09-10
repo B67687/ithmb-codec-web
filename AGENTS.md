@@ -128,6 +128,7 @@ public  → https://github.com/B67687/Ithmb-Codec-Web       (PUBLIC, shipped rep
 - **CI runs on the DEV repo** (`.github/workflows/ci.yml`): lint (typecheck + build + determinism via `git diff --exit-code`, i18n, wasm-drift), test (chromium/firefox/webkit matrix), and a gitleaks secrets job. The public repo does NOT run CI.
 - **Squash-work branch** (`squash-work`, tracks `public/main`) is where public commits are built: `git cherry-pick -n <dev-commits>` into 1-3 **thematic** squashed commits, verify `git diff --quiet <dev-head> squash-work` shows identical trees, then `git push public squash-work:main`.
 - Version bumps + CHANGELOG entries are added on dev and ride the squash.
+- **Release train:** cross-repo standard is canonical at Ithmb-Codec `docs/RELEASE_TRAIN.md` — order, gates, fixtures rule, honest-notes policy.
 
 ## WASM Regeneration (the fragile part)
 
