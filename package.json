@@ -1,6 +1,6 @@
 {
   "name": "ithmb-codec-web",
-  "version": "1.4.17",
+  "version": "1.4.18",
   "description": "Free private browser-based .ithmb (Apple iThumbnail) file decoder.",
   "directories": {
     "doc": "docs"

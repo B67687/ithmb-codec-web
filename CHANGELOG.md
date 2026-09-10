@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [1.4.18] - 2026-09-10
+
+Decoder WASM rebuilt from ithmb-core 1.9.10 (public tag v1.9.10, tree-verified identical to dev).
+
 ### Added
 
 - **Scroll to top on page refresh**: page always starts at top when loaded or refreshed (`history.scrollRestoration = "manual"`).
