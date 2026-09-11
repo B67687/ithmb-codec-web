@@ -14,6 +14,7 @@ test.describe("Viewer Mode (6+ files)", () => {
     await page.goto(PAGE_URL, { waitUntil: "networkidle" });
   });
 
+  // Guards: viewer opens for 6+ file batches (core viewer contract).
   test("viewer container appears with 8 files", async ({ page }) => {
     const fc = page.waitForEvent("filechooser");
     await page.locator("#dropzone").click();
@@ -27,6 +28,7 @@ test.describe("Viewer Mode (6+ files)", () => {
     await expect(page.locator(".filmstrip-thumb")).toHaveCount(8);
   });
 
+  // Guards: exactly one active thumb + stage canvas on viewer open.
   test("first thumbnail is active when viewer opens", async ({ page }) => {
     const fc = page.waitForEvent("filechooser");
     await page.locator("#dropzone").click();
@@ -45,6 +47,7 @@ test.describe("Viewer Mode (6+ files)", () => {
     await expect(page.locator("#viewer-stage canvas")).toBeAttached();
   });
 
+  // Bug-link: needs history (position-indicator mapping across click nav).
   test("clicking a thumbnail switches the viewer", async ({ page }) => {
     const fc = page.waitForEvent("filechooser");
     await page.locator("#dropzone").click();
@@ -75,6 +78,7 @@ test.describe("Viewer Mode (6+ files)", () => {
     await expect(page.locator("#viewerPos")).toContainText(new RegExp(`${expectedPos} \\/ 8`));
   });
 
+  // Regression: stage height jumped when switching between different-sized images.
   test("viewer stage stays fixed when navigating between different-sized images", async ({
     page,
   }) => {
@@ -110,6 +114,7 @@ test.describe("Viewer Mode (6+ files)", () => {
     expect(secondH).toBe(firstH);
   });
 
+  // Guards: arrow-key viewer navigation (unified index arithmetic).
   test("arrow keys navigate between images", async ({ page }) => {
     const fc = page.waitForEvent("filechooser");
     await page.locator("#dropzone").click();
@@ -137,6 +142,7 @@ test.describe("Viewer Mode (6+ files)", () => {
     await expect(page.locator("#viewerPos")).toContainText(/1 \/ 8/);
   });
 
+  // Regression: thumbs arrived in decode-completion order, breaking nav numbering.
   test("filmstrip thumbs appear in file order as placeholders", async ({ page }) => {
     const fc = page.waitForEvent("filechooser");
     await page.locator("#dropzone").click();
@@ -169,6 +175,7 @@ test.describe("Viewer Mode (6+ files)", () => {
     await expect(page.locator("#viewerPos")).toContainText(/2 \/ 8/);
   });
 
+  // Guards: Escape closes viewer. Overlaps quality.spec.ts Keyboard navigation (consolidation candidate).
   test("Escape closes viewer", async ({ page }) => {
     const fc = page.waitForEvent("filechooser");
     await page.locator("#dropzone").click();
@@ -257,6 +264,7 @@ test.describe("Regression: Viewer pixel content", () => {
     expect(posText).toMatch(/\d+ \/ 8/);
   });
 
+  // Guards: canvas survives arrow navigation (companion to the click-switch test above).
   test("arrow key navigation switches the viewer image", async ({ page }) => {
     const hasCanvas = await page.evaluate(() => {
       const canvas = document.querySelector<HTMLCanvasElement>("#viewer-stage canvas");
@@ -288,6 +296,7 @@ test.describe("Regression: Viewer pixel content", () => {
     expect(stillHasCanvas).toBe(true);
   });
 
+  // Guards: corrupt-file viewer placeholder (companion to decode-failure.spec.ts).
   test("failed decode shows placeholder in viewer", async ({ page }) => {
     const corruptFile = path.join(FIXTURES, "corrupt-gallery.ithmb");
     fs.writeFileSync(
@@ -312,6 +321,7 @@ test.describe("Regression: Viewer pixel content", () => {
       fs.rmSync(corruptFile, { force: true });
     }
   });
+  // Regression (needs history): filmstrip alignment drifted from flex-start (centering-regression era).
   test("filmstrip shows left-aligned thumbnails", async ({ page }) => {
     const justifyContent = await page.evaluate(() => {
       const fs = document.getElementById("viewer-filmstrip");
@@ -320,6 +330,7 @@ test.describe("Regression: Viewer pixel content", () => {
     expect(justifyContent).toBe("flex-start");
   });
 
+  // Regression (needs history): viewer escaped .container (layout contract).
   test("viewer container is inside the page container", async ({ page }) => {
     const inside = await page.evaluate(() => {
       const vc = document.getElementById("viewer-container");
@@ -329,6 +340,7 @@ test.describe("Regression: Viewer pixel content", () => {
     expect(inside).toBe(true);
   });
 
+  // Regression (needs history): viewer-main lost its flex shrink-wrap (stage sizing).
   test("viewer main shrink-wraps to image width", async ({ page }) => {
     const display = await page.evaluate(() => {
       const main = document.getElementById("viewer-main");
@@ -337,6 +349,7 @@ test.describe("Regression: Viewer pixel content", () => {
     expect(display).toBe("flex");
   });
 
+  // Regression (needs history): arrows positioned against the wrong ancestor.
   test("arrows positioned relative to viewer container", async ({ page }) => {
     const rel = await page.evaluate(() => {
       const vc = document.getElementById("viewer-container");
@@ -355,6 +368,7 @@ test.describe("Regression: Batch behavior", () => {
     await page.goto(PAGE_URL, { waitUntil: "networkidle" });
   });
 
+  // Regression: re-dropping files duplicated cards instead of deduplicating.
   test("dropping same files twice deduplicates", async ({ page }) => {
     const fc1 = page.waitForEvent("filechooser");
     await page.locator("#dropzone").click();
@@ -370,6 +384,7 @@ test.describe("Regression: Batch behavior", () => {
     await expect(page.locator(".file-card")).toHaveCount(2);
   });
 
+  // Regression: a new batch cleared old cards instead of appending.
   test("new batch appends without clearing old", async ({ page }) => {
     const fc1 = page.waitForEvent("filechooser");
     await page.locator("#dropzone").click();
@@ -385,6 +400,7 @@ test.describe("Regression: Batch behavior", () => {
     await expect(page.locator(".file-card")).toHaveCount(2);
   });
 
+  // Regression: dropzone disappeared after upload.
   test("dropzone visible after upload", async ({ page }) => {
     const fc = page.waitForEvent("filechooser");
     await page.locator("#dropzone").click();
@@ -394,6 +410,7 @@ test.describe("Regression: Batch behavior", () => {
     await expect(page.locator("#dropzone")).toBeVisible();
   });
 
+  // Guards: viewer/grid toggle round-trip after files load.
   test("viewer toggle button works after files loaded", async ({ page }) => {
     const fc = page.waitForEvent("filechooser");
     await page.locator("#dropzone").click();
@@ -409,6 +426,7 @@ test.describe("Regression: Batch behavior", () => {
     await btn.click();
     await expect(page.locator("#viewer-container")).toBeVisible();
   });
+  // Guards: toggle button label (Grid view <-> Gallery).
   test("toggle button text switches between Grid view and Gallery", async ({ page }) => {
     const fc = page.waitForEvent("filechooser");
     await page.locator("#dropzone").click();
@@ -420,6 +438,7 @@ test.describe("Regression: Batch behavior", () => {
     await expect(page.locator("#viewToggleBtn")).toHaveText("Gallery");
   });
 
+  // Guards: back-to-top link presence and text in viewer mode.
   test("back to top link exists when viewer is open", async ({ page }) => {
     const fc = page.waitForEvent("filechooser");
     await page.locator("#dropzone").click();
@@ -432,6 +451,7 @@ test.describe("Regression: Batch behavior", () => {
     await expect(page.locator("#backToTopLink")).toContainText("↑");
   });
 
+  // Guards: position indicator follows thumb clicks (companion to group-1 click test).
   test("thumbnail click updates viewer position", async ({ page }) => {
     const fc = page.waitForEvent("filechooser");
     await page.locator("#dropzone").click();
@@ -459,6 +479,7 @@ test.describe("Regression: Batch behavior", () => {
     await expect(page.locator("#viewerPos")).toContainText(new RegExp(`${expectedPos} \\/ 8`));
   });
 
+  // Guards: per-card download format select updates the Download All button.
   test("download format dropdown changes button text", async ({ page }) => {
     const fc = page.waitForEvent("filechooser");
     await page.locator("#dropzone").click();
@@ -483,6 +504,7 @@ test.describe("Regression: Batch behavior", () => {
     await expect(page.locator("#downloadAllBtn")).toHaveAttribute("title", /BMP/);
   });
 
+  // Guards: key-hold repeat navigation advances the viewer.
   test("holding ArrowRight advances viewer repeatedly", async ({ page }) => {
     const files = Array.from({ length: 8 }, (_, i) =>
       path.join(FIXTURES, "test" + (i + 1) + ".ithmb"),
@@ -523,6 +545,7 @@ test.describe("Regression: Batch behavior", () => {
     await expect(page.locator("#viewerPos")).toContainText(/\d+ \/ 8/);
   });
 
+  // Guards: per-card format select is visible in grid mode.
   test("grid mode has format select in file cards", async ({ page }) => {
     const fc = page.waitForEvent("filechooser");
     await page.locator("#dropzone").click();
@@ -549,6 +572,7 @@ test.describe("New: Additional functionality", () => {
     await page.goto(PAGE_URL, { waitUntil: "networkidle" });
   });
 
+  // Guards: Download All produces a zip file.
   test("download all creates a zip file", async ({ page }) => {
     const fc = page.waitForEvent("filechooser");
     await page.locator("#dropzone").click();
@@ -571,6 +595,7 @@ test.describe("New: Additional functionality", () => {
     expect(download.suggestedFilename()).toMatch(/\.zip$/i);
   });
 
+  // Guards: single-step determinism 1 -> 2 (companion to the group-3 hold test).
   test("holding ArrowRight advances through multiple images", async ({ page }) => {
     const fc = page.waitForEvent("filechooser");
     await page.locator("#dropzone").click();
@@ -593,6 +618,7 @@ test.describe("New: Additional functionality", () => {
     await expect(page.locator("#viewerPos")).toContainText(/2 \/ 8/);
   });
 
+  // Guards: failed-decode placeholder CSS ships (companion to the failed-decode test).
   test("viewer placeholder CSS exists for failed decodes", async ({ page }) => {
     const hasClass = await page.evaluate(() => {
       const sheets = document.styleSheets;
@@ -609,6 +635,7 @@ test.describe("New: Additional functionality", () => {
     expect(hasClass).toBe(true);
   });
 
+  // Guards: grid/viewer toggle (via button; title mentions G but body uses the button).
   test("keyboard shortcut G toggles grid view", async ({ page }) => {
     const fc = page.waitForEvent("filechooser");
     await page.locator("#dropzone").click();
@@ -629,6 +656,7 @@ test.describe("New: Additional functionality", () => {
     await expect(page.locator("#viewer-container")).toBeVisible();
   });
 
+  // Guards: mobile viewer (arrows hidden, small thumbs at 375px).
   test("mobile viewport hides arrows and adapts filmstrip", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
     await page.goto(PAGE_URL, { waitUntil: "networkidle" });
@@ -655,6 +683,7 @@ test.describe("New: Additional functionality", () => {
     expect(thumbWidth).toBeLessThanOrEqual(60);
   });
 
+  // Guards: toast show/hide lifecycle on invalid drop.
   test("toast message appears and disappears", async ({ page }) => {
     // Toast appears on various actions — test by dropping a non-ithmb file
     const dataTransfer = await page.evaluateHandle(() => {
@@ -672,6 +701,7 @@ test.describe("New: Additional functionality", () => {
     await expect(page.locator(".toast.show")).not.toBeVisible();
   });
 
+  // Guards: footer GitHub/BMC links + Powered-by text.
   test("footer has GitHub and BMC links", async ({ page }) => {
     await page.goto(PAGE_URL, { waitUntil: "load" });
     const footer = page.locator("footer");
@@ -680,6 +710,7 @@ test.describe("New: Additional functionality", () => {
     await expect(footer).toContainText("Powered by");
   });
 
+  // Guards: filmstrip overflow-x scrolls with 12 files.
   test("filmstrip scrolls when many thumbnails exist", async ({ page }) => {
     // Drop 12 files to overflow the filmstrip
     const files = Array.from({ length: 12 }, (_, i) =>
@@ -704,6 +735,7 @@ test.describe("New: Additional functionality", () => {
     expect(["auto", "scroll"]).toContain(overflowX);
   });
 
+  // Guards: G shortcut toggles grid/viewer (companion to the button-toggle test; consolidation candidate).
   test("keyboard shortcut G toggles grid/viewer mode", async ({ page }) => {
     await page.goto(PAGE_URL, { waitUntil: "networkidle" });
     const fc = page.waitForEvent("filechooser");
@@ -727,6 +759,7 @@ test.describe("New: Additional functionality", () => {
     await expect(page.locator("#viewer-container")).toBeVisible();
   });
 
+  // Regression: global format select overrode per-card formats (or vice versa).
   test("global download-format select does not override per-card formats", async ({ page }) => {
     const fc = page.waitForEvent("filechooser");
     await page.locator("#dropzone").click();

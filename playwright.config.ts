@@ -30,7 +30,10 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  ...(process.env.CI ? { workers: 1 } : {}),
+  // CI: 2 workers (item 6). Serial single-worker runs were the dominant CI-wall-time
+  // cost; 2 browser workers fit a 4-core runner with zero coverage change.
+  // Local keeps full parallelism.
+  ...(process.env.CI ? { workers: 2 } : {}),
   reporter: "list",
   use: {
     // Local-first default: tests must hit a real server (the committed

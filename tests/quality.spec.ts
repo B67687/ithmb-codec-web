@@ -16,6 +16,7 @@ const FIXTURES = path.join(__dirname, "fixtures");
 // ─── Mobile Responsive ─────────────────────────────────────────────────────
 
 test.describe("Mobile responsive", () => {
+  // Regression (needs history): horizontal overflow on iPhone-width home page.
   test("home page fits viewport at 375px (iPhone)", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
     await page.goto("/");
@@ -23,6 +24,7 @@ test.describe("Mobile responsive", () => {
     expect(bodyWidth).toBeLessThanOrEqual(380);
   });
 
+  // Regression (needs history): decoder dropzone overflowed 375px viewports.
   test("decoder page layout at 375px (iPhone)", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
     await page.goto("/ithmb-decoder/");
@@ -34,6 +36,7 @@ test.describe("Mobile responsive", () => {
     expect(dzBox!.width).toBeLessThanOrEqual(370);
   });
 
+  // Guards: no horizontal overflow at iPad width.
   test("home page layout at 768px (iPad)", async ({ page }) => {
     await page.setViewportSize({ width: 768, height: 1024 });
     await page.goto("/");
@@ -41,6 +44,7 @@ test.describe("Mobile responsive", () => {
     expect(bodyWidth).toBeLessThanOrEqual(773);
   });
 
+  // Guards: no horizontal overflow on the guide page at 375px.
   test("guide page layout at 375px", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
     await page.goto("/guide/how-to-open-ithmb-files.html");
@@ -52,6 +56,7 @@ test.describe("Mobile responsive", () => {
 // ─── Keyboard Accessibility ─────────────────────────────────────────────────
 
 test.describe("Keyboard navigation", () => {
+  // Guards: keyboard tab order reaches interactive elements.
   test("Tab navigates through interactive elements on home page", async ({ page }) => {
     await page.goto("/");
     const elements = [];
@@ -66,6 +71,7 @@ test.describe("Keyboard navigation", () => {
     expect(elements.length).toBeGreaterThan(3);
   });
 
+  // Guards: Escape closes viewer. Overlaps gallery.spec.ts group 1 (consolidation candidate).
   test("Escape closes viewer", async ({ page }) => {
     await page.goto("/ithmb-decoder/");
     const [fc] = await Promise.all([
@@ -83,6 +89,7 @@ test.describe("Keyboard navigation", () => {
     await expect(viewer).not.toBeVisible();
   });
 
+  // Guards: arrow-key round-trip in viewer. Overlaps gallery.spec.ts (consolidation candidate).
   test("arrow keys navigate between decoded images", async ({ page }) => {
     await page.goto("/ithmb-decoder/");
     const [fc] = await Promise.all([
@@ -113,6 +120,7 @@ test.describe("Keyboard navigation", () => {
 // ─── Error States ───────────────────────────────────────────────────────────
 
 test.describe("Error states", () => {
+  // Guards: invalid-file drop shows the skip toast.
   test("invalid file shows error toast", async ({ page }) => {
     await page.goto("/ithmb-decoder/");
     // Unique name: chromium+firefox run in parallel — a shared name races
@@ -162,6 +170,7 @@ test.describe("Error states", () => {
     fs.rmSync(corruptFile, { force: true });
   });
 
+  // Guards: header-only share payload shape (32-hex header, no full_file).
   test("Share 16 bytes posts header-only payload and disables buttons", async ({ page }) => {
     await page.goto("/ithmb-decoder/");
     const corruptFile = path.join(FIXTURES, "corrupt-header.ithmb");
@@ -212,6 +221,7 @@ test.describe("Error states", () => {
     fs.rmSync(corruptFile, { force: true });
   });
 
+  // Guards: full-file share posts base64 payload that round-trips byte-exact.
   test("Share full file posts full_file base64 payload", async ({ page }) => {
     await page.goto("/ithmb-decoder/");
     const corruptBytes = fs.readFileSync(path.join(FIXTURES, "test1.ithmb")).subarray(0, 100);
@@ -257,6 +267,7 @@ test.describe("Error states", () => {
     fs.rmSync(corruptFile, { force: true });
   });
 
+  // Regression: double-clicking Share sent duplicate POSTs (button now locks).
   test("double-clicking Share 16 bytes sends exactly one POST", async ({ page }) => {
     await page.goto("/ithmb-decoder/");
     const corruptFile = path.join(FIXTURES, "corrupt-dedup.ithmb");
@@ -299,6 +310,7 @@ test.describe("Error states", () => {
     fs.rmSync(corruptFile, { force: true });
   });
 
+  // Guards: header-then-full upgrade path (both payloads, both buttons lock).
   test("sharing 16 bytes then full file sends both payloads", async ({ page }) => {
     await page.goto("/ithmb-decoder/");
     const corruptBytes = fs.readFileSync(path.join(FIXTURES, "test1.ithmb")).subarray(0, 100);
@@ -355,12 +367,14 @@ test.describe("Error states", () => {
     await expect(headerBtn).toHaveAttribute("title", /Full file already shared/);
     fs.rmSync(corruptFile, { force: true });
   });
+  // Guards: dropzone hint text.
   test("dropzone shows hint text", async ({ page }) => {
     await page.goto("/ithmb-decoder/");
     const hint = page.locator("#dropzone .hint");
     await expect(hint).toContainText(/click|browse|drop/i);
   });
 
+  // Regression: fake success shown on server 4xx; now honest toast, button stays retryable.
   test("server rejection shows honest failure toast, button stays active", async ({ page }) => {
     await page.goto("/ithmb-decoder/");
     const corruptFile = path.join(FIXTURES, "corrupt-reject.ithmb");
@@ -407,6 +421,7 @@ test.describe("Error states", () => {
 // ─── Quiet-by-default (no contribution UI) ───────────────────────────────────
 
 test.describe("Quiet-by-default", () => {
+  // Guards: success cards carry no contribute UI, only the report link (quiet-by-default).
   test("success card has no contribute button, shows report link", async ({ page }) => {
     await page.goto("/ithmb-decoder/");
     const [fc] = await Promise.all([
@@ -427,6 +442,7 @@ test.describe("Quiet-by-default", () => {
     await expect(reportLink).toHaveText(/Image looks wrong\?/);
   });
 
+  // Guards: report-modal flow posts one header payload with issue + detail.
   test("report link shares first 16 bytes and marks shared", async ({ page }) => {
     await page.goto("/ithmb-decoder/");
     const [fc] = await Promise.all([
@@ -467,6 +483,7 @@ test.describe("Quiet-by-default", () => {
     await expect(page.locator(".toast")).toContainText(/shared/i);
   });
 
+  // Guards: legacy share UI stays gone (no batch toggle, footer bar, contribute modal).
   test("no legacy batch toggle, footer bar, or contribute modal", async ({ page }) => {
     await page.goto("/ithmb-decoder/");
     await expect(page.locator("#batchShareCheck")).toHaveCount(0);
@@ -482,6 +499,7 @@ test.describe("Quiet-by-default", () => {
 // ─── Viewer contextual share/report (mirrors card actions) ────────────────
 
 test.describe("Viewer contextual share/report", () => {
+  // Guards: viewer stage mirrors the card share box for failed decodes.
   test("viewer stage shows share box for a failed card", async ({ page }) => {
     const corruptFile = path.join(FIXTURES, "corrupt-viewer.ithmb");
     fs.writeFileSync(
@@ -504,6 +522,7 @@ test.describe("Viewer contextual share/report", () => {
     fs.rmSync(corruptFile, { force: true });
   });
 
+  // Guards: viewer report link posts the success-card header payload.
   test("viewer stage report link posts header for a success card", async ({ page }) => {
     await page.goto("/ithmb-decoder/");
     const [fc] = await Promise.all([

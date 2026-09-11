@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- **Bug-link comments**: `tests/gallery.spec.ts` (33) + `tests/quality.spec.ts` (19) carry `// Regression:` / `// Bug-link: needs history` / `// Guards:` provenance comments per the TEST_STRATEGY.md bug-link rule.
+
 ## [1.4.18] - 2026-09-10
 
 Decoder WASM rebuilt from ithmb-core 1.9.10 (public tag v1.9.10, tree-verified identical to dev).

@@ -16,22 +16,22 @@ nav, long-flow state). That redundancy is load-bearing — see the bug-link rule
 | `gallery` (35)             | Viewer journeys (nav, filmstrip, keys, grid)        | high          | Largest file; owns viewer journeys                    |
 | `quality` (20)             | Responsive layouts + keyboard nav                   | high          | Mates to `:lang(zh)` margin, contrast bugs            |
 | `stress` (11)              | End-to-end long flows                               | highest       | Re-walks gallery ground; slow by design               |
-| `a11y` (2)                 | axe scans (static + post-upload)                    | high each     | Compliance; inherently slow                           |
+| `a11y` (10)                | axe scans (static + post-upload)                    | cheap         | Grew past 2; still fast locally (2s)                  |
 | `perf-budget` (2)          | Byte budgets incl. WASM                             | high each     | Regression, not absolute lab speed                    |
 | `visual` (8)               | Snapshot comparisons                                | moderate      | Direct weapon vs visual regressions; grow, don't trim |
-| `seo-metadata` (11)        | Meta tags, lang redirects                           | cheap-ish     | SEO contract                                          |
+| `seo-metadata` (20)        | Meta tags, lang redirects                           | cheap         | Grew past 11; still fast locally (2s)                 |
 | `dark-mode` (3)            | Theme contract                                      | cheap         |                                                       |
 | `unit/port-regression` (6) | Port-resolution pure logic                          | ~0 (bun test) | Moved 2026-09-07; imports config only, no browser     |
 | `unit/` (75)               | Pure logic (naming, pipeline, store, worker, ports) | ~0 (bun test) | Cheapest signal per assertion                         |
 
 ## Tiers (frozen)
 
-| Tier | Command                | Scope             | Budget                                     | When                       | Rule                                                    |
-| ---- | ---------------------- | ----------------- | ------------------------------------------ | -------------------------- | ------------------------------------------------------- |
-| 0    | `bun test tests/unit/` | unit only (75)    | seconds                                    | every change               | No browser-less test may live in the Playwright runner  |
-| 1    | `bun run test:quick`   | 7 files, chromium | <30s (measured 18s, 117 tests, 2026-09-07) | every change               | Exceeds budget → trim execution, never coverage         |
-| 2    | full suite, chromium   | all 13 files      | <2min                                      | every push, non-negotiable | The insurance premium for the visual-regression history |
-| 3    | full suite, 3 browsers | CI matrix only    | CI wall time                               | CI                         | Local never pays for firefox/webkit                     |
+| Tier | Command                | Scope             | Budget                                            | When                       | Rule                                                    |
+| ---- | ---------------------- | ----------------- | ------------------------------------------------- | -------------------------- | ------------------------------------------------------- |
+| 0    | `bun test tests/unit/` | unit only (75)    | seconds                                           | every change               | No browser-less test may live in the Playwright runner  |
+| 1    | `bun run test:quick`   | 7 files, chromium | <30s (measured 18s single-run, 116+1, 2026-09-07) | every change               | Exceeds budget → trim execution, never coverage         |
+| 2    | full suite, chromium   | all 13 files      | <2min                                             | every push, non-negotiable | The insurance premium for the visual-regression history |
+| 3    | full suite, 3 browsers | CI matrix only    | CI wall time                                      | CI                         | Local never pays for firefox/webkit                     |
 
 ## Rules (frozen)
 
@@ -50,9 +50,9 @@ nav, long-flow state). That redundancy is load-bearing — see the bug-link rule
 ## No-coverage-loss backlog
 
 - [x] port-regression → unit runner (2026-09-07, pure move, zero coverage change)
-- [ ] Worker/parallelism tuning (measure first; `fullyParallel` already on)
+- [x] CI workers 1 → 2 (2026-09-10; dominant wall-time cost, zero coverage change)
 - [ ] Shared authenticated/loaded-state setup to cut repeated `goto` per file
-- [ ] Per-file chromium timings published here to justify consolidation order
+- [x] Per-file chromium timings published in Baselines (2026-09-10; gallery+quality = 2/3 of Tier 1)
 - [ ] stress stays Tier 2/CI; never Tier 1 (slow by design, value is the long flow)
 
 ## Baselines (2026-09-07, local)
@@ -60,3 +60,6 @@ nav, long-flow state). That redundancy is load-bearing — see the bug-link rule
 - Tier 1: 116 passed + 1 skipped, 18s (chromium, 7 files)
 - Tier 0: 75 passed, <1s (bun test, 7 files incl. port-regression)
 - Tier 2/3 full: ~132 tests × browsers ≈ 400 executions, ~4min (the premium)
+- Tier 1 per-file (chromium, separate runs, 2026-09-10): pages 2s (8), ithmb-decoder 3s (17),
+  gallery 17s (35), upload 3s (6), quality 8s (20), a11y 2s (10), seo-metadata 3s (20).
+- CI matrix before workers:2 ≈ 4min serial per browser job (config `workers: 1` was the cost).

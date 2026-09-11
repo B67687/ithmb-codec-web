@@ -60,7 +60,7 @@ Ithmb-Codec-Web/
 │   └── real-user-journey.mts # Manual smoke script
 ├── tests/                   # Playwright specs (see test scripts in package.json)
 ├── docs/                    # FEATURES.md, TEST_STRATEGY.md, logo.svg, adr/, badges/, screenshots/
-├── .github/workflows/       # ci.yml (lint+test+secrets), pages-deploy.yml (GitHub Pages)
+├── .github/workflows/       # ci.yml (lint+test+secrets). No deploy workflow — site serves via Cloudflare Pages (dashboard-wired)
 ├── .husky/pre-commit        # gitleaks + i18n gate + wasm-drift + 3 smoke specs
 ├── tsconfig.json            # Browser sources (strict, noEmit)
 ├── tsconfig.node.json       # tests/, scripts/, playwright.config.ts, test-worker.ts
@@ -145,7 +145,7 @@ cp pkg/ithmb_wasm_bg.wasm ../../Ithmb-Codec-Web/ithmb-decoder/ithmb_wasm_bg.wasm
 
 ## Deploy
 
-- **Site (ithmb-codec.dev):** GitHub Pages via `.github/workflows/pages-deploy.yml` (actions/deploy-pages). Runs on push to `main` in each repo. The `-Dev` repo deploys to its default `github.io` preview (the workflow strips `CNAME`); the public repo claims the custom domain. `_headers`/`_redirects`/`robots.txt`/`sitemap.xml`/`CNAME` are Cloudflare Pages artifacts retained at the root.
+- **Site (ithmb-codec.dev):** served by Cloudflare Pages directly from the repo. There is NO GitHub deploy workflow in this repo (no pages-deploy.yml — verified 2026-09-10). Root `_headers`/`_redirects`/`robots.txt`/`sitemap.xml`/`CNAME` are Cloudflare Pages artifacts. The Pages↔repo wiring (branch, previews, custom domain) lives in the Cloudflare dashboard — confirm there, not here.
 - **Telemetry worker:** `workers/telemetry/`; see `workers/telemetry/README.md` for `wrangler deploy`, secrets (`ADMIN_TOKEN`, `IP_HMAC_SECRET` set in the CF dashboard, never committed), and the KV/rate-limit/record schema. Local testing: `npm run test:worker` (miniflare integration test, in-memory KV, the canonical path); `wrangler dev` for manual probing.
 
 ## Security Posture
