@@ -1,4 +1,4 @@
-# The Ithmb-Codec-Web Whole-Project State Machine
+# The ithmb-codec-web Whole-Project State Machine
 
 > This is the project's health contract. Every transition is logged in `docs/shift-log.md` and recorded in the commit history. SPECIFICATION section 2 mandates this model.
 
@@ -55,7 +55,7 @@ any state -> SHIPPED without passing the full verification gates
 1. The privacy-first, quiet-by-default telemetry contract.
 2. The append-only public release surface (never rewrite published history).
 3. The hand-adapted `ithmb_wasm.js` loader (never replaced without a Y-Statement).
-4. `origin` points at `Ithmb-Codec-Web-Dev.git` (private); public is never a work surface.
+4. `origin` points at `ithmb-codec-web-dev.git` (private); public is never a work surface.
 5. `.omo/` is never committed except the tracked shift-log.
 
 ## Blast Radius Map (coupled components that co-change)

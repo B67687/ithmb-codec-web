@@ -4,7 +4,7 @@
 
 # ITHMB Codec Web
 
-[![CI](https://github.com/B67687/Ithmb-Codec-Web-Dev/actions/workflows/ci.yml/badge.svg)](https://github.com/B67687/Ithmb-Codec-Web-Dev/actions/workflows/ci.yml)
+[![CI](https://github.com/B67687/ithmb-codec-web-dev/actions/workflows/ci.yml/badge.svg)](https://github.com/B67687/ithmb-codec-web-dev/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Built with WebAssembly](https://img.shields.io/badge/Built%20with-WebAssembly-654FF0?logo=webassembly&logoColor=white)](https://webassembly.org/)
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/thumbnami)
@@ -20,14 +20,14 @@ Free, private, browser-based .ithmb file decoder.
 
 <sub>Built with AI assistance — see <a href="./docs/CREDITS.md">CREDITS.md</a></sub>
 <br>
-<a href="./docs/CREDITS.md"><img src="https://cdn.jsdelivr.net/gh/B67687/Ithmb-Codec-Web@main/docs/badges/deepseek.svg?v=2" alt="DeepSeek"></a>
-<a href="./docs/CREDITS.md"><img src="https://cdn.jsdelivr.net/gh/B67687/Ithmb-Codec-Web@main/docs/badges/opencode.svg" alt="OpenCode"></a>
-<a href="./docs/CREDITS.md"><img src="https://cdn.jsdelivr.net/gh/B67687/Ithmb-Codec-Web@main/docs/badges/omo.svg" alt="Oh My OpenAgent"></a>
+<a href="./docs/CREDITS.md"><img src="https://cdn.jsdelivr.net/gh/B67687/ithmb-codec-web@main/docs/badges/deepseek.svg?v=2" alt="DeepSeek"></a>
+<a href="./docs/CREDITS.md"><img src="https://cdn.jsdelivr.net/gh/B67687/ithmb-codec-web@main/docs/badges/opencode.svg" alt="OpenCode"></a>
+<a href="./docs/CREDITS.md"><img src="https://cdn.jsdelivr.net/gh/B67687/ithmb-codec-web@main/docs/badges/omo.svg" alt="Oh My OpenAgent"></a>
 
 <br>
 </div>
 
-ITHMB files are Apple iThumbnail images found in iPod Classic, iPod Nano, and other legacy Apple devices — thumbnail-sized album art, photos, and menu graphics that the iPod's UI reads directly from its disk. The format is undocumented and varies across devices and firmware versions. This project decodes them in your browser via WebAssembly, powered by [ithmb-core](https://crates.io/crates/ithmb-core) from the parent repo [Ithmb-Codec](https://github.com/B67687/Ithmb-Codec).
+ITHMB files are Apple iThumbnail images found in iPod Classic, iPod Nano, and other legacy Apple devices — thumbnail-sized album art, photos, and menu graphics that the iPod's UI reads directly from its disk. The format is undocumented and varies across devices and firmware versions. This project decodes them in your browser via WebAssembly, powered by [ithmb-core](https://crates.io/crates/ithmb-core) from the parent repo [ithmb-codec](https://github.com/B67687/ithmb-codec).
 
 ## Features
 
@@ -133,7 +133,7 @@ images or grab them all as a ZIP archive.
 
 ## Support
 
-Found an .ithmb file that doesn't decode? [Open an issue on the codec repo](https://github.com/B67687/Ithmb-Codec/issues).
+Found an .ithmb file that doesn't decode? [Open an issue on the codec repo](https://github.com/B67687/ithmb-codec/issues).
 
 Enjoying the tool? [Buy me a coffee](https://buymeacoffee.com/thumbnami).
 
