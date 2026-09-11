@@ -11,6 +11,7 @@ import { build } from "esbuild";
 //   - `?token=` no longer authenticates; Bearer does
 //   - no raw IP appears in KV key names (per-IP keys are hashed)
 //   - GET / JSON is token-gated; prefix counts derive from key names (zero value fetches)
+//   - contribution mail fires only for unknown-nonzero/full-file; silent otherwise, failures never break ingest
 //
 // The worker source is TypeScript, and miniflare's scriptPath loader passes
 // the file to workerd verbatim (it cannot parse TS), so the worker is
@@ -38,6 +39,13 @@ async function main(): Promise<void> {
 
   const first = outputFiles[0];
   if (!first) throw new Error("esbuild produced no output");
+  const sentMail: Array<{
+    from: string;
+    to: string;
+    subject: string;
+    text: string;
+  }> = [];
+  let mailShouldThrow = false;
   const mf = new Miniflare({
     modules: true,
     script: first.text,
@@ -46,7 +54,13 @@ async function main(): Promise<void> {
     // REVIEW 4.3: intentional non-secret test fixture (miniflare in-memory binding only;
     // never used in production — the real ADMIN_TOKEN lives in the Cloudflare dashboard,
     // SOPS/age-encrypted locally per spec D3).
-    bindings: { ADMIN_TOKEN: "smoke-test-token-0001" },
+    // NOTE: no NOTIFY binding here — miniflare rejects function values in
+    // `bindings`, so the mail stub cannot ride the Miniflare constructor.
+    // notify.ts is exercised directly with a stub env in §9 below; the
+    // worker's no-binding guard is covered by a miniflare POST there.
+    bindings: {
+      ADMIN_TOKEN: "smoke-test-token-0001",
+    },
   });
 
   let pass = 0;
@@ -140,6 +154,93 @@ async function main(): Promise<void> {
   }
   const rateKeys = (await ns.list({ prefix: "rate:" })).keys.length;
   check("rate markers per request (5 POSTs, 5 markers)", rateKeys >= 5, "markers=" + rateKeys);
+
+  // 9. Contribution notification mail. Miniflare bindings reject function
+  //    values, so the stub cannot ride the Miniflare constructor — notify.ts
+  //    is exercised directly with a stub env, and the worker's no-binding
+  //    guard (silent skip, ingest unaffected) is covered by a miniflare
+  //    POST at the end.
+  const { sendContributionNotification, shouldNotify } = await import("./src/notify");
+  type Mail = { from: string; to: string; subject: string; text: string };
+  const fakeEnv = {
+    NOTIFY: {
+      send: async (m: Mail) => {
+        if (mailShouldThrow) throw new Error("stub mail failure");
+        sentMail.push(m);
+      },
+    },
+    NOTIFY_EMAIL: "notify-test@example.com",
+  };
+  const mails = () => sentMail.length;
+  // rule matrix
+  check("notify: unknown nonzero fires", shouldNotify(4099, "unknown", false) === true);
+  check("notify: success silent", shouldNotify(4098, "success", false) === false);
+  check("notify: prefix-0 junk silent", shouldNotify(0, "unknown", false) === false);
+  check("notify: known-failed silent", shouldNotify(4099, "known-failed", false) === false);
+  check(
+    "notify: full file always fires",
+    shouldNotify(4098, "success", true) === true && shouldNotify(0, "unknown", true) === true,
+  );
+  // send path (stub env)
+  let base = mails();
+  await sendContributionNotification(fakeEnv, {
+    key: "fmt_4099_x",
+    prefix: 4099,
+    status: "unknown",
+    hasFullFile: false,
+    header: "ab",
+  });
+  check("notify: send fires", mails() === base + 1);
+  const lastMail = sentMail[sentMail.length - 1];
+  check(
+    "notify: recipient + sender",
+    lastMail !== undefined &&
+      lastMail.to === "notify-test@example.com" &&
+      lastMail.from === "notify@ithmb-codec.dev",
+  );
+  base = mails();
+  await sendContributionNotification(fakeEnv, {
+    key: "fmt_4098_x",
+    prefix: 4098,
+    status: "success",
+    hasFullFile: false,
+    header: "ab",
+  });
+  check("notify: send silent on success", mails() === base);
+  base = mails();
+  await sendContributionNotification(
+    {},
+    {
+      key: "fmt_4099_x",
+      prefix: 4099,
+      status: "unknown",
+      hasFullFile: false,
+      header: "ab",
+    },
+  );
+  check("notify: silent without binding", mails() === base);
+  mailShouldThrow = true;
+  base = mails();
+  await sendContributionNotification(fakeEnv, {
+    key: "fmt_4096_x",
+    prefix: 4096,
+    status: "unknown",
+    hasFullFile: false,
+    header: "ab",
+  });
+  mailShouldThrow = false;
+  check("notify: mail failure never throws", mails() === base);
+  // worker guard via miniflare (no NOTIFY binding configured): qualifying POST still ok
+  r = await post({
+    prefix: 4099,
+    status: "unknown",
+    header: "4d4d0042000000000000000000000000",
+    fileSize: 100,
+  });
+  check(
+    "notify: worker without binding still ok:true",
+    (await json<{ ok: boolean }>(r)).ok === true,
+  );
 
   console.log(`\n=== worker test: ${pass} passed, ${fail} failed ===`);
   process.exit(fail ? 1 : 0);

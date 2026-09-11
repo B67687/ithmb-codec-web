@@ -124,7 +124,7 @@ async function handleDashboardGet(
 }
 
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     // CORS: echo the request origin back when it matches the allowlist
     // (production domain + any localhost/127.0.0.1 dev origin, any port).
     // Non-allowed origins get the production domain, so browsers block them
@@ -154,7 +154,7 @@ export default {
       });
     }
     try {
-      return await handlePostIngestion(env, request, corsHeaders);
+      return await handlePostIngestion(env, request, corsHeaders, ctx);
     } catch {
       return new Response(JSON.stringify({ error: "internal error" }), {
         status: 500,

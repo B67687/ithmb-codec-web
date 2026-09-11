@@ -100,3 +100,28 @@ curl -H "Authorization: Bearer $ADMIN_TOKEN" \
 - **Scan is bounded** (5000 records) and reads slim records only — full-file payloads are never fetched during a render
 - Shows: total submissions, unique prefixes, unknown vs known-failed counts, full-file count, prefix distribution, recent 50 records
 - `GET /` is also **token-gated** (same `Authorization: Bearer <ADMIN_TOKEN>`) — the JSON prefix-counts endpoint was previously public but nothing in the app reads it (the only telemetry call is the POST submit), so the entire read surface is now private. Returns 401 without a valid token.
+
+## Contribution notifications (email)
+
+The worker sends the admin an email when a submission is worth a human
+look — an unrecognized **nonzero** prefix (a potentially new format), or any
+submission with a **full file** attached. Everything else stays silent
+(success reports, prefix-0 junk, known failures without files).
+
+Setup (all in the Cloudflare dashboard + config; no address ever lands in git):
+
+1. **Verify the destination address**: Email Service → Settings — sends to
+   verified destination addresses are free on any plan (no Workers Paid, no
+   domain onboarding needed for this path).
+2. **`wrangler.toml`** holds an unrestricted `[[send_email]]` binding named
+   `NOTIFY` — unrestricted on purpose: the recipient lives in the secret,
+   and the platform only delivers to verified destinations anyway.
+3. **Set the `NOTIFY_EMAIL` secret** (Workers → ithmb-telemetry → Settings
+   → Variables): the inbox that receives the alerts. Sender is fixed to
+   `notify@ithmb-codec.dev` in code.
+4. Deploy. The mail hook runs via `ctx.waitUntil` **after** the record is
+   stored (dedup/429 paths never notify), and send failures are caught —
+   ingest can never break because of mail.
+
+Covered by `test-worker.ts` §9 (stubbed binding): fires on unknown+file
+cases, silent on success/junk/dedup, `ok:true` even when sending throws.

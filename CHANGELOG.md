@@ -4,6 +4,7 @@
 
 ### Added
 
+- **Telemetry email notifications**: Cloudflare send-email binding notifies the maintainer on real contributions only (unknown prefix ≠ 0, or full-file attached); prefix-0 junk stays silent. Filter + mail helper in `workers/telemetry/src/notify.ts`, hook fires post-store via `ctx.waitUntil` (never blocks ingest).
 - **Bug-link comments**: `tests/gallery.spec.ts` (33) + `tests/quality.spec.ts` (19) carry `// Regression:` / `// Bug-link: needs history` / `// Guards:` provenance comments per the TEST_STRATEGY.md bug-link rule.
 
 ## [1.4.18] - 2026-09-10

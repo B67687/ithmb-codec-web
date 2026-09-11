@@ -5,10 +5,17 @@
 // Worker bindings. `FORMAT_TELEMETRY` is the KV namespace; `ADMIN_TOKEN`
 // gates the dashboard; `IP_HMAC_SECRET` (optional) keys the IP pseudonym —
 // without it the code falls back to ADMIN_TOKEN as the HMAC key.
+// `NOTIFY` (optional) is the Email Service send_email binding for
+// contribution alerts; `NOTIFY_EMAIL` (optional secret) is its recipient.
+// The binding is deliberately unrestricted: the address lives in the
+// secret, never in the repo, and the platform only delivers to verified
+// destinations. Both absent locally/in tests — the mail path then skips.
 export interface Env {
   FORMAT_TELEMETRY: KVNamespace;
   ADMIN_TOKEN: string;
   IP_HMAC_SECRET?: string;
+  NOTIFY?: import("./notify").NotifyBinding;
+  NOTIFY_EMAIL?: string;
 }
 
 // Shape of a stored record (all fields optional: legacy records predate

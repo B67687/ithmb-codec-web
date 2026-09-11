@@ -10,6 +10,7 @@ import {
   RATE_LIMIT_PER_IP_PER_DAY,
 } from "./types";
 import { type ValidatedEntry, validateEntry } from "./validation";
+import { sendContributionNotification } from "./notify";
 
 // ---- Persist: dedup check + record count cap + KV store ----
 export async function persistRecord(
@@ -18,6 +19,7 @@ export async function persistRecord(
   fp: string,
   ipHash: string,
   corsHeaders: Record<string, string>,
+  ctx: ExecutionContext,
 ): Promise<Response> {
   // ---- Deduplication ----
   // Key includes whether a full file was attached so a header share can
@@ -99,6 +101,21 @@ export async function persistRecord(
   // ---- Set dedup marker (24h TTL) ----
   await env.FORMAT_TELEMETRY.put(dedupKey, "1", { expirationTtl: 86400 });
 
+  // ---- Contribution notification (admin alert; never affects ingest) ----
+  // Fires only for worth-a-look submissions (unknown nonzero prefix, or
+  // any full-file upload); silent otherwise, and send failures are caught
+  // inside. waitUntil so the POST response is never delayed by mail.
+  ctx.waitUntil(
+    sendContributionNotification(env, {
+      key,
+      prefix: data.prefix,
+      status: data.status,
+      hasFullFile: data.fullFile !== null,
+      header: data.header,
+      extension: data.extension ?? undefined,
+    }),
+  );
+
   return new Response(JSON.stringify({ ok: true }), {
     status: 200,
     headers: { "Content-Type": "application/json", ...corsHeaders },
@@ -110,6 +127,7 @@ export async function handlePostIngestion(
   env: Env,
   request: Request,
   corsHeaders: Record<string, string>,
+  ctx: ExecutionContext,
 ): Promise<Response> {
   const contentType = request.headers.get("Content-Type") || "";
   if (!contentType.startsWith("application/json")) {
@@ -188,5 +206,5 @@ export async function handlePostIngestion(
   }
 
   const validated = validateEntry(body);
-  return persistRecord(env, validated, fp, ipHash, corsHeaders);
+  return persistRecord(env, validated, fp, ipHash, corsHeaders, ctx);
 }

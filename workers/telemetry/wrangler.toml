@@ -7,3 +7,9 @@ compatibility_date = "2026-07-13"
 binding = "FORMAT_TELEMETRY"
 id = "2c00d892cdc74a6c8a2b1054ae5bd374"
 preview_id = "2c00d892cdc74a6c8a2b1054ae5bd374"
+
+[[send_email]]
+name = "NOTIFY"
+# Unrestricted on purpose: the recipient lives in the NOTIFY_EMAIL secret
+# (Cloudflare dashboard), never in this repo. The platform only delivers
+# to verified destination addresses, and changing either requires a deploy.
