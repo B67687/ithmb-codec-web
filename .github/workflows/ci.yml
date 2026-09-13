@@ -49,10 +49,30 @@ jobs:
       - name: unit tests (bun test)
         run: bun run test:unit
 
+  guard:
+    # Trailer gate: [skip browsers] counts only on its OWN line (footer).
+    # contains() matched message bodies that merely named the trailer (bit twice).
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    outputs:
+      skip: ${{ steps.check.outputs.skip }}
+    steps:
+      - id: check
+        env:
+          MSG: ${{ github.event.head_commit.message }}
+        run: |
+          if printf '%s' "$MSG" | grep -qxF '[skip browsers]'; then
+          echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
   test:
-    # Heavy matrix opt-out: include [skip browsers] in the push commit message
-    # to run lint only (local gates must already cover the change).
-    if: "!contains(github.event.head_commit.message, '[skip browsers]')"
+    # Heavy matrix opt-out: put [skip browsers] on its OWN line in the push
+    # commit message to run lint only (local gates must already cover the change).
+    # Inline mentions no longer count (whole-line match only).
+    needs: [guard]
+    if: needs.guard.outputs.skip != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     strategy:

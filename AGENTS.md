@@ -171,7 +171,7 @@ cp pkg/ithmb_wasm_bg.wasm ../../ithmb-codec-web/ithmb-decoder/ithmb_wasm_bg.wasm
 4. Squash thematically onto `squash-work`, verify trees identical, push `public squash-work:main`.
 5. GitHub Pages auto-deploys; verify the live site (og tags, decoder load, no console errors).
 
-- **CI cost control:** `[skip browsers]` in the push message runs lint only (local gates must already cover the change); doc-only pushes skip CI entirely via paths-ignore. Rapid pushes auto-cancel superseded runs (concurrency group).
+- **CI cost control:** `[skip browsers]` on its OWN line in the push message runs lint only (local gates must already cover the change); inline mentions do not count (whole-line match — the old contains() fired on bodies that merely named it). Doc-only pushes skip CI entirely via paths-ignore. Rapid pushes auto-cancel superseded runs (concurrency group).
 
 ## Do Not Touch / Generated Paths
 

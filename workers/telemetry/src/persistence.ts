@@ -1,6 +1,7 @@
 // Cloudflare Worker — KV persistence + POST ingestion handler
 
 import { countKeys, fingerprint, ipFingerprint } from "./crypto";
+import { sendContributionNotification } from "./notify";
 import type { Env, TelemetryBody } from "./types";
 import {
   MAX_BODY_BYTES,
@@ -10,7 +11,6 @@ import {
   RATE_LIMIT_PER_IP_PER_DAY,
 } from "./types";
 import { type ValidatedEntry, validateEntry } from "./validation";
-import { sendContributionNotification } from "./notify";
 
 // ---- Persist: dedup check + record count cap + KV store ----
 export async function persistRecord(
