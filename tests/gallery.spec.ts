@@ -11,7 +11,8 @@ const FIXTURES = path.resolve(__dirname, "fixtures");
 
 test.describe("Viewer Mode (6+ files)", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto(PAGE_URL, { waitUntil: "networkidle" });
+    await page.goto(PAGE_URL, { waitUntil: "domcontentloaded" });
+    await page.waitForSelector("#dropzone");
   });
 
   // Guards: viewer opens for 6+ file batches (core viewer contract).
@@ -198,7 +199,8 @@ test.describe("Viewer Mode (6+ files)", () => {
 
 test.describe("Regression: Viewer pixel content", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto(PAGE_URL, { waitUntil: "networkidle" });
+    await page.goto(PAGE_URL, { waitUntil: "domcontentloaded" });
+    await page.waitForSelector("#dropzone");
     const fc = page.waitForEvent("filechooser");
     await page.locator("#dropzone").click();
     const fileChooser = await fc;
@@ -365,7 +367,8 @@ test.describe("Regression: Viewer pixel content", () => {
 });
 test.describe("Regression: Batch behavior", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto(PAGE_URL, { waitUntil: "networkidle" });
+    await page.goto(PAGE_URL, { waitUntil: "domcontentloaded" });
+    await page.waitForSelector("#dropzone");
   });
 
   // Regression: re-dropping files duplicated cards instead of deduplicating.
@@ -569,7 +572,8 @@ test.describe("Regression: Batch behavior", () => {
 
 test.describe("New: Additional functionality", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto(PAGE_URL, { waitUntil: "networkidle" });
+    await page.goto(PAGE_URL, { waitUntil: "domcontentloaded" });
+    await page.waitForSelector("#dropzone");
   });
 
   // Guards: Download All produces a zip file.
@@ -659,7 +663,8 @@ test.describe("New: Additional functionality", () => {
   // Guards: mobile viewer (arrows hidden, small thumbs at 375px).
   test("mobile viewport hides arrows and adapts filmstrip", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
-    await page.goto(PAGE_URL, { waitUntil: "networkidle" });
+    await page.goto(PAGE_URL, { waitUntil: "domcontentloaded" });
+    await page.waitForSelector("#dropzone");
 
     const fc = page.waitForEvent("filechooser");
     await page.locator("#dropzone").click();
@@ -737,7 +742,8 @@ test.describe("New: Additional functionality", () => {
 
   // Guards: G shortcut toggles grid/viewer (companion to the button-toggle test; consolidation candidate).
   test("keyboard shortcut G toggles grid/viewer mode", async ({ page }) => {
-    await page.goto(PAGE_URL, { waitUntil: "networkidle" });
+    await page.goto(PAGE_URL, { waitUntil: "domcontentloaded" });
+    await page.waitForSelector("#dropzone");
     const fc = page.waitForEvent("filechooser");
     await page.locator("#dropzone").click();
     const fileChooser = await fc;
@@ -748,15 +754,17 @@ test.describe("New: Additional functionality", () => {
       expect(statuses.every((s) => !s.includes("Decoding..."))).toBe(true);
     }).toPass({ timeout: 60000 });
 
-    // Press G to toggle to grid mode
+    // Press G to toggle to grid mode (toPass: fixed 300ms sleep flaked under parallel load)
     await page.keyboard.press("g");
-    await page.waitForTimeout(300);
-    await expect(page.locator("#viewer-container")).not.toBeVisible();
+    await expect(async () => {
+      await expect(page.locator("#viewer-container")).not.toBeVisible();
+    }).toPass({ timeout: 10000 });
 
     // Press G again to toggle back
     await page.keyboard.press("g");
-    await page.waitForTimeout(300);
-    await expect(page.locator("#viewer-container")).toBeVisible();
+    await expect(async () => {
+      await expect(page.locator("#viewer-container")).toBeVisible();
+    }).toPass({ timeout: 10000 });
   });
 
   // Regression: global format select overrode per-card formats (or vice versa).

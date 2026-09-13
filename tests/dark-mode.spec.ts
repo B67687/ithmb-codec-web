@@ -102,17 +102,21 @@ async function auditDark(page: Page): Promise<string[]> {
 }
 
 for (const { name, url } of PAGES) {
+  // Guards: per-page dark-mode contrast (generated per page).
   test(`dark mode: ${name} has no light-background or low-contrast elements`, async ({ page }) => {
     await page.emulateMedia({ colorScheme: "dark" });
-    await page.goto(url, { waitUntil: "networkidle" });
+    await page.goto(url, { waitUntil: "domcontentloaded" });
+    await page.waitForSelector("body");
     const issues = await auditDark(page);
     expect(issues, issues.slice(0, 6).join("\n")).toEqual([]);
   });
 }
 
+// Guards: success + failure cards clean in dark mode.
 test("dark mode: decoder with success + failure cards is clean", async ({ page }) => {
   await page.emulateMedia({ colorScheme: "dark" });
-  await page.goto("/ithmb-decoder/", { waitUntil: "networkidle" });
+  await page.goto("/ithmb-decoder/", { waitUntil: "domcontentloaded" });
+  await page.waitForSelector("body");
 
   const [chooser1] = await Promise.all([
     page.waitForEvent("filechooser", { timeout: 15000 }),
@@ -149,9 +153,11 @@ test("dark mode: decoder with success + failure cards is clean", async ({ page }
   expect(issues, issues.slice(0, 6).join("\n")).toEqual([]);
 });
 
+// Guards: manual toggle flips and persists theme.
 test("dark mode: manual toggle flips theme and persists", async ({ page }) => {
   await page.emulateMedia({ colorScheme: "light" });
-  await page.goto("/", { waitUntil: "networkidle" });
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await page.waitForSelector("body");
   expect(await page.evaluate(() => document.documentElement.dataset.theme)).toBe("light");
 
   await page.locator("#themeToggle").click();
@@ -162,7 +168,8 @@ test("dark mode: manual toggle flips theme and persists", async ({ page }) => {
   expect(issues, issues.slice(0, 6).join("\n")).toEqual([]);
 
   // persists across reload
-  await page.reload({ waitUntil: "networkidle" });
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await page.waitForSelector("body");
   expect(await page.evaluate(() => document.documentElement.dataset.theme)).toBe("dark");
 
   // and back to light

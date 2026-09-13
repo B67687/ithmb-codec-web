@@ -18,6 +18,7 @@ test.describe("decode failure paths", () => {
     await page.waitForSelector("#dropzone");
   });
 
+  // Regression: missing decoder.decodeFailed key rendered literally (W3-cover).
   test("truncated file shows failure card with human text", async ({ page }) => {
     await upload(page, "truncated.ithmb");
     const card = page.locator(".file-card").first();
@@ -27,6 +28,7 @@ test.describe("decode failure paths", () => {
     await expect(card.getByText("decoder.decodeFailed")).toHaveCount(0);
   });
 
+  // Regression: missing decoder.unknownFormat key rendered literally (W3-cover).
   test("garbage file shows unknown-format card with human text", async ({ page }) => {
     await upload(page, "garbage.ithmb");
     const card = page.locator(".file-card").first();
@@ -36,6 +38,7 @@ test.describe("decode failure paths", () => {
     await expect(card.getByText("decoder.unknownFormat")).toHaveCount(0);
   });
 
+  // Guards: empty input errors, never hangs.
   test("empty file shows error card, not a hang", async ({ page }) => {
     await upload(page, "empty.ithmb");
     const card = page.locator(".file-card").first();

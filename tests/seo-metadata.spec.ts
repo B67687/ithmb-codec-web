@@ -65,8 +65,10 @@ const ZH_PAGES = [
 for (const [name, path] of PAGES) {
   if (path === undefined) throw new Error("bad page tuple");
   test.describe(`${name} SEO metadata`, () => {
+    // Guards: meta description present (generated per page).
     test("has a meta description", async ({ page }) => {
       await page.goto(path, { waitUntil: "domcontentloaded" });
+      await page.waitForSelector("nav");
       const content = await page.locator('meta[name="description"]').getAttribute("content");
       if (!content) throw new Error("missing meta description");
       expect(content.length).toBeGreaterThan(30);
@@ -77,36 +79,44 @@ for (const [name, path] of PAGES) {
 test.describe("language preference redirect", () => {
   const baseURL = process.env.BASE_URL || "https://ithmb-codec.dev";
 
+  // Guards: stored zh preference redirects EN to /zh/.
   test("stored zh preference redirects an EN page to its /zh/ counterpart", async ({ page }) => {
     await page.addInitScript(() => localStorage.setItem("ithmbLang", "zh"));
     await page.goto("/", { waitUntil: "domcontentloaded" });
+    await page.waitForSelector("nav");
     await page.waitForFunction(() => location.pathname === "/zh/");
     await expect(page.locator("html")).toHaveAttribute("lang", /^zh/i);
     const desc = await page.locator('meta[name="description"]').getAttribute("content");
     expect(/[\u4e00-\u9fff]/.test(desc!)).toBe(true);
   });
 
+  // Guards: stored zh preference redirects guide .html to zh guide.
   test("stored zh preference redirects the guide .html URL to the zh guide", async ({ page }) => {
     await page.addInitScript(() => localStorage.setItem("ithmbLang", "zh"));
     await page.goto("/guide/how-to-open-ithmb-files.html", {
       waitUntil: "domcontentloaded",
     });
+    await page.waitForSelector("nav");
     await page.waitForFunction(() => location.pathname === "/zh/guide/how-to-open-ithmb-files");
     await expect(page.locator("html")).toHaveAttribute("lang", /^zh/i);
   });
 
+  // Guards: stored en preference redirects /zh/ to EN.
   test("stored en preference redirects a /zh/ page to its EN counterpart", async ({ page }) => {
     await page.addInitScript(() => localStorage.setItem("ithmbLang", "en"));
     await page.goto("/zh/", { waitUntil: "domcontentloaded" });
+    await page.waitForSelector("nav");
     await page.waitForFunction(() => location.pathname === "/");
     await expect(page.locator("html")).toHaveAttribute("lang", /^en/i);
     const desc = await page.locator('meta[name="description"]').getAttribute("content");
     expect(/[\u4e00-\u9fff]/.test(desc!)).toBe(false);
   });
 
+  // Guards: no preference + non-zh browser keeps EN page.
   test("no preference + non-zh browser keeps an EN page in place", async ({ page }) => {
     await page.addInitScript(() => localStorage.removeItem("ithmbLang"));
     await page.goto("/", { waitUntil: "domcontentloaded" });
+    await page.waitForSelector("nav");
     expect(new URL(page.url()).pathname).toBe("/");
     const htmlLang = await page.locator("html").getAttribute("lang");
     expect(htmlLang!.toLowerCase().startsWith("en")).toBe(true);
@@ -114,21 +124,25 @@ test.describe("language preference redirect", () => {
     expect(/[\u4e00-\u9fff]/.test(desc!)).toBe(false);
   });
 
+  // Guards: no preference + zh browser redirects EN to /zh/.
   test("no preference + zh browser redirects an EN page to /zh/", async ({ browser }) => {
     const context = await browser.newContext({ locale: "zh-CN", baseURL });
     const page = await context.newPage();
     await page.goto("/", { waitUntil: "domcontentloaded" });
+    await page.waitForSelector("nav");
     await page.waitForFunction(() => location.pathname === "/zh/");
     await expect(page.locator("html")).toHaveAttribute("lang", /^zh/i);
     await context.close();
   });
 
+  // Guards: /zh/ page never bounces to EN.
   test("no preference + zh browser stays on a /zh/ page (never bounces to EN)", async ({
     browser,
   }) => {
     const context = await browser.newContext({ locale: "zh-CN", baseURL });
     const page = await context.newPage();
     await page.goto("/zh/", { waitUntil: "domcontentloaded" });
+    await page.waitForSelector("nav");
     await page.waitForTimeout(300); // give any (wrong) redirect time to fire
     expect(new URL(page.url()).pathname).toBe("/zh/");
     const htmlLang = await page.locator("html").getAttribute("lang");
@@ -136,9 +150,11 @@ test.describe("language preference redirect", () => {
     await context.close();
   });
 
+  // Guards: unmapped paths never redirect (404 stays put).
   test("an unmapped path is never redirected (404 stays put)", async ({ page }) => {
     await page.addInitScript(() => localStorage.setItem("ithmbLang", "zh"));
     await page.goto("/404.html", { waitUntil: "domcontentloaded" });
+    await page.waitForSelector("nav");
     expect(new URL(page.url()).pathname).toBe("/404.html");
   });
 });
@@ -146,8 +162,10 @@ test.describe("language preference redirect", () => {
 test.describe("hreflang + canonical (real /zh/ URLs)", () => {
   for (const [name, path, enUrl, zhUrl] of CONTENT_PAGES) {
     if (path === undefined) throw new Error("bad page tuple");
+    // Guards: hreflang alternates per page (generated).
     test(`${name}: en ↔ zh alternates with x-default to the English URL`, async ({ page }) => {
       await page.goto(path, { waitUntil: "domcontentloaded" });
+      await page.waitForSelector("nav");
       const canonical = await page.locator('link[rel="canonical"]').getAttribute("href");
       if (canonical === null) throw new Error("missing canonical link");
       expect(canonical).toBe(enUrl);
@@ -169,8 +187,10 @@ test.describe("hreflang + canonical (real /zh/ URLs)", () => {
 test.describe("Chinese /zh/ pages (server-rendered)", () => {
   for (const [name, path, enUrl, zhUrl] of ZH_PAGES) {
     if (path === undefined) throw new Error("bad page tuple");
+    // Guards: fully-Chinese HTML + hreflang (generated).
     test(`${name}: fully Chinese HTML with real en ↔ zh hreflang`, async ({ page }) => {
       await page.goto(path, { waitUntil: "domcontentloaded" });
+      await page.waitForSelector("nav");
       const htmlLang = await page.locator("html").getAttribute("lang");
       if (htmlLang === null) throw new Error("missing html lang");
       expect(htmlLang.toLowerCase().startsWith("zh")).toBe(true);
@@ -200,6 +220,7 @@ test.describe("Chinese /zh/ pages (server-rendered)", () => {
 });
 
 test.describe("Content Security Policy", () => {
+  // Guards: CSP header on every page (localhost-skipped, see below).
   test("every page has a CSP header", async ({ request, baseURL }) => {
     // _headers is a Cloudflare Pages feature — local http-server does not
     // serve HTTP headers from it, so skip when running against localhost.

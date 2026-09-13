@@ -29,7 +29,8 @@ test.describe("Accessibility", () => {
   for (const { name, url } of pages) {
     test(`${name} page has no critical accessibility violations`, async ({ page }) => {
       await page.goto(url);
-      await page.waitForLoadState("networkidle");
+      await page.waitForLoadState("domcontentloaded");
+      await page.waitForSelector("header, nav, main, #dropzone");
 
       const serious = await seriousViolations(page);
 
@@ -52,7 +53,8 @@ test.describe("Accessibility", () => {
 
 test("Decoder post-upload state has no critical accessibility violations", async ({ page }) => {
   await page.goto("/ithmb-decoder/");
-  await page.waitForLoadState("networkidle");
+  await page.waitForLoadState("domcontentloaded");
+  await page.waitForSelector("#dropzone");
   const [fc] = await Promise.all([
     page.waitForEvent("filechooser"),
     page.locator("#dropzone").click(),

@@ -10,9 +10,11 @@ const FIXTURES = path.resolve(__dirname, "fixtures");
 
 test.describe("File Upload", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto(PAGE_URL, { waitUntil: "networkidle" });
+    await page.goto(PAGE_URL, { waitUntil: "domcontentloaded" });
+    await page.waitForSelector("#dropzone");
   });
 
+  // Guards: core 8-file decode flow.
   test("drops 8 distinct files — all decode successfully", async ({ page }) => {
     const fc = page.waitForEvent("filechooser");
     await page.locator("#dropzone").click();
@@ -38,6 +40,7 @@ test.describe("File Upload", () => {
     expect(statuses.length).toBe(8);
   });
 
+  // Guards: second-batch decoding.
   test("second batch of distinct files also decodes", async ({ page }) => {
     // First batch
     let fc = page.waitForEvent("filechooser");
@@ -76,6 +79,7 @@ test.describe("File Upload", () => {
     }
   });
 
+  // Guards: duplicate-filename handling.
   test("duplicate filenames — same file dropped 8 times", async ({ page }) => {
     // Focus on console errors
     const errors: string[] = [];
@@ -107,9 +111,11 @@ test.describe("File Upload", () => {
 
   test.describe("Drag and Drop", () => {
     test.beforeEach(async ({ page }) => {
-      await page.goto(PAGE_URL, { waitUntil: "networkidle" });
+      await page.goto(PAGE_URL, { waitUntil: "domcontentloaded" });
+      await page.waitForSelector("#dropzone");
     });
 
+    // Guards: drag overlay enter/leave signal.
     test("drag overlay appears on dragenter and clears on dragleave", async ({ page }) => {
       // Verify overlay is not active initially
       await expect(page.locator("#dropOverlay")).not.toHaveClass(/active/);
@@ -140,6 +146,7 @@ test.describe("File Upload", () => {
       await expect(page.locator("body")).not.toHaveClass(/drag-active/);
     });
 
+    // Guards: drop-to-card creation.
     test("drop processes files and creates file cards", async ({ page }) => {
       // Simulate full drag-drop flow with a real .ithmb file
       await page.evaluate(async () => {
@@ -170,6 +177,7 @@ test.describe("File Upload", () => {
       expect(status).toContain("Decoded");
     });
 
+    // Guards: overlay reset after drop.
     test("drop overlay clears after successful drop", async ({ page }) => {
       await page.evaluate(async () => {
         const response = await fetch("/tests/fixtures/test1.ithmb");

@@ -13,8 +13,9 @@ import { expect, test } from "@playwright/test";
 test.describe("Visual Regression — Pages", () => {
   test("home page — full page", async ({ page }) => {
     await page.goto("/", {
-      waitUntil: "networkidle",
+      waitUntil: "domcontentloaded",
     });
+    await page.waitForSelector("nav");
     await expect(page).toHaveScreenshot({
       fullPage: true,
       maxDiffPixelRatio: 0.01,
@@ -23,8 +24,9 @@ test.describe("Visual Regression — Pages", () => {
 
   test("enterprise page — full page", async ({ page }) => {
     await page.goto("/enterprise/", {
-      waitUntil: "networkidle",
+      waitUntil: "domcontentloaded",
     });
+    await page.waitForSelector("nav");
     await expect(page).toHaveScreenshot({
       fullPage: true,
       maxDiffPixelRatio: 0.01,
@@ -33,8 +35,9 @@ test.describe("Visual Regression — Pages", () => {
 
   test("guide page — full page", async ({ page }) => {
     await page.goto("/guide/how-to-open-ithmb-files.html", {
-      waitUntil: "networkidle",
+      waitUntil: "domcontentloaded",
     });
+    await page.waitForSelector("nav");
     await expect(page).toHaveScreenshot({
       fullPage: true,
       maxDiffPixelRatio: 0.01,
@@ -45,8 +48,9 @@ test.describe("Visual Regression — Pages", () => {
 test.describe("Visual Regression — Nav bar", () => {
   test("nav — home (active: Home, brand logo present)", async ({ page }) => {
     await page.goto("/", {
-      waitUntil: "networkidle",
+      waitUntil: "domcontentloaded",
     });
+    await page.waitForSelector("nav");
     const nav = page.locator("nav");
     await expect(nav).toBeVisible();
     await expect(nav).toHaveScreenshot({ maxDiffPixelRatio: 0.01 });
@@ -54,8 +58,9 @@ test.describe("Visual Regression — Nav bar", () => {
 
   test("nav — enterprise (active: Enterprise)", async ({ page }) => {
     await page.goto("/enterprise/", {
-      waitUntil: "networkidle",
+      waitUntil: "domcontentloaded",
     });
+    await page.waitForSelector("nav");
     const nav = page.locator("nav");
     await expect(nav).toBeVisible();
     await expect(nav).toHaveScreenshot({ maxDiffPixelRatio: 0.01 });
@@ -63,8 +68,9 @@ test.describe("Visual Regression — Nav bar", () => {
 
   test("nav — decoder (active: Decoder)", async ({ page }) => {
     await page.goto("/ithmb-decoder/", {
-      waitUntil: "networkidle",
+      waitUntil: "domcontentloaded",
     });
+    await page.waitForSelector("nav");
     const nav = page.locator("nav");
     await expect(nav).toBeVisible();
     await expect(nav).toHaveScreenshot({ maxDiffPixelRatio: 0.01 });
@@ -72,8 +78,9 @@ test.describe("Visual Regression — Nav bar", () => {
 
   test("nav — guide (active: Guide)", async ({ page }) => {
     await page.goto("/guide/how-to-open-ithmb-files.html", {
-      waitUntil: "networkidle",
+      waitUntil: "domcontentloaded",
     });
+    await page.waitForSelector("nav");
     const nav = page.locator("nav");
     await expect(nav).toBeVisible();
     await expect(nav).toHaveScreenshot({ maxDiffPixelRatio: 0.01 });
@@ -83,8 +90,9 @@ test.describe("Visual Regression — Nav bar", () => {
 test.describe("Visual Regression — Footer", () => {
   test("footer — enterprise page (should show BMC icon inside container)", async ({ page }) => {
     await page.goto("/enterprise/", {
-      waitUntil: "networkidle",
+      waitUntil: "domcontentloaded",
     });
+    await page.waitForSelector("nav");
     const footer = page.locator("footer");
     await expect(footer).toBeVisible();
     await expect(footer).toHaveScreenshot({ maxDiffPixelRatio: 0.01 });
