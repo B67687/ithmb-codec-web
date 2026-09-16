@@ -67,18 +67,12 @@ jobs:
           echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
 
-  test:
-    # Heavy matrix opt-out: put [skip browsers] on its OWN line in the push
-    # commit message to run lint only (local gates must already cover the change).
-    # Inline mentions no longer count (whole-line match only).
+  test-chromium:
+    # Fast iteration driver: runs on push + PR (unless [skip browsers]).
     needs: [guard]
     if: needs.guard.outputs.skip != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    strategy:
-      fail-fast: false
-      matrix:
-        browser: [chromium, firefox, webkit]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
@@ -98,29 +92,146 @@ jobs:
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: ~/.cache/ms-playwright
-          # Key on browsers.json (exact browser revisions), NOT package-lock.json:
-          # a dep bump must not force a ~200MB browser re-download. Per-browser
-          # keys avoid the concurrent-save last-writer-wins cache thrash across the
-          # 3-browser matrix. See ADR-0007.
-          key: pw-${{ matrix.browser }}-${{ runner.os }}-${{ hashFiles('node_modules/playwright-core/browsers.json') }}
+          key: pw-chromium-${{ runner.os }}-${{ hashFiles('node_modules/playwright-core/browsers.json') }}
           restore-keys: |
-            pw-${{ matrix.browser }}-${{ runner.os }}-
+            pw-chromium-${{ runner.os }}-
       - name: Install Playwright system deps (apt only)
         if: steps.pw-cache.outputs.cache-hit == 'true'
-        run: npx playwright install-deps ${{ matrix.browser }}
-      - name: Install Playwright ${{ matrix.browser }}
+        run: npx playwright install-deps chromium
+      - name: Install Playwright chromium
         if: steps.pw-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps ${{ matrix.browser }}
+        run: npx playwright install --with-deps chromium
       - name: Build (TS -> JS)
         run: bun run build
-      - name: Playwright (${{ matrix.browser }}, local server)
+      - name: Playwright (chromium, local server)
         env:
-          # Pass the matrix browser so the config can pick a distinct
-          # web-server port per browser under act (parallel jobs, shared
-          # host network would otherwise collide). Config derives baseURL
-          # from the same port; no fixed BASE_URL override here.
-          PLAYWRIGHT_BROWSER: ${{ matrix.browser }}
+          PLAYWRIGHT_BROWSER: chromium
         run: |
-          # Server lifecycle handled by playwright webServer config (polls
-          # until ready instead of a fixed sleep; owns start/kill). See ADR-0007.
-          npx playwright test --project=${{ matrix.browser }}
+          npx playwright test --project=chromium
+
+  test-firefox:
+    # Full coverage only on PR: push to main stays fast (chromium-only).
+    needs: [guard]
+    if: needs.guard.outputs.skip != 'true' && github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 22
+      - uses: oven-sh/setup-bun@v2 # Phase 1: Build step runs on bun
+        with:
+          bun-version: "1.3.14"
+      - name: Cache bun install
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+      - run: bun install --frozen-lockfile
+      - name: Cache Playwright browsers
+        id: pw-cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: pw-firefox-${{ runner.os }}-${{ hashFiles('node_modules/playwright-core/browsers.json') }}
+          restore-keys: |
+            pw-firefox-${{ runner.os }}-
+      - name: Install Playwright system deps (apt only)
+        if: steps.pw-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps firefox
+      - name: Install Playwright firefox
+        if: steps.pw-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps firefox
+      - name: Build (TS -> JS)
+        run: bun run build
+      - name: Playwright (firefox, local server)
+        env:
+          PLAYWRIGHT_BROWSER: firefox
+        run: |
+          npx playwright test --project=firefox
+
+  test-webkit-1-2:
+    # Webkit shard 1/2: PR-only, halves the 6m18s bottleneck. Unique job
+    # name avoids artifact/step collisions with shard 2/2.
+    needs: [guard]
+    if: needs.guard.outputs.skip != 'true' && github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 22
+      - uses: oven-sh/setup-bun@v2 # Phase 1: Build step runs on bun
+        with:
+          bun-version: "1.3.14"
+      - name: Cache bun install
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+      - run: bun install --frozen-lockfile
+      - name: Cache Playwright browsers
+        id: pw-cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: pw-webkit-${{ runner.os }}-${{ hashFiles('node_modules/playwright-core/browsers.json') }}
+          restore-keys: |
+            pw-webkit-${{ runner.os }}-
+      - name: Install Playwright system deps (apt only)
+        if: steps.pw-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps webkit
+      - name: Install Playwright webkit
+        if: steps.pw-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps webkit
+      - name: Build (TS -> JS)
+        run: bun run build
+      - name: Playwright (webkit shard 1/2, local server)
+        env:
+          PLAYWRIGHT_BROWSER: webkit
+        run: |
+          npx playwright test --project=webkit --shard=1/2
+
+  test-webkit-2-2:
+    # Webkit shard 2/2: PR-only, complements test-webkit-1-2.
+    needs: [guard]
+    if: needs.guard.outputs.skip != 'true' && github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 22
+      - uses: oven-sh/setup-bun@v2 # Phase 1: Build step runs on bun
+        with:
+          bun-version: "1.3.14"
+      - name: Cache bun install
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+      - run: bun install --frozen-lockfile
+      - name: Cache Playwright browsers
+        id: pw-cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: pw-webkit-${{ runner.os }}-${{ hashFiles('node_modules/playwright-core/browsers.json') }}
+          restore-keys: |
+            pw-webkit-${{ runner.os }}-
+      - name: Install Playwright system deps (apt only)
+        if: steps.pw-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps webkit
+      - name: Install Playwright webkit
+        if: steps.pw-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps webkit
+      - name: Build (TS -> JS)
+        run: bun run build
+      - name: Playwright (webkit shard 2/2, local server)
+        env:
+          PLAYWRIGHT_BROWSER: webkit
+        run: |
+          npx playwright test --project=webkit --shard=2/2
