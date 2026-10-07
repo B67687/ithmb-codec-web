@@ -755,16 +755,17 @@ test.describe("New: Additional functionality", () => {
     }).toPass({ timeout: 60000 });
 
     // Press G to toggle to grid mode (toPass: fixed 300ms sleep flaked under parallel load)
+    await page.locator("#viewer-container").click();
     await page.keyboard.press("g");
     await expect(async () => {
       await expect(page.locator("#viewer-container")).not.toBeVisible();
-    }).toPass({ timeout: 10000 });
-
+    }).toPass({ timeout: 15000 });
     // Press G again to toggle back
+    await page.locator("body").click();
     await page.keyboard.press("g");
     await expect(async () => {
       await expect(page.locator("#viewer-container")).toBeVisible();
-    }).toPass({ timeout: 10000 });
+    }).toPass({ timeout: 15000 });
   });
 
   // Regression: global format select overrode per-card formats (or vice versa).

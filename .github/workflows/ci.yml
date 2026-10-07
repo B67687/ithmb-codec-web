@@ -68,6 +68,7 @@ jobs:
           fi
 
   test-chromium:
+    name: E2E — Chromium (fast, push + PR)
     # Fast iteration driver: runs on push + PR (unless [skip browsers]).
     needs: [guard]
     if: needs.guard.outputs.skip != 'true'
@@ -110,6 +111,7 @@ jobs:
           npx playwright test --project=chromium
 
   test-firefox:
+    name: E2E — Firefox (PR only)
     # Full coverage only on PR: push to main stays fast (chromium-only).
     needs: [guard]
     if: needs.guard.outputs.skip != 'true' && github.event_name == 'pull_request'
@@ -152,6 +154,7 @@ jobs:
           npx playwright test --project=firefox
 
   test-webkit-1-2:
+    name: E2E — WebKit shard 1 of 2 (PR only)
     # Webkit shard 1/2: PR-only, halves the 6m18s bottleneck. Unique job
     # name avoids artifact/step collisions with shard 2/2.
     needs: [guard]
@@ -195,6 +198,7 @@ jobs:
           npx playwright test --project=webkit --shard=1/2
 
   test-webkit-2-2:
+    name: E2E — WebKit shard 2 of 2 (PR only)
     # Webkit shard 2/2: PR-only, complements test-webkit-1-2.
     needs: [guard]
     if: needs.guard.outputs.skip != 'true' && github.event_name == 'pull_request'
