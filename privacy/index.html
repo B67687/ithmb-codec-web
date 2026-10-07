@@ -138,6 +138,13 @@
         Submissions are rate-limited, and IP-derived identifiers are
         pseudonymized with a keyed hash — your raw IP address is never stored.
       </p>
+      <p>
+        Full files you choose to share are stored quarantined, opened only in an
+        offline sandbox on the maintainer machine, scanned locally, and never
+        sent to third-party scanners without your explicit per-file consent.
+        Stored telemetry auto-expires from KV after 365 days, and the operator
+        deletes shared files within 90 days of triage.
+      </p>
 
       <h2>What we don't do</h2>
       <ul>
@@ -164,7 +171,8 @@
       <p>
         This tool is provided as-is, without warranty of any kind. It is meant
         for recovering your own photos and thumbnails from your own devices.
-        Because decoding happens locally, no content passes through our servers.
+        Because decoding happens locally, no content passes through our servers
+        except files you explicitly choose to Share, handled as described above.
       </p>
       <p>
         Organizations that need custom integration, volume conversion, or

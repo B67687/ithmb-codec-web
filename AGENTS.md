@@ -2,6 +2,7 @@
 
 This file tells AI coding agents (Claude Code, Copilot, Cursor, Codex, OpenCode) how to work with this repository. Read this first before editing any code.
 
+Central SWE inventory: ../ithmb-codec/docs/SWE_INVENTORY.md
 ## Repository Purpose
 
 The browser front-end for the ITHMB Codec project: a **zero-runtime-dependency** TypeScript decoder web app (`ithmb-codec.dev`) plus a **Cloudflare telemetry worker** that collects opt-in share/report data. Decoding happens in WebAssembly (`ithmb_wasm_bg.wasm`) generated from the sibling Rust repo `B67687/ithmb-codec` (`crates/ithmb-wasm`). This repo also hosts the marketing pages (home, guide, enterprise, privacy, 404) and is fully i18n'd (Simplified Chinese + English).
