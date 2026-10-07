@@ -234,14 +234,27 @@ document
       });
     }
   });
+// W3 no-hang: wasm fetch/instantiation can stall forever on a flaky
+// connection (fetch never settles). Cap init so the page always lands on
+// either the decoder or the honest load-failed + retry UI — never a
+// permanent spinner.
+const INIT_TIMEOUT_MS = 15000;
+function initWithTimeout(): Promise<unknown> {
+  return Promise.race([
+    init(),
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("wasm init timeout")), INIT_TIMEOUT_MS),
+    ),
+  ]);
+}
 // Init
 try {
-  await init();
+  await initWithTimeout();
 } catch (e) {
-  // Load failed (e.g. wasm fetch blipped, or the browser truly lacks
-  // WebAssembly). Show the message + a retry that re-runs init() — a
-  // transient failure (network blip) recovers; a permanent one re-enables
-  // the button so the user can try again.
+  // Load failed (wasm fetch blipped, init stalled past the timeout above,
+  // or the browser truly lacks WebAssembly). Show the message + a retry
+  // that re-runs init — a transient failure (network blip) recovers, a
+  // permanent one re-enables the button so the user can try again.
   const failDiv = document.createElement("div");
   failDiv.id = "loadFailed";
   failDiv.style.cssText = "text-align:center;padding:20px;color:#ff453a";
@@ -259,7 +272,7 @@ try {
     retryBtn.disabled = true;
     retryBtn.textContent = t("app.retrying");
     try {
-      await init();
+      await initWithTimeout();
       failDiv.remove();
       dropzone.style.pointerEvents = "";
       dropzone.style.opacity = "";

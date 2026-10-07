@@ -416,6 +416,20 @@ test.describe("Error states", () => {
     await expect.poll(() => posted.length, { timeout: 5000 }).toBe(1);
     fs.rmSync(corruptFile, { force: true });
   });
+
+  // W3 no-hang: a wasm fetch failure lands on the honest retry UI,
+  // never a permanent spinner (the init timeout caps even a stalled fetch).
+  test("wasm load failure shows retry UI instead of hanging", async ({ page }) => {
+    await page.route("**/ithmb_wasm_bg.wasm*", async (route) => {
+      await route.abort("failed");
+    });
+    await page.goto("/ithmb-decoder/");
+    await expect(page.locator("#loadFailed")).toBeVisible({
+      timeout: 20000,
+    });
+    await expect(page.locator("#loadFailed button")).toBeVisible();
+    await expect(page.locator("#dropzone")).toHaveCSS("pointer-events", "none");
+  });
 });
 
 // ─── Quiet-by-default (no contribution UI) ───────────────────────────────────

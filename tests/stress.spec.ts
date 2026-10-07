@@ -11,14 +11,16 @@ import type { Page } from "@playwright/test";
 const PAGE_URL = "/ithmb-decoder/";
 const FIXTURES = path.resolve(__dirname, "fixtures");
 
-/** Wait for all file cards to finish decoding (no "Decoding..." text remaining). */
-async function waitForDecode(page: Page) {
-  for (let attempt = 0; attempt < 60; attempt++) {
+/* Wait for all file cards to finish decoding (no "Decoding..." remaining).
+ * W3 no-hang: capped at 25s so the helper itself fails with a clear error
+ * INSIDE the 30s Playwright test timeout. */
+async function waitForDecode(page: Page, maxAttempts = 25) {
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
     const statuses = await page.locator(".file-card .status").allTextContents();
     if (statuses.length && statuses.every((s) => !s.includes("Decoding..."))) return;
     await page.waitForTimeout(1000);
   }
-  throw new Error("Decode did not complete within 60s");
+  throw new Error("Decode did not complete within 25s");
 }
 
 /** Drop files via the file-chooser triggered by clicking the dropzone. */

@@ -10,8 +10,8 @@ export async function decodeFile(file: File, cardId: string): Promise<void> {
   const card = document.getElementById(cardId)!;
   const statusEl = card.querySelector<HTMLElement>(".status")!;
   const previewEl = card.querySelector<HTMLElement>(".preview")!;
-  let bytes: Uint8Array;
-  let prefix: number;
+  let bytes: Uint8Array | undefined;
+  let prefix: number | undefined;
 
   try {
     const buf = await file.arrayBuffer();
@@ -38,16 +38,25 @@ export async function decodeFile(file: File, cardId: string): Promise<void> {
     }
   } catch (err) {
     const message = (err instanceof Error && err.message) || String(err);
-    statusEl.className = "status err";
-    statusEl.textContent = t("card.error");
-    previewEl.style.display = "block";
-    previewEl.innerHTML = `<div class="err-msg">${escapeHtml(message)}</div>`;
-    // Error cards are NOT stored in the cards lists: they carry no shareable
-    // bytes (the failure may have happened before bytes/prefix were set), so
-    // a failed entry would break reRenderCards (createShareBox throws
-    // on undefined bytes) and mislabel the card as an unknown format. The
-    // viewer already treats error cards as entries without a failed entry.
-    renderErrorCard(cardId, message);
+    // W3 wasm boundary: a throw AFTER bytes/prefix were captured (wasm panic,
+    // OOM, malformed pixel header) is still a decodable-format failure the
+    // user can help with — render the share card, not a dead-end error.
+    // Only pre-bytes failures (empty input, unreadable file) stay error cards.
+    console.error("[wasm] decode threw", { prefix, message });
+    if (bytes !== undefined && prefix !== undefined) {
+      renderFailureCard(cardId, file, bytes, prefix, classifyResult(prefix, null));
+    } else {
+      statusEl.className = "status err";
+      statusEl.textContent = t("card.error");
+      previewEl.style.display = "block";
+      previewEl.innerHTML = `<div class="err-msg">${escapeHtml(message)}</div>`;
+      // Error cards are NOT stored in the cards lists: they carry no shareable
+      // bytes (the failure may have happened before bytes/prefix were set), so
+      // a failed entry would break reRenderCards (createShareBox throws
+      // on undefined bytes) and mislabel the card as an unknown format. The
+      // viewer already treats error cards as entries without a failed entry.
+      renderErrorCard(cardId, message);
+    }
   }
   updateToolbar();
 }
