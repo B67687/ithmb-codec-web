@@ -16,7 +16,7 @@ came from. Screenshots help for anything visual.
 
 ## Per-repo guidance
 
-- **WASM comes from public codec releases only** — never hand-build it; see `docs/RELEASE_TRAIN.md`.
+- **WASM comes from public codec releases only** — never hand-build it; see `../ithmb-codec/docs/RELEASE_TRAIN.md`.
 - **Any `.ts` change needs `npm run build` + committed HTML** (the determinism gate).
 - **Tests run in tiers** (`docs/TEST_STRATEGY.md`); use `[skip browsers]` in the commit message
   only for changes with no browser surface (worker, config, docs).

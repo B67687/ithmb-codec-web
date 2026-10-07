@@ -104,6 +104,8 @@ ithmb-codec-web/
 | Decoder    | `/ithmb-decoder/`                     | Core web app   | Full SPA (ES modules + WASM) | nav.js, footer.js, app.js (14 modules), lang-redirect.js |
 | Guide      | `/guide/how-to-open-ithmb-files.html` | Documentation  | Static + CSS                 | nav.js, footer.js, lang-redirect.js                      |
 | Enterprise | `/enterprise/`                        | Marketing page | Static + CSS                 | nav.js, footer.js, lang-redirect.js                      |
+| Privacy    | `/privacy/`                           | Content page   | Static + CSS                 | nav.js, footer.js, lang-redirect.js                      |
+| Privacy ZH | `/zh/privacy/`                        | Content page   | Static + CSS                 | nav.js, footer.js, lang-redirect.js                      |
 
 ### Dependency Direction (module graph)
 

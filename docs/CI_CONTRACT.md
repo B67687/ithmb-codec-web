@@ -8,3 +8,4 @@ Web summary: `ci.yml` on push/PR to main (docs-only skipped) — lint
 (chromium/firefox/webkit); `[skip browsers]` opts out per-push.
 Runs on BOTH dev + public (public minutes are free).
 Local mirror: `scripts/check-local.sh` (audit → unit → Playwright).
+wasm-drift: bash scripts/check-wasm-drift.sh (imports vs glue, enforced in CI)

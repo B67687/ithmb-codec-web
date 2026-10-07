@@ -94,7 +94,7 @@ async function __wbg_init(module_or_path) {
   }
 
   if (module_or_path === undefined) {
-    module_or_path = new URL("ithmb_wasm_bg.wasm?v=1.9.9", import.meta.url);
+    module_or_path = new URL("ithmb_wasm_bg.wasm?v=1.9.10", import.meta.url);
   }
   const imports = __wbg_get_imports();
 

@@ -48,6 +48,8 @@ jobs:
         run: bun run lint:modules && git diff --exit-code # fail if the build mutated tracked files (uncommitted ?v= hashes)
       - name: unit tests (bun test)
         run: bun run test:unit
+      - name: wasm-drift (imports vs glue)
+        run: bash scripts/check-wasm-drift.sh
 
   guard:
     # Trailer gate: [skip browsers] counts only on its OWN line (footer).

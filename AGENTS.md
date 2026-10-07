@@ -135,10 +135,8 @@ public  → https://github.com/B67687/ithmb-codec-web       (PUBLIC, shipped rep
 The decoder wasm comes from `B67687/ithmb-codec` → `crates/ithmb-wasm`. To ship a core change to the browser:
 
 ```bash
-cd ../ithmb-codec/crates/ithmb-wasm
-cargo check -p ithmb-wasm --target wasm32-unknown-unknown
-wasm-pack build --target web --release
-cp pkg/ithmb_wasm_bg.wasm ../../ithmb-codec-web/ithmb-decoder/ithmb_wasm_bg.wasm
+wasm-pack build crates/ithmb-wasm --target web --release
+cp crates/ithmb-wasm/pkg/ithmb_wasm_bg.wasm ../ithmb-codec-web/ithmb-decoder/ithmb_wasm_bg.wasm
 ```
 
 **Copy ONLY `ithmb_wasm_bg.wasm`.** `ithmb_wasm.js` is hand-adapted (custom streaming loader, `__wbindgen_start` call) and `ithmb_wasm_bg.js` is the reformatted glue. Replacing them with stock wasm-pack output breaks the app. **If the rebuild adds a wasm import the glue doesn't define, the decoder fails at runtime**; `scripts/check-wasm-drift.sh` detects exactly this (it compares the wasm's import list against the glue). Example of a forbidden import: `console_error_panic_hook`'s `__wbg_new_...` (js_sys::Error glue). A panic hook using it broke the loader once; don't reintroduce it.

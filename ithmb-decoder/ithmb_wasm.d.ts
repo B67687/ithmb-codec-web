@@ -11,7 +11,7 @@
 //   - get_encoding_name(prefix) -> string
 //   - initSync(module?)    -> wasm exports
 //   - __wbg_init()         -> Promise<wasm exports>  (default export; fetches
-//                             ./ithmb_wasm_bg.wasm?v=1.9.9 when called bare)
+//                             ./ithmb_wasm_bg.wasm?v=1.9.10 when called bare)
 
 export const WASM_VERSION: string;
 

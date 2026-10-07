@@ -40,4 +40,14 @@
     <lastmod>2026-08-06</lastmod>
     <priority>0.7</priority>
   </url>
+  <url>
+    <loc>https://ithmb-codec.dev/privacy/</loc>
+    <lastmod>2026-09-10</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ithmb-codec.dev/zh/privacy/</loc>
+    <lastmod>2026-09-10</lastmod>
+    <priority>0.5</priority>
+  </url>
 </urlset>

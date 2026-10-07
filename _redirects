@@ -1,6 +1,10 @@
 # Force non-www (Cloudflare handles HTTPS)
 https://www.ithmb-codec.dev/* https://ithmb-codec.dev/:splat 301
 
+# Legacy decoder path → new decoder path (GSC 404 fix)
+/wasm-decoder/*  /ithmb-decoder/:splat  301
+/zh/wasm-decoder/* /zh/ithmb-decoder/:splat 301
+
 # .html → canonical extensionless URLs
 /guide/how-to-open-ithmb-files.html    /guide/how-to-open-ithmb-files    301
 /zh/guide/how-to-open-ithmb-files.html /zh/guide/how-to-open-ithmb-files 301
