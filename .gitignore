@@ -1,0 +1,42 @@
+# Normal .gitignore — ignore the known ephemera; everything else tracks.
+# (The old whitelist approach silently excluded real files — theme.ts was
+# never committed and broke CI. Known patterns are just as safe and far
+# less footgun-prone.)
+
+# dependencies
+node_modules/
+
+# build outputs — generated from authored .ts by `bun run build`
+# (build-from-source model). Classic page scripts land in assets/js/ so the
+# repo root stays free of generated JavaScript. The wasm glue is external
+# (wasm-pack output) and stays tracked.
+assets/js/
+ithmb-decoder/*.js
+!ithmb-decoder/ithmb_wasm.js
+!ithmb-decoder/ithmb_wasm_bg.js
+
+# agent / tooling ephemera (privacy: never commit session scratch)
+.omo/
+.codegraph/
+.playwright-mcp/
+test-results/
+preview/
+_site/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Cloudflare wrangler state/temp (telemetry worker local dev)
+.wrangler/
+
+# secrets — never commit local env files or keys
+/.env
+/.env.*
+!/.env.example
+.dev.vars
+.dev.vars.*
+*.pem
+secrets/
+*.key

@@ -1,0 +1,1691 @@
+/* ═══ design-lab parity for the loaded decoder ═══ */
+
+/* toolbar: file block left, controls right (lab mock) */
+#downloadFormatSelect {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  overflow: hidden !important;
+}
+#toolbar #clearBtn {
+  background: transparent;
+  color: var(--muted);
+  padding: 8px 10px;
+}
+#toolbar #helpBtn {
+  order: 9;
+  background: transparent;
+  border: 0;
+  color: var(--muted);
+  padding: 4px 6px;
+}
+#toolbar #downloadAllBtn {
+  font-size: 14px;
+  padding: 8px 16px;
+}
+
+/* viewer band (lab measurements) */
+#viewer-container {
+  padding: 34px 0 26px;
+  border-radius: 0;
+  color: #f5f5f7;
+}
+#viewer-header {
+  position: absolute;
+  top: 16px;
+  left: max(24px, calc((100vw - 1180px) / 2));
+  margin: 0;
+  z-index: 5;
+  background: rgba(18, 18, 20, 0.55);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 11.5px;
+  padding: 8px 14px;
+}
+#viewer-header .vh-file {
+  color: #fff;
+}
+#viewer-header .vh-dims {
+  color: rgba(255, 255, 255, 0.65);
+}
+#viewer-header .vh-enc {
+  color: #2997ff;
+}
+#viewer-main {
+  padding: 0;
+  min-height: 0;
+}
+#viewer-stage {
+  height: min(58vh, 560px);
+  background: transparent;
+}
+#viewer-stage canvas {
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 14px;
+  box-shadow: 0 60px 120px -50px rgba(0, 0, 0, 0.9);
+}
+#viewer-filmstrip {
+  border-top: 0;
+  padding: 14px 0 10px;
+  gap: 8px;
+}
+.filmstrip-thumb {
+  width: 64px;
+  height: 43px;
+  border-radius: 7px;
+  border: 0;
+  background: #1a1a1c;
+  opacity: 0.5;
+}
+.filmstrip-thumb.active {
+  opacity: 1;
+  outline: 1.5px solid #fff;
+  outline-offset: 0;
+}
+
+/* results grid (lab measurements) */
+.decoder-page .results-head {
+  margin: 0 0 26px;
+}
+.decoder-page .results-head h2 {
+  font-size: clamp(28px, 2.9vw, 40px);
+}
+.decoder-page .file-list {
+  gap: 18px;
+  margin-top: 0;
+}
+.file-card {
+  padding: 0;
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 0 0 1px #ececef;
+}
+.file-card .meta {
+  padding: 12px 14px 0;
+  margin-bottom: 3px;
+}
+.file-card .name {
+  font-size: 13px;
+}
+.file-card .size {
+  font-size: 11px;
+}
+.file-card .status {
+  display: none;
+}
+.file-card .preview {
+  padding: 9px 14px 14px;
+  margin-top: 0;
+  flex-direction: column;
+  gap: 6px;
+}
+.file-card .preview canvas {
+  width: 100% !important;
+  height: 152px !important;
+  border-radius: 8px;
+}
+.file-card .preview .info {
+  font-size: 11px;
+  line-height: 1.45;
+}
+.file-card .preview .info > div {
+  display: none;
+}
+.file-card .preview .info > div[data-info="dims"],
+.file-card .preview .info > div[data-info="enc"] {
+  display: inline;
+  margin-right: 6px;
+}
+.file-card .preview .actions {
+  margin-top: 2px;
+}
+.file-card .preview .actions .btn {
+  background: var(--fog);
+  color: var(--ink);
+  font-size: 12px;
+  padding: 6px 11px;
+  border-radius: 8px;
+}
+.file-card .preview .actions select {
+  font-size: 11px;
+  padding: 4px 6px;
+}
+
+@media (max-width: 560px) {
+  #viewer-stage {
+    height: 42vh;
+  }
+  .file-card .preview canvas {
+    height: 120px !important;
+  }
+}
+:root[data-theme="dark"] #toolbar #clearBtn {
+  color: #d2d2d7;
+}
+:root[data-theme="dark"] #viewer-container {
+  background: #000;
+}
+:root[data-theme="dark"] .file-card .preview .actions .btn {
+  background: #2c2c2e;
+  color: #f5f5f7;
+}
+
+/* lab parity: loaded state chrome */
+#viewer-filmstrip {
+  align-items: center;
+}
+#viewer-filmstrip #viewerPos {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  min-width: 42px;
+}
+#viewer-stage {
+  height: min(58vh, 560px);
+}
+#viewer-stage canvas {
+  width: auto !important;
+  height: min(58vh, 560px) !important;
+  max-width: 100% !important;
+  object-fit: contain;
+}
+.viewer-stage-content {
+  padding: 0;
+}
+body.has-files #dropzone {
+  margin-left: 4px;
+}
+
+/* ==========================================================================
+   DECODER — faithful port of design-lab/decoder.html
+   --------------------------------------------------------------------------
+   Appended last on purpose: this layer is a direct port of the design-lab
+   reference page (its inline <style>), scoped to body.decoder-page. Later
+   rules win over the legacy decoder styles above, so the live page renders
+   the reference layout instead of the old stacked-controls shell.
+   Only the two adaptations the live site needs are added: dark-theme tokens
+   (the reference is light-only) and the app's own generated markup (canvas
+   stage, result cards, filmstrip buttons).
+   ========================================================================== */
+
+body.decoder-page {
+  --ring: #e3e3e8;
+  --ring-hover: #d6d6dc;
+  --card-ring: #ececef;
+  --drop-tint: #f7fbff;
+  --save-bg: #f5f5f7;
+  --save-bg-hover: #ebebef;
+  background: var(--bg);
+  color: var(--text);
+}
+:root[data-theme="dark"] body.decoder-page {
+  --ring: #2c2c2e;
+  --ring-hover: #3a3a3c;
+  --card-ring: #2c2c2e;
+  --drop-tint: #101418;
+  --save-bg: #2c2c2e;
+  --save-bg-hover: #3a3a3c;
+}
+body.decoder-page [hidden] {
+  display: none !important;
+}
+body.decoder-page main {
+  display: block;
+}
+body.decoder-page .container {
+  max-width: 980px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+body.decoder-page .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* The native select is the functional backing store for the segmented
+   format control; it stays in the DOM (form semantics, specs) but out of
+   the visible layout. */
+body.decoder-page #downloadFormatSelect.visually-hidden {
+  display: none !important;
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: -1px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  clip: rect(0 0 0 0) !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* ---------- Intro ---------- */
+
+body.decoder-page .decoder-hero {
+  padding: calc(var(--nav-h) + 136px) 0 44px;
+  text-align: center;
+}
+body.decoder-page .decoder-hero .t-eyebrow {
+  display: none;
+}
+body.decoder-page .decoder-hero h1 {
+  margin: 0 0 16px;
+}
+body.decoder-page .decoder-hero .t-lede {
+  max-width: 480px;
+  margin: 0 auto;
+}
+body.is-loaded .decoder-hero {
+  display: none;
+}
+
+/* ---------- Drop target ---------- */
+
+body.decoder-page #dropzone.drop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 286px;
+  margin-top: 38px;
+  padding: 40px 28px;
+  background: var(--surface);
+  border: 0;
+  border-radius: 28px;
+  box-shadow: 0 0 0 1px var(--ring), 0 1px 2px rgba(0, 0, 0, 0.03);
+  cursor: pointer;
+  text-align: center;
+  transition: box-shadow 0.35s var(--ease), transform 0.35s var(--ease), background 0.35s
+    var(--ease);
+}
+body.decoder-page #dropzone.drop:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 0 1px var(--ring-hover), 0 24px 48px -24px rgba(0, 0, 0, 0.24);
+}
+body.decoder-page #dropzone.drop.drag-over,
+body.drag-active #dropzone.drop {
+  background: var(--drop-tint);
+  box-shadow: 0 0 0 2px var(--accent), 0 24px 48px -24px rgba(0, 113, 227, 0.3);
+  transform: scale(1.004);
+}
+body.decoder-page #dropzone .drop__icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 113, 227, 0.08);
+  color: var(--accent);
+  margin: 0 0 22px;
+  font-size: 0;
+}
+body.decoder-page #dropzone .drop__icon svg {
+  width: 27px;
+  height: 27px;
+}
+body.decoder-page #dropzone b,
+body.decoder-page #dropzone .drop__title {
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 600;
+  letter-spacing: -0.024em;
+  line-height: 1.2;
+  color: var(--text);
+}
+body.decoder-page #dropzone .drop__hint {
+  display: block;
+  margin-top: 7px;
+  font-size: 14px;
+  color: var(--muted);
+  letter-spacing: -0.006em;
+}
+body.decoder-page #dropzone .drop__fine {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 24px;
+  font-size: 11.5px;
+  color: var(--faint);
+  letter-spacing: -0.002em;
+}
+body.decoder-page .sample-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+  font-size: 13px;
+  color: var(--muted);
+  letter-spacing: -0.004em;
+}
+body.decoder-page .sample-row a {
+  color: var(--link);
+  text-decoration: none;
+}
+body.decoder-page .sample-row a:hover {
+  text-decoration: underline;
+}
+body.decoder-page .sample-row i {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--border);
+}
+body.decoder-page .decoding {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 22px;
+  font-size: 14px;
+  color: var(--muted);
+}
+body.decoder-page .spinner {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 0, 0, 0.12);
+  border-top-color: var(--accent);
+  animation: decoderSpin 0.7s linear infinite;
+}
+@keyframes decoderSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.decoder-page .spinner {
+    animation-duration: 2.4s;
+  }
+}
+
+/* ---------- Loaded shell ---------- */
+
+body.decoder-page .loaded {
+  scroll-margin-top: calc(var(--nav-h) + 20px);
+  padding-top: 34px;
+}
+body.decoder-page.is-loaded .loaded {
+  padding-top: calc(var(--nav-h) + 44px);
+}
+
+/* ---------- Toolbar ---------- */
+
+body.decoder-page #toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin: 0 0 22px;
+}
+body.decoder-page .toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+body.decoder-page .toolbar__file {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+body.decoder-page .toolbar__file b {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.022em;
+  line-height: 1.25;
+  max-width: 420px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+body.decoder-page .toolbar__file span {
+  font-size: 12.5px;
+  color: var(--muted);
+  letter-spacing: -0.002em;
+}
+body.decoder-page .toolbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+body.decoder-page .segmented {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 11px;
+  background: var(--fog);
+  gap: 2px;
+}
+body.decoder-page .segmented button {
+  border: 0;
+  background: transparent;
+  border-radius: 8px;
+  padding: 7px 13px;
+  font-family: var(--font-text);
+  font-size: 12.5px;
+  letter-spacing: -0.004em;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+body.decoder-page .segmented button:hover {
+  color: var(--text);
+}
+body.decoder-page .segmented button.is-on {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.04);
+}
+:root[data-theme="dark"] body.decoder-page .segmented button.is-on {
+  background: #3a3a3c;
+  box-shadow: none;
+}
+body.decoder-page .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 0;
+  border-radius: 980px;
+  padding: 12px 23px;
+  font-family: var(--font-text);
+  font-size: 17px;
+  font-weight: 400;
+  letter-spacing: -0.012em;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s var(--ease), color 0.2s var(--ease), transform 0.25s var(--ease);
+  -webkit-tap-highlight-color: transparent;
+}
+body.decoder-page .btn--primary {
+  background: var(--accent);
+  color: #fff;
+}
+body.decoder-page .btn--primary:hover {
+  background: var(--accent-hover);
+}
+body.decoder-page .btn--ghost {
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--text);
+}
+body.decoder-page .btn--ghost:hover {
+  background: rgba(0, 0, 0, 0.07);
+}
+:root[data-theme="dark"] body.decoder-page .btn--ghost {
+  background: rgba(255, 255, 255, 0.1);
+}
+:root[data-theme="dark"] body.decoder-page .btn--ghost:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+body.decoder-page .btn--sm {
+  font-size: 14px;
+  padding: 8px 16px;
+}
+body.decoder-page .icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--faint);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+body.decoder-page .icon-btn:hover {
+  background: var(--fog);
+  color: var(--text);
+}
+body.decoder-page .icon-btn svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* ---------- Big stage (viewer band) ---------- */
+
+body.decoder-page .big-stage {
+  background: #000;
+  padding: 34px 0 26px;
+}
+body.decoder-page .big-stage__frame {
+  position: relative;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+body.decoder-page .big-stage__view {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+body.decoder-page #viewer-container {
+  display: block;
+  padding: 34px 0 26px;
+  border: 0;
+  border-radius: 0;
+  background: #000;
+  color: #f5f5f7;
+}
+body.decoder-page #viewer-main {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+}
+body.decoder-page #viewer-stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 300px;
+  height: auto;
+  overflow: visible;
+}
+body.decoder-page #viewer-stage canvas {
+  display: block;
+  width: auto;
+  height: min(58vh, 560px);
+  max-width: 100%;
+  object-fit: contain;
+  border-radius: 16px;
+  box-shadow: 0 50px 100px -40px rgba(0, 0, 0, 0.9);
+  transition: opacity 0.3s var(--ease);
+}
+body.decoder-page .viewer-stage-content {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+body.decoder-page .big-stage__meta,
+body.decoder-page #viewer-header {
+  position: absolute;
+  top: 16px;
+  left: 18px;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(16, 16, 18, 0.55);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12);
+  font-size: 11.5px;
+  letter-spacing: -0.002em;
+  color: rgba(255, 255, 255, 0.82);
+  margin: 0;
+}
+body.decoder-page .big-stage__meta i,
+body.decoder-page #viewer-header i {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  flex: none;
+}
+body.decoder-page #viewer-header .vh-file {
+  color: rgba(255, 255, 255, 0.95);
+}
+body.decoder-page #viewer-header .vh-enc,
+body.decoder-page #viewer-header .vh-dims {
+  color: rgba(255, 255, 255, 0.7);
+}
+body.decoder-page .big-stage__arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.14);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
+  z-index: 3;
+}
+body.decoder-page .big-stage__arrow:hover {
+  background: rgba(255, 255, 255, 0.26);
+}
+body.decoder-page .big-stage__arrow svg {
+  width: 13px;
+  height: 13px;
+}
+body.decoder-page .big-stage__arrow--l {
+  left: 36px;
+}
+body.decoder-page .big-stage__arrow--r {
+  right: 36px;
+}
+body.decoder-page .big-stage__film,
+body.decoder-page #viewer-filmstrip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 16px 24px 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  background: transparent;
+  border: 0;
+}
+body.decoder-page #viewer-filmstrip::-webkit-scrollbar {
+  display: none;
+}
+body.decoder-page .filmstrip-thumb {
+  width: 64px;
+  height: 43px;
+  flex: none;
+  padding: 0;
+  border: 0;
+  border-radius: 7px;
+  overflow: hidden;
+  background: #1a1a1c;
+  opacity: 0.45;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  display: block;
+  outline: none;
+}
+body.decoder-page .filmstrip-thumb img,
+body.decoder-page .filmstrip-thumb canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  object-fit: cover;
+  border-radius: 0;
+}
+body.decoder-page .filmstrip-thumb:hover {
+  opacity: 0.8;
+}
+body.decoder-page .filmstrip-thumb.active {
+  opacity: 1;
+  box-shadow: 0 0 0 1.5px #fff;
+  outline: none;
+}
+body.decoder-page .filmstrip-thumb.failed {
+  background: #1a1a1c;
+  border: 0;
+}
+body.decoder-page .filmstrip-thumb.failed.active {
+  box-shadow: 0 0 0 1.5px #ff9f0a;
+}
+body.decoder-page .filmstrip-thumb.failed svg {
+  color: #ff9f0a;
+}
+body.decoder-page .big-stage__count,
+body.decoder-page #viewerPos {
+  margin-left: auto;
+  flex: none;
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+  padding-left: 14px;
+  white-space: nowrap;
+}
+
+/* ---------- Results ---------- */
+
+body.decoder-page .results-block {
+  padding: 72px 0 0;
+}
+body.decoder-page .results-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  margin: 0 0 26px;
+}
+body.decoder-page .results-head span {
+  font-size: 12.5px;
+  color: var(--muted);
+  letter-spacing: -0.002em;
+  padding-bottom: 6px;
+}
+body.decoder-page #file-list.results {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin: 0;
+  padding: 0;
+}
+body.decoder-page #file-list .file-card {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+  background: var(--surface);
+  border: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px var(--card-ring);
+  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+}
+body.decoder-page #file-list .file-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 0 1px var(--ring), 0 18px 36px -18px rgba(0, 0, 0, 0.22);
+}
+body.decoder-page #file-list .file-card .preview {
+  order: 0;
+  aspect-ratio: 4 / 3;
+  background: var(--fog);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+}
+body.decoder-page #file-list .file-card .preview canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  object-fit: cover;
+  border-radius: 0;
+}
+body.decoder-page #file-list .file-card.is-failure .preview,
+body.decoder-page #file-list .file-card.is-error .preview {
+  aspect-ratio: auto;
+  background: var(--fog);
+  display: block;
+  padding: 10px;
+  overflow: visible;
+}
+body.decoder-page #file-list .file-card .result__body {
+  padding: 12px 14px 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  min-width: 0;
+}
+body.decoder-page #file-list .file-card .name {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  margin: 0;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+body.decoder-page #file-list .file-card .status {
+  display: block;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--muted);
+  margin: 0 0 11px;
+  padding: 0;
+  background: none;
+  border: 0;
+  min-height: 0;
+}
+body.decoder-page #file-list .file-card .status.err,
+body.decoder-page #file-list .file-card .status.unknown {
+  color: #d70015;
+}
+:root[data-theme="dark"] body.decoder-page #file-list .file-card .status.err,
+:root[data-theme="dark"] body.decoder-page #file-list .file-card .status.unknown {
+  color: #ff453a;
+}
+body.decoder-page #file-list .file-card .status.loading .spinner {
+  display: inline-block;
+  vertical-align: -2px;
+  width: 11px;
+  height: 11px;
+  border-width: 1.5px;
+  margin-right: 4px;
+}
+body.decoder-page #file-list .file-card .info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+body.decoder-page #file-list .file-card .info > div {
+  display: none;
+}
+body.decoder-page #file-list .file-card .info > .actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+/* "另存为" label + per-card format select travel as one unit so a narrow card
+   can wrap them together instead of breaking the label into single glyphs. */
+body.decoder-page #file-list .file-card .info > .actions .actions-format {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+body.decoder-page #file-list .file-card .info > .actions .btn,
+body.decoder-page #file-list .file-card .info > .actions .btn-primary,
+body.decoder-page #file-list .file-card .info > .actions .btn-small {
+  font-family: var(--font-text);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.2;
+  padding: 6px 11px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--save-bg);
+  color: var(--text);
+  letter-spacing: -0.004em;
+  cursor: pointer;
+  transition: background 0.2s;
+  box-shadow: none;
+}
+body.decoder-page #file-list .file-card .info > .actions .btn:hover {
+  background: var(--save-bg-hover);
+}
+body.decoder-page #file-list .file-card .info > .actions select.fmt-select {
+  height: 26px;
+  margin-left: auto;
+  padding: 1px 4px;
+  font-size: 11px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--muted);
+}
+body.decoder-page #file-list .file-card .err-msg,
+body.decoder-page #file-list .file-card .preview .err-msg {
+  font-size: 12px;
+  color: var(--muted);
+  padding: 4px 2px;
+  word-break: break-word;
+}
+
+/* ---------- Info ---------- */
+
+body.decoder-page .info-block {
+  padding: 104px 0 120px;
+}
+body.decoder-page .info-grid {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 96px;
+  align-items: start;
+}
+body.decoder-page .info-grid h2 {
+  margin: 14px 0 20px;
+}
+body.decoder-page .info-grid p {
+  margin: 0 0 16px;
+  font-size: 16px;
+  line-height: 1.55;
+  letter-spacing: -0.01em;
+  color: var(--muted);
+}
+body.decoder-page .info-tips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--border);
+}
+body.decoder-page .info-tips li {
+  display: flex;
+  gap: 14px;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14.5px;
+  line-height: 1.5;
+  letter-spacing: -0.006em;
+  color: var(--ink-2);
+}
+body.decoder-page .info-tips svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  margin-top: 3px;
+  color: var(--accent);
+}
+
+/* ---------- Back to top / position ---------- */
+
+body.decoder-page #backToTop,
+body.decoder-page #backToPosition {
+  position: fixed;
+  right: 20px;
+  bottom: 22px;
+  z-index: 60;
+  display: none;
+}
+body.decoder-page #backToPosition {
+  bottom: 68px;
+}
+body.decoder-page #backToTop a,
+body.decoder-page #backToPosition a {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--fog);
+  color: var(--muted);
+  border: 0;
+  text-decoration: none;
+  font-size: 15px;
+  line-height: 1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16);
+  transition: transform 0.15s, color 0.15s;
+}
+body.decoder-page #backToTop a:hover,
+body.decoder-page #backToPosition a:hover {
+  transform: scale(1.06);
+  color: var(--text);
+}
+
+/* ---------- Responsive (reference breakpoints) ---------- */
+
+@media (max-width: 1068px) {
+  body.decoder-page #file-list.results {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  body.decoder-page .info-grid {
+    gap: 64px;
+  }
+}
+
+@media (max-width: 834px) {
+  body.decoder-page .decoder-hero {
+    padding-top: calc(var(--nav-h) + 52px);
+  }
+  body.decoder-page #dropzone.drop {
+    min-height: 240px;
+  }
+  body.decoder-page .big-stage__arrow--l {
+    left: 34px;
+  }
+  body.decoder-page .big-stage__arrow--r {
+    right: 34px;
+  }
+  body.decoder-page .info-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+}
+
+@media (max-width: 560px) {
+  body.decoder-page #dropzone.drop {
+    min-height: 220px;
+    padding: 32px 18px;
+    border-radius: 22px;
+  }
+  body.decoder-page #dropzone b,
+  body.decoder-page #dropzone .drop__title {
+    font-size: 18px;
+  }
+  body.decoder-page #dropzone .drop__hint {
+    font-size: 13px;
+  }
+  body.decoder-page #dropzone .drop__fine {
+    flex-wrap: wrap;
+    row-gap: 6px;
+    font-size: 10.5px;
+    padding: 0 10px;
+  }
+  body.decoder-page .sample-row {
+    flex-wrap: wrap;
+    row-gap: 6px;
+    font-size: 12px;
+  }
+  body.decoder-page #file-list.results {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  body.decoder-page .results-block {
+    padding-top: 52px;
+  }
+  body.decoder-page .toolbar {
+    align-items: flex-start;
+  }
+  body.decoder-page .segmented {
+    order: 2;
+  }
+  body.decoder-page .big-stage,
+  body.decoder-page #viewer-container {
+    padding-top: 24px;
+  }
+  body.decoder-page .big-stage__frame {
+    padding: 0 12px;
+  }
+  body.decoder-page .big-stage__view,
+  body.decoder-page #viewer-main,
+  body.decoder-page #viewer-stage {
+    min-height: 0;
+  }
+  body.decoder-page #viewer-stage canvas {
+    height: 34vh;
+  }
+  body.decoder-page .big-stage__arrow {
+    width: 34px;
+    height: 34px;
+  }
+  body.decoder-page .big-stage__arrow--l {
+    left: 22px;
+  }
+  body.decoder-page .big-stage__arrow--r {
+    right: 22px;
+  }
+  body.decoder-page .big-stage__film,
+  body.decoder-page #viewer-filmstrip {
+    padding: 12px 12px 0;
+  }
+  body.decoder-page .filmstrip-thumb {
+    width: 52px;
+    height: 35px;
+  }
+  body.decoder-page .info-block {
+    padding: 72px 0 84px;
+  }
+}
+
+/* ---------- Port calibration ----------
+   The site shell reserves the fixed-nav height on <body>; the reference
+   page does that inside each section's own padding, so the decode page
+   opts out. Also re-assert the toolbar row direction and the ID-level
+   button resets carry higher specificity than the ported class rules
+   above. */
+
+body.decoder-page {
+  padding-top: 0;
+}
+body.decoder-page .decoder-hero {
+  padding-top: calc(var(--nav-h) + 40px);
+}
+body.decoder-page #dropzone.drop {
+  margin: 38px 0 0;
+}
+body.decoder-page .toolbar,
+body.decoder-page #toolbar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  margin: 0 0 22px;
+}
+body.decoder-page #helpBtn,
+body.decoder-page #addFilesBtn {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: none;
+  color: var(--faint);
+  font-family: var(--font-text);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+body.decoder-page #helpBtn:hover,
+body.decoder-page #addFilesBtn:hover {
+  background: var(--fog);
+  color: var(--text);
+}
+body.decoder-page #downloadAllBtn {
+  white-space: nowrap;
+  font-size: 14px;
+  padding: 8px 16px;
+}
+body.decoder-page .viewer-stage-content {
+  display: block;
+  width: 100%;
+  position: static;
+}
+body.decoder-page .viewer-stage-content > canvas {
+  margin: 0 auto;
+}
+
+@media (max-width: 834px) {
+  body.decoder-page .decoder-hero {
+    padding-top: calc(var(--nav-h) + 20px);
+  }
+}
+
+/* ---------- Port calibration 2: secondary controls stay out of the
+   reference toolbar. The only extra control next to the filename is the
+   small "add files" icon; grid toggle + shortcuts live in the results
+   header so the toolbar keeps the reference's exact three-action layout. */
+
+body.decoder-page .toolbar__file b {
+  line-height: 1.5;
+  max-width: 340px;
+}
+body.decoder-page .toolbar__name-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+body.decoder-page #addFilesBtn {
+  width: 22px;
+  height: 22px;
+  flex: none;
+  color: var(--faint);
+  opacity: 0.75;
+}
+body.decoder-page #addFilesBtn svg {
+  width: 12px;
+  height: 12px;
+}
+body.decoder-page #addFilesBtn:hover {
+  opacity: 1;
+}
+body.decoder-page #clearBtn {
+  border: 0;
+  border-radius: 980px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: -0.012em;
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.2s var(--ease);
+}
+body.decoder-page #clearBtn:hover {
+  background: rgba(0, 0, 0, 0.07);
+}
+:root[data-theme="dark"] body.decoder-page #clearBtn {
+  background: rgba(255, 255, 255, 0.1);
+}
+body.decoder-page .results-head__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 3px;
+}
+body.decoder-page .results-head__meta span {
+  padding-bottom: 0;
+}
+body.decoder-page #file-list.results ~ * {
+  /* no-op guard: keeps the results grid the last block */
+}
+body.decoder-page .results-head__meta #helpBtn {
+  width: 26px;
+  height: 26px;
+}
+
+/* ---------- Port calibration 3 ---------- */
+
+body.decoder-page #viewer-container,
+body.decoder-page .big-stage {
+  margin: 0;
+}
+body.decoder-page #toolbar #clearBtn {
+  border: 0;
+  border-radius: 980px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: -0.012em;
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.2s var(--ease);
+}
+body.decoder-page #toolbar #clearBtn:hover {
+  background: rgba(0, 0, 0, 0.07);
+}
+:root[data-theme="dark"] body.decoder-page #toolbar #clearBtn {
+  background: rgba(255, 255, 255, 0.1);
+}
+:root[data-theme="dark"] body.decoder-page #toolbar #clearBtn:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+/* ---------- Port calibration 4: mobile band ---------- */
+
+body.decoder-page #viewer-stage canvas {
+  height: min(58vh, 560px) !important;
+  width: auto !important;
+  max-width: 100% !important;
+}
+body.decoder-page #viewer-header .vh-dims {
+  display: inline;
+}
+
+@media (max-width: 560px) {
+  body.decoder-page #viewer-stage canvas {
+    height: 34vh;
+  }
+  body.decoder-page #viewer-header {
+    max-width: calc(100% - 36px);
+    font-size: 10.5px;
+    padding: 6px 11px;
+    gap: 7px;
+  }
+}
+
+/* ---------- Port calibration 5: mobile results header + meta pill ---------- */
+
+@media (max-width: 560px) {
+  body.decoder-page .results-head {
+    flex-wrap: nowrap;
+    gap: 12px;
+  }
+  body.decoder-page .results-head h2 {
+    white-space: nowrap;
+  }
+  body.decoder-page .results-head__meta {
+    flex: none;
+    margin-left: auto;
+  }
+  body.decoder-page .results-head__meta > span,
+  body.decoder-page #resultsMeta {
+    white-space: nowrap;
+  }
+  body.decoder-page #helpBtn {
+    display: none;
+  }
+  body.decoder-page #viewer-header {
+    max-width: calc(100% - 36px);
+    font-size: 11.5px;
+    padding: 8px 14px;
+    gap: 10px;
+  }
+}
+
+/* ---------- Port calibration 6: result card metrics match .result ---------- */
+
+body.decoder-page #file-list .file-card .result__body {
+  position: relative;
+}
+body.decoder-page #file-list .file-card .name {
+  line-height: 1.5;
+  max-width: calc(100% - 76px);
+}
+body.decoder-page #file-list .file-card .status {
+  line-height: 1.5;
+}
+body.decoder-page #file-list .file-card .info > .actions .btn {
+  line-height: 1.5;
+}
+
+/* segmented control keeps the reference's taller text line */
+body.decoder-page .segmented button {
+  line-height: 1.5;
+}
+/* final calibration: match the reference hero top (h1 at y=120 with nav 48) */
+body.decoder-page .decoder-hero {
+  padding-top: 120px;
+}
+
+/* ---------- 1. Viewer band geometry ---------- */
+
+body.decoder-page #viewer-main,
+body.decoder-page #viewer-stage {
+  height: min(58vh, 560px);
+  min-height: 0;
+}
+body.decoder-page .viewer-stage-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  overflow: hidden;
+}
+
+/* Any placeholder hosted on the band (spinner or failed decode) is centred
+   inside the fixed stage and scrolls internally if it cannot fit. */
+body.decoder-page #viewer-stage > .viewer-stage-content > .viewer-placeholder {
+  flex: none;
+  max-height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  width: min(540px, calc(100% - 96px));
+  box-sizing: border-box;
+  margin: 0 auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.28) transparent;
+}
+
+@media (max-width: 560px) {
+  body.decoder-page #viewer-main,
+  body.decoder-page #viewer-stage {
+    height: 34vh;
+  }
+}
+body.decoder-page .viewer-placeholder {
+  border: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.82);
+  gap: 8px;
+  padding: 0;
+  min-height: 0;
+}
+body.decoder-page .viewer-placeholder.failed {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.82);
+}
+:root[data-theme="dark"] body.decoder-page .viewer-placeholder.failed {
+  background: transparent;
+  border: 0;
+}
+body.decoder-page .viewer-placeholder.failed .placeholder-title {
+  color: #f5f5f7;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+body.decoder-page .viewer-placeholder.failed .placeholder-msg {
+  color: rgba(255, 255, 255, 0.64);
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+body.decoder-page #file-list .file-card.is-failure {
+  flex-direction: column;
+}
+body.decoder-page #file-list .file-card.is-failure .result__body {
+  order: 0;
+  width: 100%;
+  padding: 13px 16px 10px;
+  gap: 2px;
+}
+body.decoder-page #file-list .file-card.is-failure .preview {
+  order: 1;
+  width: 100%;
+  padding: 0;
+  background: transparent;
+  display: block;
+  aspect-ratio: auto;
+}
+body.decoder-page #file-list .file-card.is-failure .name {
+  max-width: 100%;
+}
+body.decoder-page #file-list .file-card.is-failure .status {
+  margin: 0;
+  min-height: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FILMSTRIP GALLERY (decoder UI pass)
+   A proper thumbnail rail: larger 80×55 desktop / 68×46 phone thumbs, a real
+   scroll track with snap + edge fades + wheel support, an always-visible count
+   pill outside the scroller, failure thumbs with visible tile rings.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+body.decoder-page .big-stage__film,
+body.decoder-page #viewer-filmstrip {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: 1180px;
+  margin: 20px auto 0;
+  padding: 20px 24px 16px;
+  overflow: visible;
+  background: transparent;
+  border: 0;
+}
+body.decoder-page .filmstrip-track {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 3px 2px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  scroll-snap-type: x proximity;
+  scroll-padding-left: 2px;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  mask-image: none;
+  -webkit-mask-image: none;
+}
+body.decoder-page .filmstrip-track::-webkit-scrollbar {
+  display: none;
+}
+
+/* Rail centering: tinted when the thumbs fit, left-aligned once they overflow
+   (JS toggles .has-overflow). The switch happens exactly at the overflow
+   boundary, so there is no visual jump. */
+body.decoder-page .filmstrip-track.has-overflow {
+  justify-content: flex-start;
+}
+
+/* Edge affordance: fade the rail only on sides where more thumbs exist. */
+body.decoder-page .filmstrip-track.can-scroll-left {
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 30px, #000 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 30px, #000 100%);
+}
+body.decoder-page .filmstrip-track.can-scroll-right {
+  -webkit-mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 30px), transparent 100%);
+  mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 30px), transparent 100%);
+}
+body.decoder-page .filmstrip-track.can-scroll-left.can-scroll-right {
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    #000 30px,
+    #000 calc(100% - 30px),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    #000 30px,
+    #000 calc(100% - 30px),
+    transparent 100%
+  );
+}
+body.decoder-page .filmstrip-thumb {
+  width: 80px;
+  height: 55px;
+  flex: none;
+  padding: 0;
+  border: 0;
+  border-radius: 9px;
+  overflow: hidden;
+  background: #141416;
+  opacity: 0.72;
+  cursor: pointer;
+  display: block;
+  outline: none;
+  position: relative;
+  scroll-snap-align: start;
+  box-shadow: inset 0 0 0 1px var(--film-thumb-ring);
+  /* Selection ring must be instant: only opacity animates, so a click can
+     never show a transient ring colour race. */
+  transition: opacity 0.18s ease;
+}
+body.decoder-page .filmstrip-thumb:hover {
+  opacity: 0.92;
+}
+body.decoder-page .filmstrip-thumb.active {
+  opacity: 1;
+  box-shadow: inset 0 0 0 2px #fff, 0 8px 20px -10px rgba(0, 0, 0, 0.6);
+}
+body.decoder-page .filmstrip-thumb:focus-visible {
+  box-shadow: inset 0 0 0 2px #0a84ff, 0 0 0 2px rgba(10, 132, 255, 0.35);
+}
+body.decoder-page .filmstrip-thumb.failed {
+  background: #141416;
+  border: 0;
+}
+body.decoder-page .filmstrip-thumb.failed.active {
+  box-shadow: inset 0 0 0 2px #fff, 0 8px 20px -10px rgba(0, 0, 0, 0.6);
+}
+body.decoder-page .filmstrip-thumb.failed svg {
+  color: rgba(255, 255, 255, 0.3);
+}
+body.decoder-page .filmstrip-thumb .film-thumb-fail__glyph {
+  width: 18px;
+  height: 18px;
+}
+
+/* Count pill: outside the scroller, always visible, tabular numerals. */
+body.decoder-page .big-stage__count,
+body.decoder-page #viewerPos {
+  flex: none;
+  margin: 0;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: var(--film-count-bg);
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 12px;
+  min-width: 52px;
+  text-align: center;
+}
+
+@media (max-width: 560px) {
+  body.decoder-page .big-stage__film,
+  body.decoder-page #viewer-filmstrip {
+    gap: 10px;
+    padding: 14px 14px 12px;
+  }
+  body.decoder-page .filmstrip-track {
+    gap: 10px;
+    padding: 2px 0;
+  }
+  body.decoder-page .filmstrip-thumb {
+    width: 68px;
+    height: 46px;
+    border-radius: 8px;
+  }
+  body.decoder-page .filmstrip-thumb .film-thumb-fail__glyph {
+    width: 16px;
+    height: 16px;
+  }
+  body.decoder-page .big-stage__count,
+  body.decoder-page #viewerPos {
+    padding: 6px 10px;
+    min-width: 46px;
+    font-size: 11.5px;
+  }
+}
+
+@media (max-width: 360px) {
+  body.decoder-page .big-stage__film,
+  body.decoder-page #viewer-filmstrip {
+    gap: 8px;
+    padding: 12px 12px 10px;
+  }
+  body.decoder-page .filmstrip-track {
+    gap: 8px;
+  }
+  body.decoder-page .filmstrip-thumb {
+    width: 62px;
+    height: 44px;
+  }
+}
+
+/* ID-scoped overrides win over the earlier mobile filmstrip rules (which use
+   #viewer-filmstrip .filmstrip-thumb) and the polish-layer failed-ring rules. */
+body.decoder-page #viewer-filmstrip .filmstrip-thumb {
+  width: 80px;
+  height: 55px;
+}
+body.decoder-page #viewer-filmstrip .filmstrip-thumb.active,
+body.decoder-page #viewer-filmstrip .filmstrip-thumb.failed.active {
+  box-shadow: inset 0 0 0 2px #fff, 0 8px 20px -10px rgba(0, 0, 0, 0.6);
+}
+body.decoder-page #viewer-filmstrip .filmstrip-thumb:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px #0a84ff, 0 0 0 2px rgba(10, 132, 255, 0.35);
+}
+
+@media (max-width: 560px) {
+  body.decoder-page #viewer-filmstrip .filmstrip-thumb {
+    width: 68px;
+    height: 46px;
+  }
+}
+
+@media (max-width: 360px) {
+  body.decoder-page #viewer-filmstrip .filmstrip-thumb {
+    width: 62px;
+    height: 44px;
+  }
+}
+body.decoder-page #viewer-filmstrip .filmstrip-thumb.active:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px #fff, 0 0 0 2px #0a84ff;
+}
+
+/* Pointer activation never paints a focus ring. Keyboard focus still does.
+   The selected (active) ring is identical for decoded and failed thumbs and
+   always wins over focus styling: no flash, no failed-only treatment. */
+body.decoder-page #viewer-filmstrip .filmstrip-thumb:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: inset 0 0 0 1px var(--film-thumb-ring);
+}
+body.decoder-page #viewer-filmstrip .filmstrip-thumb.active:focus:not(:focus-visible),
+body.decoder-page #viewer-filmstrip .filmstrip-thumb.failed.active:focus:not(:focus-visible) {
+  box-shadow: inset 0 0 0 2px #fff, 0 8px 20px -10px rgba(0, 0, 0, 0.6);
+}

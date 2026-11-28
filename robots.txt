@@ -1,0 +1,5 @@
+# Public pages and assets are crawlable. Error pages are noindex, not blocked.
+User-agent: *
+Allow: /
+
+Sitemap: https://ithmb-codec.dev/sitemap.xml

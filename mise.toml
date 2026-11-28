@@ -1,0 +1,12 @@
+# mise.toml — Tool version management for the web repo
+# Schema reference: https://mise.jdx.dev/configuration.html
+
+min_version = "2024.1.1"
+
+[tools]
+# Node.js pinned to match CI (ci.yml uses node-version: 22)
+node = "22"
+
+[env]
+# Tools in scripts/ should be discoverable
+_.path = ["./scripts"]

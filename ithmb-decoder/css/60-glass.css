@@ -1,0 +1,948 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   LAYER 6 · GLASS MATERIALS
+   Approved Medium glassmorphism surfaces, fallbacks and reduced-motion rules.
+   ═══════════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════════════════
+   Glassmorphism — approved "Medium" level (v2 design-lab), Apple-like restraint
+   ───────────────────────────────────────────────────────────────────────────
+   Glass floats, information sits: only floating chrome gets a backdrop pass.
+   All information-carrying cards (result cards, content cards, bands) stay
+   opaque. Values mirror the approved Medium sheet: blur 16px, nav tint
+   .54/.50 (light/dark), hairline ring .24. Tune at token level only.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ---------- Nav: near-opaque at the top; glass only once scrolled ---------- */
+/* At the top the nav does no backdrop work at all. The is-scrolled class is
+   toggled by nav.ts with a passive, rAF-throttled scroll listener. */
+body .top-nav {
+  background: var(--glass-nav-top-bg);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  transition: none;
+}
+:root[data-theme="dark"] body .top-nav {
+  background: var(--glass-nav-top-bg);
+  border-bottom-color: var(--glass-nav-hairline);
+}
+body.is-scrolled .top-nav {
+  background: var(--glass-nav-bg);
+  -webkit-backdrop-filter: saturate(180%) blur(var(--glass-blur));
+  backdrop-filter: saturate(180%) blur(var(--glass-blur));
+  box-shadow: inset 0 -1px 0 var(--glass-nav-hairline);
+  border-bottom-color: transparent;
+}
+:root[data-theme="dark"] body.is-scrolled .top-nav {
+  background: var(--glass-nav-bg);
+  box-shadow: inset 0 -1px 0 var(--glass-nav-hairline);
+}
+
+/* ---------- Floating viewer chrome ---------- */
+body.decoder-page .big-stage__meta,
+body.decoder-page #viewer-header {
+  background: var(--glass-float);
+  -webkit-backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
+  backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
+  box-shadow: inset 0 0 0 1px var(--glass-ring);
+}
+body.decoder-page .big-stage__arrow {
+  background: var(--glass-arrow);
+  -webkit-backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
+  backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
+  box-shadow: inset 0 0 0 1px var(--glass-ring);
+}
+body.decoder-page .big-stage__film,
+body.decoder-page #viewer-filmstrip {
+  background: var(--glass-film);
+  -webkit-backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
+  backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
+  border-radius: 14px;
+  box-shadow: inset 0 0 0 1px var(--glass-ring);
+}
+
+/* ---------- Toolbar segmented control ---------- */
+body.decoder-page .segmented {
+  background: var(--glass-seg);
+  -webkit-backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
+  backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+:root[data-theme="dark"] body.decoder-page .segmented {
+  box-shadow: inset 0 0 0 1px var(--glass-ring);
+}
+body.decoder-page .segmented .is-on {
+  background: var(--glass-seg-on);
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  backdrop-filter: blur(var(--glass-blur));
+}
+
+/* ---------- Reduced motion: the scroll-state tint must not animate ---------- */
+@media (prefers-reduced-motion: reduce) {
+  body .top-nav,
+  body.is-scrolled .top-nav {
+    transition: none !important;
+  }
+}
+
+/* ---------- Fallback: no backdrop-filter → current opaque surfaces ---------- */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  body.is-scrolled .top-nav {
+    background: var(--glass-nav-top-bg);
+    box-shadow: inset 0 -1px 0 var(--glass-nav-hairline);
+  }
+  body.decoder-page .big-stage__meta,
+  body.decoder-page #viewer-header,
+  body.decoder-page body.decoder-page .big-stage__arrow {
+    background: rgba(255, 255, 255, 0.14);
+  }
+  body.decoder-page .big-stage__film,
+  body.decoder-page #viewer-filmstrip {
+    background: rgba(10, 10, 12, 0.62);
+  }
+  body.decoder-page .segmented {
+    background: var(--fog);
+    box-shadow: none;
+  }
+  :root[data-theme="dark"] body.decoder-page .segmented {
+    background: #2c2c2e;
+  }
+  body.decoder-page .segmented .is-on {
+    background: #fff;
+  }
+  :root[data-theme="dark"] body.decoder-page .segmented .is-on {
+    background: #3a3a3c;
+  }
+}
+
+/* Final failure-thumb decision: muted glyph colour. Legacy ID-specificity
+   rules above set failed filmstrip svgs to amber; the owner decision is
+   neutral/muted — no amber or red in the tile. */
+#viewer-filmstrip .filmstrip-thumb.failed svg.film-thumb-fail__glyph {
+  color: var(--viewer-tile-glyph);
+}
+
+/* global screen-reader-only utility: footer/CTA "(opens in a new tab)" hints
+   must never render visibly outside the decoder page either. */
+.sr-only:not(:focus):not(:active) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+body.decoder-page #viewer-container {
+  background-color: var(--viewer-bg);
+  /* Short page-coloured fades at the band edges turn the hard page→viewer
+     transition into a gradient; the radial glow adds the inner light. */
+  background-image: linear-gradient(180deg, var(--viewer-edge) 0, rgba(0, 0, 0, 0) 44px),
+    linear-gradient(0deg, var(--viewer-edge) 0, rgba(0, 0, 0, 0) 40px), var(--viewer-glow);
+  background-repeat: no-repeat, no-repeat, no-repeat;
+  background-size: 100% 44px, 100% 40px, cover;
+  background-position: center top, center bottom, center top;
+  color: #f5f5f7;
+}
+:root[data-theme="dark"] body.decoder-page #viewer-container {
+  background-color: var(--viewer-bg);
+}
+
+/* The light-mode card floats on a deep neutral band now: keep its text colours
+   on the dark side of the scale (measured over the composited glass) and lift
+   the glass slightly so muted copy stays legible. */
+/* Slightly wider failure card on phones (arrows keep their clearance). */
+@media (max-width: 560px) {
+  body.decoder-page #viewer-stage > .viewer-stage-content > .viewer-placeholder {
+    width: min(520px, calc(100% - 72px));
+  }
+}
+body.decoder-page .failure-info {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  text-align: left;
+  color: #f5f5f7;
+}
+body.decoder-page .failure-info--band {
+  width: min(520px, calc(100% - 96px));
+  margin: 0 auto;
+  padding: 22px 24px;
+  border-radius: 18px;
+  background: rgba(28, 28, 30, 0.82);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 30px 70px -40px rgba(0, 0, 0, 0.6);
+}
+body.decoder-page .failure-info--card {
+  gap: 5px;
+  padding: 10px 0 2px;
+  color: var(--text);
+}
+body.decoder-page .failure-info__head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+body.decoder-page .failure-info__title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #f5f5f7;
+}
+body.decoder-page .failure-info--card .failure-info__title {
+  color: var(--text);
+}
+body.decoder-page .failure-info__meta {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.58);
+  font-variant-numeric: tabular-nums;
+}
+body.decoder-page .failure-info__why {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.74);
+}
+body.decoder-page .failure-info--card .failure-info__why {
+  color: var(--muted);
+}
+body.decoder-page .failure-info__links {
+  margin: 2px 0 0;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.55);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 10px;
+}
+
+/* The middle dots were inline separators; the flex gap replaces them so the
+   links wrap cleanly on phones without a dangling dot. */
+body.decoder-page .failure-info__links > span[aria-hidden="true"] {
+  display: none;
+}
+body.decoder-page .failure-info__links a,
+body.decoder-page .failure-info__try {
+  color: #6cb4ff;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+body.decoder-page .failure-info__links a:hover,
+body.decoder-page .failure-info__try:hover {
+  color: #8cc6ff;
+}
+body.decoder-page .failure-info__try {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+}
+@media (max-width: 560px) {
+  body.decoder-page .failure-info--band {
+    width: min(520px, calc(100% - 72px));
+    padding: 18px;
+    border-radius: 16px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   AMBIENT VIEWER LIGHT (YouTube-style, main image viewer only)
+   The decoded image's own colours are sampled locally into --ambient-1/2/3
+   and bleed into the band behind the stage. Gradients only (no blur filter),
+   absolutely positioned so viewer/filmstrip geometry never moves.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+body.decoder-page #viewer-container {
+  position: relative;
+  isolation: isolate;
+  transition: --ambient-1 600ms ease, --ambient-2 600ms ease, --ambient-3 600ms ease;
+}
+body.decoder-page #viewer-container::before,
+body.decoder-page #viewer-container::after {
+  content: "";
+  position: absolute;
+  inset: 0 -6%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 600ms ease;
+}
+body.decoder-page #viewer-container[data-ambient="on"]::before {
+  opacity: 1;
+  background: radial-gradient(
+      46% 92% at 2% 48%,
+      color-mix(in srgb, var(--ambient-1) var(--ambient-mix), transparent) 0%,
+      transparent 72%
+    ),
+    radial-gradient(
+      46% 92% at 98% 52%,
+      color-mix(in srgb, var(--ambient-2) var(--ambient-mix), transparent) 0%,
+      transparent 72%
+    );
+}
+body.decoder-page #viewer-container[data-ambient="on"]::after {
+  opacity: 0.6;
+  background: radial-gradient(
+    56% 64% at 50% 2%,
+    color-mix(in srgb, var(--ambient-3) var(--ambient-mix-strong), transparent) 0%,
+    transparent 76%
+  );
+}
+
+/* Content always paints above the glow. */
+body.decoder-page #viewer-container > * {
+  position: relative;
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.decoder-page #viewer-container {
+    transition: none;
+  }
+  body.decoder-page #viewer-container::before,
+  body.decoder-page #viewer-container::after {
+    transition: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LIGHT-BAND SURFACE SYSTEM (UI4)
+   In light mode the viewer band is a page-family light neutral, so every
+   floating surface (meta pill, arrows, filmstrip, count, failure card) uses
+   theme-aware viewer tokens instead of the dark-glass constants.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+body.decoder-page #viewer-container {
+  color: var(--viewer-fg);
+  --film-count-reserve: 92px;
+  --film-rail-gutter: 24px;
+  --film-count-right: 24px;
+}
+body.decoder-page #viewer-stage canvas {
+  box-shadow: var(--viewer-image-shadow);
+}
+body.decoder-page .big-stage__meta,
+body.decoder-page #viewer-header {
+  background: var(--viewer-glass);
+  color: var(--viewer-fg);
+  box-shadow: inset 0 0 0 1px var(--viewer-glass-ring);
+}
+body.decoder-page #viewer-header .vh-file {
+  color: var(--viewer-fg);
+}
+body.decoder-page #viewer-header .vh-enc,
+body.decoder-page #viewer-header .vh-dims {
+  color: var(--viewer-fg-muted);
+}
+body.decoder-page #viewer-header i,
+body.decoder-page .big-stage__meta i {
+  background: var(--viewer-glass-ring);
+}
+body.decoder-page .big-stage__arrow {
+  background: var(--viewer-arrow-bg);
+  color: var(--viewer-arrow-fg);
+  box-shadow: inset 0 0 0 1px var(--viewer-glass-ring);
+}
+body.decoder-page .big-stage__film,
+body.decoder-page #viewer-filmstrip {
+  background: var(--viewer-glass);
+  box-shadow: inset 0 0 0 1px var(--viewer-glass-ring);
+}
+body.decoder-page .big-stage__count,
+body.decoder-page #viewerPos {
+  background: var(--viewer-count-bg);
+  color: var(--viewer-count-fg);
+}
+
+body.decoder-page #viewer-filmstrip #viewerPos {
+  color: var(--viewer-count-fg);
+}
+body.decoder-page .filmstrip-thumb {
+  box-shadow: inset 0 0 0 1px var(--viewer-thumb-ring);
+}
+body.decoder-page #viewer-filmstrip .filmstrip-thumb.active,
+body.decoder-page #viewer-filmstrip .filmstrip-thumb.failed.active {
+  box-shadow: inset 0 0 0 2px var(--viewer-thumb-active), 0 8px 20px -10px rgba(0, 0, 0, 0.4);
+}
+body.decoder-page #viewer-filmstrip .filmstrip-thumb:focus:not(:focus-visible) {
+  box-shadow: inset 0 0 0 1px var(--viewer-thumb-ring);
+}
+body.decoder-page #viewer-filmstrip .filmstrip-thumb.active:focus:not(:focus-visible),
+body.decoder-page #viewer-filmstrip .filmstrip-thumb.failed.active:focus:not(:focus-visible) {
+  box-shadow: inset 0 0 0 2px var(--viewer-thumb-active), 0 8px 20px -10px rgba(0, 0, 0, 0.4);
+}
+body.decoder-page .failure-info {
+  color: var(--viewer-fg);
+}
+body.decoder-page .failure-info--band {
+  background: var(--viewer-glass-strong);
+  box-shadow: inset 0 0 0 1px var(--viewer-glass-ring), 0 30px 70px -40px rgba(0, 0, 0, 0.28);
+}
+body.decoder-page .failure-info__title {
+  color: var(--viewer-fg);
+}
+body.decoder-page .failure-info__meta,
+body.decoder-page .failure-info__why,
+body.decoder-page .failure-info__links {
+  color: var(--viewer-fg-muted);
+}
+body.decoder-page .failure-info--card .failure-info__why,
+body.decoder-page .failure-info--card .failure-info__title {
+  color: var(--text);
+}
+body.decoder-page .viewer-placeholder.failed .placeholder-title,
+body.decoder-page .viewer-placeholder.plain .placeholder-title {
+  color: var(--viewer-fg);
+}
+body.decoder-page .viewer-placeholder.failed .placeholder-msg,
+body.decoder-page .viewer-placeholder.plain .placeholder-msg,
+body.decoder-page .viewer-placeholder .placeholder-msg {
+  color: var(--viewer-fg-muted);
+}
+
+/* Filmstrip: full-rail centring. The count pill is absolutely pinned at the
+   right and the track reserves symmetric space, so the thumbnail group is
+   centred relative to the WHOLE rail, not just the leftover width. */
+body.decoder-page .big-stage__film,
+body.decoder-page #viewer-filmstrip {
+  position: relative;
+  gap: 0;
+}
+body.decoder-page .filmstrip-track {
+  width: calc(100% + 2 * var(--film-rail-gutter));
+  margin-inline: calc(-1 * var(--film-rail-gutter));
+  padding-left: var(--film-count-reserve);
+  padding-right: var(--film-count-reserve);
+}
+body.decoder-page .filmstrip-track.has-overflow {
+  justify-content: flex-start;
+  padding-left: var(--film-rail-gutter);
+}
+body.decoder-page .big-stage__count,
+body.decoder-page #viewerPos {
+  position: absolute;
+  right: var(--film-count-right);
+  top: 50%;
+  transform: translateY(-50%);
+  margin: 0;
+  z-index: 3;
+}
+
+@media (max-width: 560px) {
+  body.decoder-page #viewer-container {
+    --film-count-reserve: 78px;
+    --film-rail-gutter: 14px;
+    --film-count-right: 14px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESULTS GRID (UI4): always visible below the viewer, scrolls in its own
+   capped region so a 200-file batch never grows the page to 500 cards tall.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+body.decoder-page #file-list.results {
+  max-height: min(70vh, 720px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 2px 6px 2px 2px;
+  scrollbar-gutter: stable;
+  align-content: start;
+}
+body.decoder-page .results-block {
+  padding-bottom: 84px;
+}
+
+@media (max-width: 560px) {
+  body.decoder-page #file-list.results {
+    max-height: 58vh;
+  }
+}
+
+/* Remaining viewer surfaces through the same tokens so a viewer-mode change
+   never needs component-level rewrites. */
+body.decoder-page .filmstrip-thumb {
+  background: var(--viewer-tile-bg);
+}
+
+body.decoder-page .failure-info__links a,
+body.decoder-page .failure-info__try {
+  color: var(--viewer-link);
+}
+
+body.decoder-page .big-stage__arrow:hover {
+  background: var(--viewer-arrow-hover-bg);
+}
+
+body.decoder-page #viewer-filmstrip .filmstrip-thumb:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--viewer-focus-ring), 0 0 0 2px
+    color-mix(in srgb, var(--viewer-focus-ring) 35%, transparent);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   EDGE-CASE UI (UI5): batch summary, skip link, card focus, load-failed
+   ═══════════════════════════════════════════════════════════════════════════ */
+.batch-notice {
+  padding: calc(var(--nav-h, 52px) + 12px) 0 12px;
+  background: color-mix(in srgb, var(--accent, #0071e3) 8%, var(--bg, #fff));
+  border-bottom: 1px solid var(--card-ring, #e5e5ea);
+}
+.batch-notice__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.batch-notice__text {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text);
+}
+.batch-notice__dismiss {
+  flex: none;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid var(--card-ring, #e5e5ea);
+  background: var(--surface, #fff);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.skip-link--results {
+  position: absolute;
+  left: 16px;
+  top: 12px;
+  z-index: 30;
+  transform: translateY(-200%);
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: var(--surface, #fff);
+  color: var(--text);
+  box-shadow: 0 0 0 1px var(--card-ring, #e5e5ea);
+  font-size: 13px;
+}
+.skip-link--results:focus {
+  transform: translateY(0);
+}
+.file-card[data-card-id] {
+  cursor: pointer;
+}
+.file-card[data-card-id]:focus-visible {
+  outline: 3px solid var(--viewer-focus-ring, #0a84ff);
+  outline-offset: 3px;
+}
+.load-failed {
+  margin: 24px auto;
+  padding: 20px;
+  border-radius: 14px;
+  background: color-mix(in srgb, #ff453a 8%, var(--surface, #fff));
+  color: var(--text);
+  text-align: center;
+}
+.load-failed .btn {
+  margin-left: 10px;
+}
+@media (max-width: 560px) {
+  .batch-notice__inner {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+/* EDGE tap targets: phone controls are at least 44×44 CSS px (edge-audit F13). */
+@media (max-width: 560px) {
+  body.decoder-page .big-stage__arrow,
+  body.decoder-page .icon-btn,
+  body.decoder-page #addFilesBtn,
+  body.decoder-page #helpBtn,
+  body.decoder-page .segmented button,
+  body.decoder-page .toolbar .btn,
+  body.decoder-page .toolbar__actions .btn {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  body.decoder-page .batch-notice__dismiss {
+    width: 100%;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   B5: mobile results, 320 reflow, contrast, touch and no-JS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Nav scrim for the collapsed drawer. */
+.nav-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgba(0, 0, 0, 0.32);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.nav-scrim.is-on {
+  opacity: 1;
+  pointer-events: auto;
+}
+body.nav-open .top-nav {
+  z-index: 50;
+}
+
+/* Small batches scroll with the page; only large batches get a bounded
+   region, and then the hint above the grid explains it. */
+body.decoder-page:not(.results-many) #file-list.results {
+  max-height: none;
+  overflow: visible;
+  overscroll-behavior: auto;
+  padding-right: 0;
+}
+body.decoder-page.results-many #file-list.results {
+  max-height: min(70vh, 720px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+body.decoder-page .results-window-hint {
+  margin: 8px 0 0;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+body.decoder-page.results-many .results-window-hint {
+  position: sticky;
+  bottom: 0;
+}
+
+/* 320 px: restore the gutter, let the action row wrap, keep the select inside. */
+@media (max-width: 360px) {
+  body.decoder-page .container {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  body.decoder-page #file-list .file-card .info > .actions {
+    flex-wrap: wrap;
+    row-gap: 6px;
+  }
+  body.decoder-page #file-list .file-card .info > .actions select.fmt-select {
+    margin-left: 0;
+    max-width: 100%;
+    min-width: 0;
+  }
+  body.decoder-page #file-list .file-card .result__body {
+    overflow: visible;
+  }
+  body.decoder-page .results-head h2 {
+    font-size: clamp(24px, 7vw, 30px);
+  }
+}
+
+/* 361–480 px phones (390/414/428): `.results-block` resets the horizontal
+   padding of `.container`, so the results heading and cards used to run to
+   the screen edge here while 360px and desktop were padded. Restore the
+   20px gutter for this band only, and let the card action row wrap so
+   "保存 JPEG" / "Save JPEG" never breaks and "另存为" / "Save as" never
+   stacks one glyph per line. */
+@media (min-width: 361px) and (max-width: 480px) {
+  body.decoder-page .container.results-block {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  body.decoder-page #file-list .file-card .info > .actions {
+    flex-wrap: wrap;
+    row-gap: 6px;
+  }
+  body.decoder-page #file-list .file-card .info > .actions .actions-format {
+    margin-left: 0;
+  }
+}
+
+/* Contrast: inactive format labels 4.5:1, selected segment boundary 3:1. */
+body.decoder-page .segmented button:not(.is-on) {
+  color: #4a4a4f;
+}
+:root[data-theme="dark"] body.decoder-page .segmented button:not(.is-on) {
+  color: #c7c7cc;
+}
+body.decoder-page .segmented button.is-on {
+  box-shadow: 0 0 0 1px #86868b, 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+:root[data-theme="dark"] body.decoder-page .segmented button.is-on {
+  box-shadow: 0 0 0 1px #8e8e93;
+}
+:root[data-theme="dark"] .guide-step__num {
+  color: #d1d1d6;
+  background: #2c2c2e;
+}
+
+/* Touch targets: 44×44 minimum on phones. */
+@media (max-width: 560px) {
+  body.decoder-page .icon-btn,
+  body.decoder-page #addFilesBtn,
+  body.decoder-page #helpBtn,
+  body.decoder-page .segmented button,
+  body.decoder-page #file-list .file-card .info > .actions .btn,
+  body.decoder-page #file-list .file-card .info > .actions select.fmt-select {
+    min-height: 44px;
+  }
+  body.decoder-page #file-list .file-card .info > .actions select.fmt-select {
+    min-width: 72px;
+  }
+}
+body.decoder-page .nojs-notice {
+  margin: 12px auto 0;
+  max-width: 640px;
+  font-size: 13px;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* 320 guide rail: keep the step number and content in one column. */
+@media (max-width: 360px) {
+  .guide-step {
+    grid-template-columns: 1fr;
+  }
+  .guide-step__head {
+    position: static;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   POST-LAUNCH POLISH: delayed loading pill + labelled Add files control
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Fixed status pill: appears after 2 s only, so a fast load never flashes
+   loading text and the drop card never shifts when it does appear. */
+body.decoder-page .decoding {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 60;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  color: var(--text);
+  box-shadow: 0 0 0 1px var(--card-ring, rgba(0, 0, 0, 0.1)), 0 12px 30px -12px rgba(0, 0, 0, 0.28);
+  font-size: 13px;
+  max-width: calc(100vw - 32px);
+  white-space: nowrap;
+}
+body.decoder-page .decoding[hidden] {
+  display: none;
+}
+@media (max-width: 560px) {
+  body.decoder-page .decoding {
+    bottom: 16px;
+    max-width: calc(100vw - 24px);
+    white-space: normal;
+    text-align: center;
+  }
+}
+
+/* Toolbar: filename block gets a second row with the count + Add files. */
+body.decoder-page .toolbar__file {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+body.decoder-page .toolbar__sub-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  min-width: 0;
+}
+body.decoder-page .add-files-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  gap: 6px;
+  height: auto;
+  min-height: 0;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--card-ring, rgba(0, 0, 0, 0.12));
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1.2;
+  cursor: pointer;
+  white-space: nowrap;
+}
+body.decoder-page .add-files-btn svg {
+  width: 13px;
+  height: 13px;
+}
+body.decoder-page .add-files-btn:hover {
+  background: var(--fog);
+}
+body.decoder-page .add-files-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+body.decoder-page .add-files-btn:active {
+  transform: translateY(1px);
+}
+@media (max-width: 560px) {
+  body.decoder-page .add-files-btn {
+    min-height: 44px;
+    height: auto;
+    padding: 11px 16px;
+    font-size: 13px;
+    line-height: 1.2;
+  }
+  body.decoder-page .toolbar__sub-row {
+    gap: 6px 8px;
+  }
+}
+
+/* Remove the old circular-icon sizing if any competing rule remains. */
+body.decoder-page #addFilesBtn {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: auto;
+  height: auto;
+  min-width: 0;
+  min-height: 0;
+  padding: 6px 12px;
+  border-radius: 999px;
+  line-height: 1.2;
+  opacity: 1;
+}
+body.decoder-page #addFilesBtn svg {
+  width: 13px;
+  height: 13px;
+  flex: none;
+}
+body.decoder-page #addFilesBtn span {
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+@media (max-width: 560px) {
+  body.decoder-page #addFilesBtn {
+    height: auto;
+    min-height: 44px;
+    padding: 11px 16px;
+    line-height: 1.2;
+  }
+}
+
+/* Sweep fixes: narrow-phone failure card and the retired floating add pill. */
+@media (max-width: 560px) {
+  body.decoder-page .failure-info--band {
+    width: min(520px, calc(100% - 40px));
+    padding: 16px;
+  }
+  body.decoder-page .failure-info__meta {
+    word-break: break-word;
+  }
+}
+body.decoder-page .add-files-btn span {
+  color: inherit;
+  font-size: inherit;
+}
+#addFilesBtn:after {
+  content: none;
+}
+
+/* UI fixes: Add files is a label-only pill aligned with the meta row. */
+body.decoder-page .add-files-btn,
+body.decoder-page #addFilesBtn {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: auto;
+  height: auto;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  line-height: 1.2;
+  padding: 6px 11px;
+  border: 1px solid var(--card-ring, rgba(0, 0, 0, 0.12));
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text);
+  box-shadow: none;
+  opacity: 1;
+  font-family: var(--font-text);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  white-space: nowrap;
+  cursor: pointer;
+  transform: none;
+}
+body.decoder-page .add-files-btn span,
+body.decoder-page #addFilesBtn span {
+  display: inline-flex;
+  align-items: center;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+body.decoder-page .add-files-btn:hover,
+body.decoder-page #addFilesBtn:hover {
+  background: var(--fog);
+}
+body.decoder-page .add-files-btn:focus-visible,
+body.decoder-page #addFilesBtn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+body.decoder-page .add-files-btn:active,
+body.decoder-page #addFilesBtn:active {
+  transform: translateY(1px);
+}
+@media (max-width: 560px) {
+  body.decoder-page .add-files-btn,
+  body.decoder-page #addFilesBtn {
+    height: auto;
+    min-height: 44px;
+    padding: 11px 16px;
+    font-size: 13px;
+    line-height: 1.2;
+  }
+}
+
+/* Mobile drawer: lock background scrolling while the scrim is open. */
+
+/* 320px card actions: the "Save as" label and its format select are one
+   unit (see .actions-format); give that unit the full row so the label never
+   stacks one glyph per line at the narrowest phone. Kept last so it wins over
+   the generic 560px touch-target min-width. */
+@media (max-width: 360px) {
+  body.decoder-page #file-list .file-card .info > .actions .actions-format {
+    width: 100%;
+  }
+  body.decoder-page #file-list .file-card .info > .actions .actions-label {
+    white-space: nowrap;
+  }
+  body.decoder-page #file-list .file-card .info > .actions select.fmt-select {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+}

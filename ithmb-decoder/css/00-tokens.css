@@ -1,0 +1,327 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   LAYER 0 · TOKENS
+   Single source of design variables (colour, type, radius, shadow, glass). Theme switch = :root[data-theme="dark"].
+   ═══════════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════════════════
+   0 · TOKENS — the single source of design variables (colour, type, spacing,
+   radius, shadow, glass). Theme switch = :root[data-theme="dark"].
+   Do not define component/page variables outside this layer unless they are
+   page-local (documented next to the file that owns them).
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --border: #d2d2d7;
+  --text: #1d1d1f;
+  --muted: #6e6e73;
+  --accent: #0071e3;
+  --accent-hover: #0077ed;
+  --success: #30d158;
+  --warn: #ff9f0a;
+  --radius: 18px;
+  --shadow: 0 2px 6px rgba(0, 0, 0, 0.05), 0 30px 60px -24px rgba(0, 0, 0, 0.28);
+  --card-bg: var(--surface);
+  /* badge tints (theme-aware via variables — dark overrides below) */
+  --badge-free-bg: #f0fdf4;
+  --badge-free: #16a34a;
+  --badge-popular-bg: #fff7ed;
+  --badge-popular: #ea580c;
+  --badge-blue-bg: #e8f0fe;
+  --badge-blue: #0071e3;
+  --badge-violet-bg: #f5f3ff;
+  --badge-violet: #7c3aed;
+  /* named breakpoints (mobile-first): floor 360px must not break;
+  desktop 1024px */
+  --bp-floor: 360px;
+  --bp-chrome: 480px;
+  --bp-tablet: 768px;
+  --bp-desktop: 1024px;
+  --nav-h: 48px;
+  --nav-panel-h: 0px;
+  --ink-2: #424245;
+  --faint: #6e6e73;
+  --fog: #f5f5f7;
+  --fog-deep: #ececef;
+  --link: #0066cc;
+  --link-dark: #2997ff;
+  --canvas: #ffffff;
+  --radius-s: 12px;
+  --radius-l: 26px;
+  --shadow-s: 0 1px 2px rgba(0, 0, 0, 0.04), 0 10px 30px -12px rgba(0, 0, 0, 0.18);
+  --font-display: "Inter", "Inter Fallback", -apple-system, BlinkMacSystemFont, "SF Pro Display",
+    "Segoe UI", sans-serif;
+  --font-text: "Inter", "Inter Fallback", -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    "Segoe UI", sans-serif;
+  /* CJK faces appended to the Latin stacks for Chinese pages only. Inter still
+     owns every Latin glyph; these faces only supply codepoints Inter does not
+     cover (Han, kana, fullwidth punctuation). Ordered macOS → Windows → Linux;
+     "Noto Sans SC" is the current Noto family name, "Noto Sans CJK SC" the
+     older distro face. */
+  --font-cjk: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC",
+    "Noto Sans CJK SC", sans-serif;
+  --font-text-zh: "Inter", "Inter Fallback", -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    "Segoe UI", var(--font-cjk);
+  --font-display-zh: "Inter", "Inter Fallback", -apple-system, BlinkMacSystemFont, "SF Pro Display",
+    "Segoe UI", var(--font-cjk);
+  --ease: cubic-bezier(0.28, 0.11, 0.32, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --max: 980px;
+  --max-wide: 1180px;
+  /* Tunables — single source of truth for the glass level. */
+  --glass-blur: 16px;
+  --glass-saturate: 150%;
+  --glass-ring: rgba(255, 255, 255, 0.24);
+  --glass-ring-ink: rgba(0, 0, 0, 0.08);
+  --glass-nav-bg: rgba(251, 251, 253, 0.54);
+  --glass-nav-top-bg: rgba(251, 251, 253, 0.94);
+  --glass-nav-hairline: rgba(0, 0, 0, 0.1);
+  --glass-float: rgba(16, 16, 18, 0.48);
+  --glass-arrow: rgba(255, 255, 255, 0.14);
+  --glass-film: rgba(10, 10, 12, 0.32);
+  --glass-seg: rgba(118, 118, 128, 0.45);
+  --glass-seg-on: rgba(255, 255, 255, 0.72);
+  /* guide floating chrome (rail + copy chips) */
+  --glass-rail: rgba(251, 251, 253, 0.58);
+  --glass-chip: rgba(255, 255, 255, 0.67);
+  /* ── soft-light atmosphere (site-wide gradient system) ─────────────── */
+  --wash-hero: radial-gradient(
+      95% 130% at 50% -25%,
+      rgba(0, 113, 227, 0.07),
+      rgba(255, 255, 255, 0) 62%
+    ), radial-gradient(60% 70% at 88% 6%, rgba(120, 150, 195, 0.06), rgba(255, 255, 255, 0) 64%);
+  --wash-hero-visual: radial-gradient(
+    52% 62% at 50% 42%,
+    rgba(0, 113, 227, 0.055),
+    rgba(255, 255, 255, 0) 72%
+  );
+  --wash-section: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(0, 113, 227, 0.03) 46%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  --wash-support: radial-gradient(
+    70% 130% at 50% 125%,
+    rgba(0, 113, 227, 0.06),
+    rgba(255, 255, 255, 0) 68%
+  );
+  --wash-page-top: radial-gradient(
+    105% 90% at 50% -32%,
+    rgba(0, 113, 227, 0.085),
+    rgba(255, 255, 255, 0) 70%
+  );
+  --wash-footer: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 113, 227, 0.05) 100%);
+  --viewer-bg: #f2f2f5;
+  --viewer-edge: rgba(255, 255, 255, 0.96);
+  --viewer-glow: radial-gradient(
+      120% 92% at 50% 6%,
+      rgba(255, 255, 255, 0.92),
+      rgba(242, 242, 245, 0) 62%
+    ), radial-gradient(85% 62% at 50% 102%, rgba(120, 130, 150, 0.07), rgba(242, 242, 245, 0) 72%);
+  --viewer-fg: #1d1d1f;
+  --viewer-fg-muted: rgba(29, 29, 31, 0.62);
+  --viewer-glass: rgba(255, 255, 255, 0.72);
+  --viewer-glass-strong: rgba(255, 255, 255, 0.9);
+  --viewer-glass-ring: rgba(0, 0, 0, 0.1);
+  --viewer-arrow-bg: rgba(255, 255, 255, 0.84);
+  --viewer-arrow-fg: #1d1d1f;
+  --viewer-count-bg: rgba(255, 255, 255, 0.88);
+  --viewer-count-fg: rgba(29, 29, 31, 0.78);
+  --viewer-thumb-ring: rgba(0, 0, 0, 0.16);
+  --viewer-thumb-active: #1d1d1f;
+  --viewer-image-shadow: 0 26px 70px -34px rgba(0, 0, 0, 0.28);
+  --viewer-tile-bg: #1a1a1c;
+  --viewer-tile-glyph: rgba(255, 255, 255, 0.32);
+  --viewer-link: #0066cc;
+  --viewer-arrow-hover-bg: rgba(255, 255, 255, 0.97);
+  --viewer-focus-ring: #0a84ff;
+  --ambient-mix: 30%;
+  --ambient-mix-strong: 18%;
+  --film-count-bg: rgba(22, 22, 24, 0.55);
+  --film-thumb-ring: rgba(255, 255, 255, 0.24);
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  /* Single dark-theme token layer (Tier A5): the old pre-redesign palette and the later contrast override are folded in here. */ --bg: #000000;
+  --surface: #1c1c1e;
+  --card-bg: #303036;
+  --border: #3a3a3c;
+  --text: #f5f5f7;
+  --ink-2: #d2d2d7;
+  --muted: #a1a1a6;
+  --faint: #8e8e93;
+  --fog: #161618;
+  --fog-deep: #1c1c1e;
+  --accent: #0a84ff;
+  --accent-hover: #409cff;
+  --link: #2997ff;
+  --canvas: #000;
+  --success: #30d158;
+  --warn: #ff9f0a;
+  --shadow: 0 2px 6px rgba(0, 0, 0, 0.5), 0 30px 60px -24px rgba(0, 0, 0, 0.8);
+  --shadow-s: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 30px -12px rgba(0, 0, 0, 0.6);
+  --glass-nav-bg: rgba(22, 22, 23, 0.5);
+  --glass-nav-top-bg: rgba(22, 22, 23, 0.94);
+  --glass-nav-hairline: rgba(255, 255, 255, 0.1);
+  --glass-seg: rgba(118, 118, 128, 0.22);
+  --glass-seg-on: rgba(255, 255, 255, 0.14);
+  --glass-rail: rgba(22, 22, 23, 0.58);
+  --glass-chip: rgba(44, 44, 46, 0.57);
+  /* ── soft-light atmosphere (dark theme) ────────────────────────────── */
+  --wash-hero: radial-gradient(95% 130% at 50% -25%, rgba(58, 118, 214, 0.11), rgba(0, 0, 0, 0) 62%),
+    radial-gradient(60% 70% at 88% 6%, rgba(88, 118, 166, 0.08), rgba(0, 0, 0, 0) 64%);
+  --wash-hero-visual: radial-gradient(
+    52% 62% at 50% 42%,
+    rgba(58, 118, 214, 0.09),
+    rgba(0, 0, 0, 0) 72%
+  );
+  --wash-section: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(58, 118, 214, 0.04) 46%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  --wash-support: radial-gradient(
+    70% 130% at 50% 125%,
+    rgba(58, 118, 214, 0.08),
+    rgba(0, 0, 0, 0) 68%
+  );
+  --wash-page-top: radial-gradient(
+    105% 90% at 50% -32%,
+    rgba(58, 118, 214, 0.12),
+    rgba(0, 0, 0, 0) 70%
+  );
+  --wash-footer: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(58, 118, 214, 0.07) 100%);
+  --viewer-bg: #000000;
+  --viewer-edge: rgba(0, 0, 0, 0.95);
+  --viewer-glow: radial-gradient(120% 92% at 50% 6%, rgba(72, 112, 172, 0.13), rgba(0, 0, 0, 0) 62%),
+    radial-gradient(85% 62% at 50% 102%, rgba(54, 74, 104, 0.11), rgba(0, 0, 0, 0) 72%);
+  --viewer-fg: #f5f5f7;
+  --viewer-fg-muted: rgba(255, 255, 255, 0.62);
+  --viewer-glass: rgba(16, 16, 18, 0.55);
+  --viewer-glass-strong: rgba(16, 16, 18, 0.78);
+  --viewer-glass-ring: rgba(255, 255, 255, 0.14);
+  --viewer-arrow-bg: rgba(255, 255, 255, 0.14);
+  --viewer-arrow-fg: #f5f5f7;
+  --viewer-count-bg: rgba(14, 14, 16, 0.62);
+  --viewer-count-fg: rgba(255, 255, 255, 0.78);
+  --viewer-thumb-ring: rgba(255, 255, 255, 0.24);
+  --viewer-thumb-active: #ffffff;
+  --viewer-image-shadow: 0 60px 120px -50px rgba(0, 0, 0, 0.9);
+  --viewer-tile-bg: #141416;
+  --viewer-tile-glyph: rgba(255, 255, 255, 0.3);
+  --viewer-link: #6cb4ff;
+  --viewer-arrow-hover-bg: rgba(255, 255, 255, 0.22);
+  --viewer-focus-ring: #0a84ff;
+  --ambient-mix: 38%;
+  --ambient-mix-strong: 26%;
+  --film-count-bg: rgba(14, 14, 16, 0.62);
+  --film-thumb-ring: rgba(255, 255, 255, 0.2);
+  color-scheme: dark;
+}
+/* Ambient viewer light: sampled image colours are written as CSS custom
+   properties on the viewer container. Registering them as <color> lets the
+   browser interpolate the glow on image change (500-700ms) instead of
+   snapping. No storage, no network: sampling happens locally on image change. */
+@property --ambient-1 {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --ambient-2 {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --ambient-3 {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+/* ── Viewer surface modes (prototype hooks) ────────────────────────────────
+   The default is theme-matched: light site → light viewer band, dark site →
+   black band. These blocks are inert unless <html data-viewer-mode="…"> is set,
+   so the alternate treatments can be prototyped without touching component
+   CSS:
+     dark-stage  → dark viewer band on both themes
+     inverted    → light band on the dark site, dark band on the light site
+   Every viewer surface, control and ambient layer reads these tokens. */
+:root[data-viewer-mode="dark-stage"][data-theme="light"] {
+  --viewer-bg: #000000;
+  --viewer-edge: rgba(255, 255, 255, 0.96);
+  --viewer-glow: radial-gradient(120% 92% at 50% 6%, rgba(72, 112, 172, 0.13), rgba(0, 0, 0, 0) 62%),
+    radial-gradient(85% 62% at 50% 102%, rgba(54, 74, 104, 0.11), rgba(0, 0, 0, 0) 72%);
+  --viewer-fg: #f5f5f7;
+  --viewer-fg-muted: rgba(255, 255, 255, 0.62);
+  --viewer-glass: rgba(16, 16, 18, 0.55);
+  --viewer-glass-strong: rgba(16, 16, 18, 0.78);
+  --viewer-glass-ring: rgba(255, 255, 255, 0.14);
+  --viewer-arrow-bg: rgba(255, 255, 255, 0.14);
+  --viewer-arrow-hover-bg: rgba(255, 255, 255, 0.22);
+  --viewer-arrow-fg: #f5f5f7;
+  --viewer-count-bg: rgba(14, 14, 16, 0.62);
+  --viewer-count-fg: rgba(255, 255, 255, 0.78);
+  --viewer-thumb-ring: rgba(255, 255, 255, 0.24);
+  --viewer-thumb-active: #ffffff;
+  --viewer-tile-bg: #141416;
+  --viewer-tile-glyph: rgba(255, 255, 255, 0.3);
+  --viewer-link: #6cb4ff;
+  --viewer-image-shadow: 0 60px 120px -50px rgba(0, 0, 0, 0.9);
+  --ambient-mix: 38%;
+  --ambient-mix-strong: 26%;
+}
+
+:root[data-viewer-mode="inverted"][data-theme="light"] {
+  --viewer-bg: #000000;
+  --viewer-edge: rgba(255, 255, 255, 0.96);
+  --viewer-glow: radial-gradient(120% 92% at 50% 6%, rgba(72, 112, 172, 0.13), rgba(0, 0, 0, 0) 62%),
+    radial-gradient(85% 62% at 50% 102%, rgba(54, 74, 104, 0.11), rgba(0, 0, 0, 0) 72%);
+  --viewer-fg: #f5f5f7;
+  --viewer-fg-muted: rgba(255, 255, 255, 0.62);
+  --viewer-glass: rgba(16, 16, 18, 0.55);
+  --viewer-glass-strong: rgba(16, 16, 18, 0.78);
+  --viewer-glass-ring: rgba(255, 255, 255, 0.14);
+  --viewer-arrow-bg: rgba(255, 255, 255, 0.14);
+  --viewer-arrow-hover-bg: rgba(255, 255, 255, 0.22);
+  --viewer-arrow-fg: #f5f5f7;
+  --viewer-count-bg: rgba(14, 14, 16, 0.62);
+  --viewer-count-fg: rgba(255, 255, 255, 0.78);
+  --viewer-thumb-ring: rgba(255, 255, 255, 0.24);
+  --viewer-thumb-active: #ffffff;
+  --viewer-tile-bg: #141416;
+  --viewer-tile-glyph: rgba(255, 255, 255, 0.3);
+  --viewer-link: #6cb4ff;
+  --viewer-image-shadow: 0 60px 120px -50px rgba(0, 0, 0, 0.9);
+  --ambient-mix: 38%;
+  --ambient-mix-strong: 26%;
+}
+
+:root[data-viewer-mode="inverted"][data-theme="dark"] {
+  --viewer-bg: #f2f2f5;
+  --viewer-edge: rgba(0, 0, 0, 0.95);
+  --viewer-glow: radial-gradient(
+      120% 92% at 50% 6%,
+      rgba(255, 255, 255, 0.92),
+      rgba(242, 242, 245, 0) 62%
+    ), radial-gradient(85% 62% at 50% 102%, rgba(120, 130, 150, 0.07), rgba(242, 242, 245, 0) 72%);
+  --viewer-fg: #1d1d1f;
+  --viewer-fg-muted: rgba(29, 29, 31, 0.62);
+  --viewer-glass: rgba(255, 255, 255, 0.72);
+  --viewer-glass-strong: rgba(255, 255, 255, 0.9);
+  --viewer-glass-ring: rgba(0, 0, 0, 0.1);
+  --viewer-arrow-bg: rgba(255, 255, 255, 0.84);
+  --viewer-arrow-hover-bg: rgba(255, 255, 255, 0.97);
+  --viewer-arrow-fg: #1d1d1f;
+  --viewer-count-bg: rgba(255, 255, 255, 0.88);
+  --viewer-count-fg: rgba(29, 29, 31, 0.78);
+  --viewer-thumb-ring: rgba(0, 0, 0, 0.16);
+  --viewer-thumb-active: #1d1d1f;
+  --viewer-tile-bg: #1a1a1c;
+  --viewer-tile-glyph: rgba(255, 255, 255, 0.32);
+  --viewer-link: #0066cc;
+  --viewer-image-shadow: 0 26px 70px -34px rgba(0, 0, 0, 0.28);
+  --ambient-mix: 30%;
+  --ambient-mix-strong: 18%;
+}

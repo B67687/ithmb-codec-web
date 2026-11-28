@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# gitleaks secret scan — fail fast if staged changes leak secrets (defense in depth)
+if command -v gitleaks >/dev/null 2>&1; then
+  if ! gitleaks git --pre-commit --staged --no-banner --exit-code 1 --redact 2>/tmp/gitleaks-hook.log; then
+    echo "GITLEAKS: secrets or high-entropy strings found in staged changes — aborting commit" >&2
+    cat /tmp/gitleaks-hook.log >&2
+    echo "Use git commit --no-verify to bypass this check." >&2
+    exit 1
+  fi
+  echo "=== gitleaks scan clean ==="
+else
+  echo "— gitleaks not installed; skipping scan (install to ~/.local/bin/gitleaks)" >&2
+fi
+# i18n integrity gate — fail fast before tests if key parity / raw literals / t() refs broken
+echo "=== Running i18n integrity gate ==="
+bun scripts/check-i18n.mts
+i18n_result=$?
+if [ $i18n_result -ne 0 ]; then
+  echo "i18n integrity gate FAILED — aborting commit"
+  exit $i18n_result
+fi
+# wasm drift: committed wasm imports must all be provided by the loader glue
+# (a rebuild adding imports breaks the decoder at runtime — see script header)
+if ! bash scripts/check-wasm-drift.sh; then
+  echo "wasm drift check FAILED — aborting commit"
+  exit 1
+fi
+echo "=== Running pre-commit Playwright smoke tests ==="
+# No manual http-server here: playwright.config.ts already manages its own
+# webServer on :8899 (reuseExistingServer locally, fresh start in CI). A
+# hook-owned server only caused EADDRINUSE fights and orphaned processes
+# when the hook was killed (kill $SERVER_PID killed npx, not http-server).
+# BASE_URL pins the tests at the LOCAL server — never the live site
+# (playwright.config.ts would default to https://ithmb-codec.dev otherwise,
+# giving false confidence by testing the deployed code, not your changes).
+# Smoke runs chromium-only (matches package.json test:quick): firefox/webkit
+# browsers are not installed here; running all 3 projects hangs the hook.
+# timeout 600 keeps a hung run from blocking commits forever.
+timeout 600 env BASE_URL=http://localhost:8899 npx playwright test --project=chromium tests/pages.spec.ts tests/ithmb-decoder.spec.ts tests/gallery.spec.ts --reporter=list
+result=$?
+echo "=== Smoke tests completed (exit=$result) ==="
+exit $result

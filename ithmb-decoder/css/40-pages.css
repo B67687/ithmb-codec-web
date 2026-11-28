@@ -1,0 +1,858 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   LAYER 4 · PAGES (404 / home / privacy / typography pass)
+   Page-specific rules for pages that do not have their own stylesheet.
+   ═══════════════════════════════════════════════════════════════════════ */
+/* ---------- 4. 404: page class on <body> was flexing the whole page ---------- */
+
+body.notfound-page {
+  display: block;
+  align-items: initial;
+  justify-content: initial;
+  text-align: initial;
+  padding: 0;
+  min-height: 0;
+}
+body.notfound-page .container {
+  padding-top: calc(var(--nav-h) + 64px);
+  padding-bottom: 64px;
+}
+
+/* ---------- 5. Type wraps: keep short headings/decks balanced ---------- */
+
+.t-hero,
+.t-h1,
+.t-h2,
+.t-lede,
+.subtitle,
+.section-head p,
+.home-cta p,
+.home-hero .subtitle {
+  text-wrap: balance;
+}
+.t-eyebrow,
+.home-hero__trust,
+.home-cta__fine,
+.site-footer__legal p {
+  text-wrap: pretty;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Home hero app mock — rebuilt to mirror the CURRENT decoder (ported
+   layout): filename + thumbnail/encoding meta, format segmented control,
+   Download all (.zip) + Clear, black viewer band with glass meta pill,
+   arrows, filmstrip and counter, then the All thumbnails grid.
+   (The markup is structural; all sizes below are the mock's own scale.)
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.app-mock__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  height: 34px;
+  padding: 0 16px;
+  border-bottom: 1px solid #f0f0f2;
+  font-size: 10.5px;
+  color: var(--muted);
+  letter-spacing: -0.004em;
+}
+.app-mock__nav .app-mock__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  white-space: nowrap;
+}
+.app-mock__nav .brand-mark {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  font-size: 8px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  margin: 0;
+}
+.app-mock__navlinks {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.app-mock__navlinks b {
+  font-weight: 400;
+  color: var(--muted);
+}
+.app-mock__navlinks b.is-on {
+  color: var(--text);
+  font-weight: 600;
+}
+.app-mock__navtools {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.app-mock__lang {
+  padding: 2px 6px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 8px;
+  line-height: 1.4;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.app-mock__moon {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  box-shadow: inset -3px -1px 0 0 var(--muted);
+}
+.app-mock__toolbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 16px 12px;
+  border-bottom: 1px solid #f0f0f2;
+  font-size: 12.5px;
+}
+.app-mock__file {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.app-mock__file b {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 300px;
+}
+.app-mock__file span {
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0;
+}
+.app-mock__file .app-mock__filemeta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.app-mock__add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 7px;
+  border: 1px solid #e3e3e8;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text);
+  font-size: 9.5px;
+  font-weight: 500;
+  line-height: 1.45;
+}
+:root[data-theme="dark"] .app-mock__add {
+  border-color: #3a3a3c;
+}
+.app-mock__actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: none;
+}
+.app-mock__seg {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 8px;
+  background: var(--fog);
+  font-size: 9.5px;
+}
+.app-mock__seg i {
+  font-style: normal;
+  padding: 3px 7px;
+  border-radius: 6px;
+  color: var(--muted);
+}
+.app-mock__seg i.is-on {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.04);
+}
+.app-mock__btn {
+  font-size: 10px;
+  line-height: 1.2;
+  padding: 5px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+  color: var(--text);
+}
+.app-mock__btn--primary {
+  background: var(--accent);
+  color: #fff;
+}
+.app-mock__btn--ghost {
+  background: rgba(0, 0, 0, 0.04);
+}
+.app-mock__stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 16 / 7.2;
+  overflow: hidden;
+  background: #000;
+}
+.app-mock__stage img {
+  width: auto;
+  height: 80%;
+  max-width: 80%;
+  object-fit: contain;
+  border-radius: 10px;
+  box-shadow: 0 30px 60px -24px rgba(0, 0, 0, 0.9);
+}
+.app-mock__meta {
+  position: absolute;
+  top: 11px;
+  left: 13px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: rgba(16, 16, 18, 0.55);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12);
+  font-size: 8.5px;
+  color: rgba(255, 255, 255, 0.82);
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+.app-mock__meta .dot {
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+}
+.app-mock__arrow {
+  width: 28px;
+  height: 28px;
+}
+.app-mock__arrow svg {
+  width: 10px;
+  height: 10px;
+}
+.app-mock__arrow--l {
+  left: 16px;
+}
+.app-mock__arrow--r {
+  right: 16px;
+}
+.app-mock__film {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px 10px;
+  background: #0a0a0c;
+  border-top: 0;
+  overflow: hidden;
+}
+.app-mock__thumb {
+  width: 46px;
+  height: 31px;
+  border-radius: 5px;
+  background-image: url("/guide/mock-thumb-ycbcr.webp");
+  background-image: image-set(
+    url("/guide/mock-thumb-ycbcr.avif") type("image/avif"),
+    url("/guide/mock-thumb-ycbcr.webp") type("image/webp")
+  );
+  background-size: cover;
+  opacity: 0.5;
+}
+.app-mock__thumb.is-on {
+  opacity: 1;
+  box-shadow: 0 0 0 1.5px #fff;
+}
+.app-mock__count {
+  margin-left: auto;
+  padding-left: 12px;
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.app-mock__results {
+  padding: 12px 16px 16px;
+  border-top: 1px solid #f0f0f2;
+  background: #fff;
+}
+.app-mock__results-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 9px;
+}
+.app-mock__results-head b {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.022em;
+  color: var(--text);
+}
+.app-mock__results-head span {
+  font-size: 9px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.app-mock__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.app-mock__card {
+  display: block;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--fog);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+.app-mock__card img {
+  display: block;
+  width: 100%;
+  /* width/height attributes are presentational hints for CLS; the card's 4:3
+     box must come from aspect-ratio, so height must stay auto. */
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+/* dark theme — the mock surface follows the real app */
+:root[data-theme="dark"] .app-mock__nav,
+:root[data-theme="dark"] .app-mock__toolbar,
+:root[data-theme="dark"] .app-mock__results {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+:root[data-theme="dark"] .app-mock__results {
+  background: #1c1c1e;
+}
+:root[data-theme="dark"] .app-mock__seg {
+  background: #161618;
+}
+:root[data-theme="dark"] .app-mock__seg i.is-on {
+  background: #3a3a3c;
+  box-shadow: none;
+}
+:root[data-theme="dark"] .app-mock__btn--ghost {
+  background: rgba(255, 255, 255, 0.1);
+}
+:root[data-theme="dark"] .app-mock__card {
+  background: #2c2c2e;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+@media (max-width: 560px) {
+  .app-mock__nav {
+    height: 30px;
+    padding: 0 11px;
+  }
+  .app-mock__navlinks,
+  .app-mock__moon {
+    display: none;
+  }
+  .app-mock__toolbar {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 9px 11px 10px;
+  }
+  .app-mock__file b {
+    max-width: 220px;
+    font-size: 12px;
+  }
+  .app-mock__actions {
+    width: 100%;
+    gap: 6px;
+  }
+  .app-mock__seg {
+    flex: none;
+  }
+  .app-mock__btn {
+    font-size: 9px;
+    padding: 4px 8px;
+  }
+  .app-mock__btn--primary {
+    margin-left: auto;
+  }
+  .app-mock__stage {
+    aspect-ratio: 16 / 8.4;
+  }
+  .app-mock__stage img {
+    height: 78%;
+    max-width: 78%;
+    border-radius: 7px;
+  }
+  .app-mock__meta {
+    top: 8px;
+    left: 9px;
+    font-size: 7.5px;
+    padding: 3px 7px;
+    gap: 5px;
+  }
+  .app-mock__arrow {
+    width: 24px;
+    height: 24px;
+  }
+  .app-mock__arrow--l {
+    left: 9px;
+  }
+  .app-mock__arrow--r {
+    right: 9px;
+  }
+  .app-mock__film {
+    padding: 7px 11px 8px;
+    gap: 5px;
+  }
+  .app-mock__thumb {
+    width: 34px;
+    height: 23px;
+  }
+  .app-mock__count {
+    font-size: 8px;
+    padding-left: 8px;
+  }
+  .app-mock__results {
+    padding: 10px 11px 12px;
+  }
+  .app-mock__results-head b {
+    font-size: 12.5px;
+  }
+  .app-mock__results-head span {
+    font-size: 8px;
+  }
+  .app-mock__grid {
+    gap: 6px;
+  }
+}
+
+/* ---------- 6. Type wraps: fewer one-word last lines across the site ---------- */
+
+/* Chrome/Edge honour pretty (last line at least two words where possible);
+   Safari/Firefox ignore it and keep normal wrapping. */
+p,
+li,
+figcaption,
+.app-mock__results-head span {
+  text-wrap: pretty;
+}
+h1,
+h2,
+h3,
+.app-mock__results-head b {
+  text-wrap: balance;
+}
+
+/* The mock's URL pill: the old 46px side padding forced an ellipsis even on
+   a desktop mock, and cut the hostname on phones. */
+.app-mock__url {
+  padding: 4px 22px;
+  font-size: 10.5px;
+  max-width: 62%;
+}
+
+@media (max-width: 560px) {
+  .app-mock__url {
+    padding: 3px 10px;
+    font-size: 9px;
+    max-width: 78%;
+  }
+}
+
+/* ---------- 7. Privacy visual on phones: badge overlapped the meta pill ---------- */
+
+@media (max-width: 560px) {
+  .privacy-visual .app-mock__meta {
+    display: none;
+  }
+}
+
+/* ── Simplified Chinese typography (CJK) ───────────────────
+   Inter has no CJK glyphs: pair it with the platform CJK faces, drop the
+   Latin negative tracking (CJK has no side bearings to absorb it) and give
+   Chinese copy CJK-appropriate leading. Scoped to :lang(zh) so EN is
+   byte-for-byte unaffected. */
+html:lang(zh) {
+  /* Redeclare the shared stacks on the zh root so every element that opts into
+     var(--font-text)/var(--font-display) gets the CJK fallbacks, not only
+     body. Latin still resolves to the same Inter file, so Latin rendering is
+     unchanged. */
+  --font-text: var(--font-text-zh);
+  --font-display: var(--font-display-zh);
+}
+html:lang(zh) body {
+  font-family: var(--font-text-zh);
+  letter-spacing: 0;
+  line-height: 1.7;
+}
+html:lang(zh) .t-hero {
+  letter-spacing: 0;
+  line-height: 1.12;
+}
+html:lang(zh) .t-h1 {
+  letter-spacing: 0;
+  line-height: 1.2;
+}
+html:lang(zh) .t-h2 {
+  letter-spacing: 0;
+  line-height: 1.3;
+}
+html:lang(zh) .t-lede,
+html:lang(zh) .home-hero .subtitle {
+  letter-spacing: 0;
+  line-height: 1.6;
+}
+html:lang(zh) :is(.btn, .link-arrow, .top-nav-link, .home-hero__trust, .segmented button) {
+  letter-spacing: 0;
+}
+html:lang(zh) .t-eyebrow {
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+/* article + legal pages define their own inline styles — outrank them */
+/* decoder: keep the results header row aligned when the CJK heading grows */
+html:lang(zh) .decoder-page .results-head h2 {
+  line-height: 1.1;
+}
+html:lang(zh) .privacy-title {
+  letter-spacing: 0;
+  line-height: 1.15;
+}
+html:lang(zh) .privacy-deck {
+  letter-spacing: 0;
+  line-height: 1.6;
+}
+/* avoid one/two-character last lines */
+html:lang(zh)
+  :is(
+    .article p,
+    .article li,
+    .info-block p,
+    .privacy-band p,
+    .t-lede,
+    .legal p,
+    .legal li,
+    .privacy-deck,
+    .info-tips li
+  ) {
+  text-wrap: pretty;
+}
+html:lang(zh) .article a[href] {
+  hyphens: none;
+}
+/* optical centring for centered lines that end in 。 (full-em advance, left ink) */
+
+/* ── Simplified Chinese typography, page components ─────────
+   The .t-* scale above covers the shared display classes; these are the
+   page-specific headings and ledes that were still inheriting the Latin
+   negative tracking and tight Latin leading (guide h1/h2, home dark band,
+   decoder drop card). CJK has no side bearings to absorb negative tracking,
+   so every rule here zeroes it and uses CJK leading instead. Scoped to
+   :lang(zh) so EN is byte-for-byte unaffected. */
+html:lang(zh)
+  :is(
+    .guide-title,
+    .guide-section__head h2,
+    .guide-step__head h2,
+    .guide-card h3,
+    .guide-quality__item h3,
+    .guide-acc summary,
+    .guide-callout p,
+    .guide-acc__body p,
+    .guide-tools p,
+    .guide-figure figcaption,
+    .feature h3,
+    .privacy-band h2,
+    .privacy-section__head h2,
+    .privacy-glance__title,
+    .privacy-policy__label,
+    .privacy-card__title,
+    .privacy-toc__link,
+    .decoder-scope,
+    a.card h2,
+    #dropzone .label
+  ) {
+  letter-spacing: 0;
+}
+html:lang(zh) a.card h2 {
+  line-height: 1.3;
+}
+html:lang(zh) body.decoder-page #dropzone b,
+html:lang(zh) body.decoder-page #dropzone .drop__title {
+  letter-spacing: 0;
+}
+html:lang(zh) .guide-title {
+  line-height: 1.2;
+}
+html:lang(zh) :is(.guide-section__head h2, .guide-step__head h2) {
+  line-height: 1.3;
+}
+html:lang(zh) .guide-deck {
+  letter-spacing: 0;
+  line-height: 1.6;
+}
+html:lang(zh) .guide-card h3 {
+  line-height: 1.4;
+}
+html:lang(zh) .guide-acc summary {
+  line-height: 1.5;
+  /* keep a lone 吗？ from landing on its own line on 320/390 */
+  text-wrap: pretty;
+}
+html:lang(zh) :is(.guide-callout p, .guide-acc__body p, .guide-tools p) {
+  line-height: 1.75;
+}
+html:lang(zh) .privacy-band h2 {
+  line-height: 1.25;
+}
+html:lang(zh) .privacy-band p {
+  line-height: 1.7;
+}
+html:lang(zh) .feature h3 {
+  line-height: 1.35;
+}
+html:lang(zh) .feature p {
+  line-height: 1.65;
+}
+html:lang(zh) .decoder-scope {
+  line-height: 1.7;
+}
+/* Readable CJK measure for the two wide explanatory cards: 45/52 Han
+   characters per line at 1440 is too long to scan. 58em ≈ 841px at the
+   14.5px callout size holds roughly 40 Han characters; mobile is narrower
+   than the cap, so phone layouts are unchanged. */
+html:lang(zh) :is(.guide-callout p, .guide-tools p) {
+  max-width: 50em;
+}
+html:lang(zh) .guide-figure figcaption {
+  max-width: 46em;
+}
+/* The zh home note keeps one sentence-level break (EN has one too); balance
+   the remaining lines instead of leaving the short-long-short wedge. */
+html:lang(zh) .home-hero__note {
+  text-wrap: balance;
+}
+
+/* 320px mock: wrap the mock toolbar actions instead of clipping the row.
+   Scoped to :lang(zh) so the English home hero keeps its current layout. */
+@media (max-width: 360px) {
+  html:lang(zh) .app-mock__toolbar {
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+  html:lang(zh) .app-mock__actions {
+    width: 100%;
+    flex-wrap: wrap;
+    row-gap: 6px;
+  }
+}
+
+/* ── Simplified Chinese small labels ────────────────────────
+   Latin small labels are set uppercase with positive tracking; caps give them
+   a consistent optical size even at 11–12px. Han has no cap-height and no
+   side bearings to absorb tracking, so the same 11–12px Han pair reads a size
+   smaller than the Latin label it replaces (the privacy eyebrow was the
+   clearest case: 隐私 next to PRIVACY). Give Han-running small labels one
+   extra pixel, drop the Latin tracking, and keep the existing weight. Latin-
+   only labels (file names, format names, numerals, code) are left alone —
+   they are not the problem this layer exists to solve. Scope is still
+   :lang(zh) only, so every English page renders exactly as before. */
+html:lang(zh) .top-nav-link {
+  font-size: 13px;
+  letter-spacing: 0;
+}
+html:lang(zh) .lang-toggle {
+  font-size: 12.5px !important;
+}
+html:lang(zh) .site-footer {
+  font-size: 12.5px;
+}
+html:lang(zh) .site-footer__col-title {
+  font-size: 13px;
+  letter-spacing: 0;
+}
+html:lang(zh) .card__eyebrow {
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
+}
+html:lang(zh) :is(.home-hero__trust, .home-cta__fine) {
+  font-size: 13px;
+  letter-spacing: 0;
+}
+html:lang(zh) .home-hero__note {
+  font-size: 13.5px;
+}
+/* guide small labels */
+html:lang(zh) .guide-eyebrow {
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+html:lang(zh) .guide-kicker {
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
+}
+html:lang(zh) :is(.guide-mini__label, .guide-copy__hint) {
+  font-size: 11.5px;
+  letter-spacing: 0.02em;
+}
+html:lang(zh) .guide-chip {
+  font-size: 13px;
+  letter-spacing: 0;
+}
+html:lang(zh) .guide-figure__zoom {
+  font-size: 12.5px;
+  letter-spacing: 0;
+}
+html:lang(zh) .guide-figure figcaption {
+  font-size: 13.5px;
+}
+html:lang(zh) .guide-pathcard__note {
+  font-size: 12.5px;
+  letter-spacing: 0;
+}
+html:lang(zh) .guide-rail__step {
+  font-size: 13px;
+  letter-spacing: 0;
+}
+/* decoder small labels: drop-zone captions, toolbar, pills, status text.
+   The base rules for these live in 30-decoder/50-polish/60-glass under #id and
+   body.decoder-page selectors; the zh override matches that shape so it wins
+   without !important. */
+html:lang(zh) body.decoder-page #dropzone :is(.drop__fine, .drop__limits) {
+  font-size: 12.5px;
+  letter-spacing: 0;
+}
+html:lang(zh) body.decoder-page .sample-row {
+  font-size: 13.5px;
+  letter-spacing: 0;
+}
+html:lang(zh) body.decoder-page .toolbar__fmt-label {
+  font-size: 11.5px;
+  letter-spacing: 0.02em;
+}
+/* #tbMeta is the "1 张图 · 1 种编码" counter — not the Add files label that
+   shares the .toolbar__file span selector. */
+html:lang(zh) body.decoder-page #tbMeta {
+  font-size: 13px;
+  letter-spacing: 0;
+}
+html:lang(zh) body.decoder-page #addFilesBtn,
+html:lang(zh) body.decoder-page #addFilesBtn > span {
+  font-size: 12.5px;
+}
+html:lang(zh) body.decoder-page :is(.btn, #downloadAllBtn, #clearBtn) {
+  font-size: 14.5px;
+  letter-spacing: 0;
+}
+html:lang(zh) body.decoder-page :is(.big-stage__meta, #viewer-header) {
+  font-size: 12.5px;
+  letter-spacing: 0;
+  /* CJK ascenders need a hair more box than Latin caps in the same pill */
+  line-height: 1.5;
+}
+html:lang(zh) body.decoder-page #file-list .file-card .status {
+  font-size: 12px;
+}
+html:lang(zh) body.decoder-page #file-list .file-card .preview .info {
+  font-size: 12px;
+  letter-spacing: 0;
+}
+html:lang(zh) body.decoder-page #file-list .file-card .info > .actions .btn {
+  font-size: 12.5px;
+  letter-spacing: 0;
+}
+html:lang(zh) body.decoder-page #file-list .file-card .info > .actions select {
+  font-size: 12px;
+}
+@media (max-width: 560px) {
+  html:lang(zh) body.decoder-page #dropzone :is(.drop__fine, .drop__limits) {
+    font-size: 11.5px;
+  }
+  html:lang(zh) body.decoder-page .sample-row {
+    font-size: 12.5px;
+  }
+  html:lang(zh) body.decoder-page #addFilesBtn,
+  html:lang(zh) body.decoder-page #addFilesBtn > span {
+    font-size: 13.5px;
+  }
+  /* The floating meta pill has to fit filename + encoding + dimensions on one
+     row at 320/390; +0.5px over the Latin pill is as far as it goes. */
+  html:lang(zh) body.decoder-page :is(.big-stage__meta, #viewer-header) {
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  /* One more line in the card would break "720 × 480" mid-pair at 320, so the
+     status line keeps its 11px phone size; desktop gets the +1px. */
+  html:lang(zh) body.decoder-page #file-list .file-card .status {
+    font-size: 11px;
+  }
+  html:lang(zh) :is(.home-hero__trust, .home-hero__note) {
+    font-size: 12.5px;
+  }
+}
+@media (max-width: 360px) {
+  /* 320px: claw back the pill's inline padding/gap so the +0.5px meta pill
+     still holds filename + encoding + dimensions on one row. */
+  html:lang(zh) body.decoder-page :is(.big-stage__meta, #viewer-header) {
+    gap: 6px;
+    padding-inline: 10px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SOFT-LIGHT ATMOSPHERE — home + 404 (static CSS, tokens per theme)
+   Large, very low-opacity washes only; surfaces stay flat/restrained.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.home-hero {
+  background-image: var(--wash-hero);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+/* The pre-existing dark hero gradient carries higher specificity; layer the
+   same soft-light wash over it instead of replacing its base depth. */
+:root[data-theme="dark"] .home-hero {
+  background-color: #000;
+  background-image: var(--wash-hero), radial-gradient(120% 72% at 50% -10%, #0c1220 0%, #000 58%);
+  background-repeat: no-repeat, no-repeat;
+  background-size: 100% 100%, 100% 100%;
+}
+.home-hero__visual {
+  background-image: var(--wash-hero-visual);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+.site-section--fog {
+  background-image: var(--wash-section);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+.home-support {
+  background-image: var(--wash-support);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+body.notfound-page {
+  background-image: var(--wash-page-top);
+  background-repeat: no-repeat;
+  background-size: 100% 560px;
+}

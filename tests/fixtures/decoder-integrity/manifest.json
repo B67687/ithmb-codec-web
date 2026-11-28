@@ -1,0 +1,93 @@
+{
+  "generator": "work/decoder-integrity fixtures (B3); see work/shots/decoder-integrity/",
+  "cliReference": "ithmb 1.9.x (Rust CLI) decoding [prefix][frame 0] to PNG; hash is over RGBA rows",
+  "fixtures": [
+    {
+      "file": "multiframe-1055-prefixed.ithmb",
+      "size": 327684,
+      "sha256": "fa29155c92e3949e288e24f8847530e79355d779f60e3d9b9c19607abcd586bc",
+      "prefix": 1055,
+      "encoding": "RGB565",
+      "frameStride": 32768,
+      "frameCount": 10,
+      "note": "prefix + 10 real 128x128 frames from F1055_1.ithmb; frame 1 differs from frame 0",
+      "cliFrame0": {
+        "width": 128,
+        "height": 128,
+        "sha256_rgba": "774a2bd5ad0bfcbc2c409ab79a89caca90f933a2ec65a166f9572e4de3860cc6"
+      }
+    },
+    {
+      "file": "unknown-prefix-lenmatch-2524.ithmb",
+      "size": 2524,
+      "sha256": "05bd7f19708550367f69bc09330d50886fa3d697fc94dde6fb5c8bcea2352036",
+      "prefix": 3735928559,
+      "note": "random payload, length == profile 1009 frame size (the codec size-heuristic case)"
+    },
+    {
+      "file": "two-frames-1009.ithmb",
+      "size": 5044,
+      "sha256": "f0dfdda6c6a851898f3d47d2069f5e33f43ef7b360da3686796cc8aded40b704",
+      "prefix": 1009,
+      "encoding": "RGB565",
+      "frameStride": 2520,
+      "frameCount": 2,
+      "note": "frame 0 all black, frame 1 0xAB fill; RGB565 stride bug would interleave rows",
+      "cliFrame0": {
+        "width": 42,
+        "height": 30,
+        "sha256_rgba": "d99119a9302536cbd95b13c4978a4ba45f277d77eafbaeb9ea8d601154940ed4"
+      }
+    },
+    {
+      "file": "multiframe-uyvy-1019.ithmb",
+      "size": 1382404,
+      "sha256": "431d8b82a68a1a198fd5d5962a6dea1b9a296a8eff2370bbefab51858516f582",
+      "prefix": 1019,
+      "encoding": "UYVY 4:2:2",
+      "frameStride": 691200,
+      "frameCount": 2,
+      "note": "frame 1 is the byte-inverse of frame 0, so showing anything but frame 0 fails",
+      "cliFrame0": {
+        "width": 720,
+        "height": 480,
+        "sha256_rgba": "fffcf36600ed48e9feba8420003e309d41bebd6ad1273165d44ac42dddf40040"
+      }
+    },
+    {
+      "file": "multiframe-reordered-3001.ithmb",
+      "size": 262148,
+      "sha256": "7a701fb16f93352b72cfd178bfb772aa02337f478914c88a54e339535f558d5d",
+      "prefix": 3001,
+      "encoding": "Reordered RGB555",
+      "frameStride": 131072,
+      "frameCount": 2,
+      "note": "frame 1 is the byte-inverse of frame 0, so showing anything but frame 0 fails",
+      "cliFrame0": {
+        "width": 256,
+        "height": 256,
+        "sha256_rgba": "2f51366b7207b3f689b7c27a10fd09daf2bf78abb4a944ccbdf2d6a07ab84488"
+      }
+    }
+  ],
+  "jpegFixtures": [
+    {
+      "file": "jpeg-bare.ithmb",
+      "size": 1040,
+      "sha256": "d3381bd38a2c9ef356c4084a2ec191da04c4fbcc60004a9e9346bdff380d1631",
+      "note": "64x48 JPEG with no ithmb prefix: must succeed and be labelled JPEG (embedded), not Unknown format"
+    },
+    {
+      "file": "jpeg-carved-at-256.ithmb",
+      "size": 1296,
+      "sha256": "243d7d5e7db5ab29eb64032e7d5559b9e07ab94df21fa8bcaf88913f46fc1f5f",
+      "note": "unknown prefix 0x0BADCAFE + 252 padding + a 64x48 JPEG: the validated carve path must still succeed"
+    },
+    {
+      "file": "jpeg-bomb-65535.ithmb",
+      "size": 17,
+      "sha256": "c7a5f300f7f91076f1973c62a60ca0efb685edd5b9a7dda87376623808ae90da",
+      "note": "17-byte SOI+SOF2 declaring 65535x65535: must fail and be classified damaged, not unknown"
+    }
+  ]
+}

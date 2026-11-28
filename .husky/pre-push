@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# pre-push — soft guard for the `release` (production) branch.
+#
+# Refuses any push whose destination ref is `release` unless
+# ALLOW_RELEASE_PUSH=1 (set only by scripts/publish.sh, which exports it
+# for the single `git push origin main:release` it performs).
+#
+# This is a SOFT guard: it lives in the working tree, not on the server.
+# Bypass (only via publish.sh): ALLOW_RELEASE_PUSH=1 git push origin main:release
+# Never push to `release` by hand — use scripts/publish.sh.
+
+# public-tree gate — the mirror allowlist and leak scan (see .publicignore).
+# Absent on the mirror itself, where the tooling is intentionally not published.
+if [ -f scripts/check-public-tree.mts ]; then
+  echo "=== Running public-tree gate ===" >&2
+  if ! bun scripts/check-public-tree.mts; then
+    echo "pre-push: public-tree gate FAILED — refusing to push." >&2
+    exit 1
+  fi
+fi
+while read -r _local_ref _local_sha remote_ref _remote_sha; do
+  case "$remote_ref" in
+    refs/heads/release)
+      if [[ "${ALLOW_RELEASE_PUSH:-0}" != "1" ]]; then
+        echo "pre-push: refusing push to '$remote_ref'." >&2
+        echo "  The release branch is production (ithmb-codec.dev)." >&2
+        echo "  Use scripts/publish.sh to publish — never push to release by hand." >&2
+        exit 1
+      fi
+      ;;
+  esac
+done
+exit 0

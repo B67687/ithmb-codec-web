@@ -1,0 +1,54 @@
+{
+  "name": "ithmb-codec-web",
+  "version": "2.0.0",
+  "description": "Free private browser-based .ithmb (Apple iThumbnail) file decoder.",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "playwright test",
+    "test:pages": "playwright test tests/pages.spec.ts",
+    "test:decoder": "playwright test tests/ithmb-decoder.spec.ts",
+    "serve": "http-server -p 8899 -a 0.0.0.0 -c-1 --no-dotfiles",
+    "test:gallery": "playwright test tests/gallery.spec.ts",
+    "test:stress": "playwright test tests/stress.spec.ts",
+    "test:upload": "playwright test tests/upload.spec.ts",
+    "test:quick": "playwright test tests/pages.spec.ts tests/ithmb-decoder.spec.ts tests/gallery.spec.ts tests/upload.spec.ts tests/quality.spec.ts tests/a11y.spec.ts tests/seo-metadata.spec.ts --project=chromium",
+    "test:full": "playwright test",
+    "ci": "bun run lint:modules && bun run lint:i18n && playwright test",
+    "build": "bun scripts/build.mts",
+    "build:pages": "bun run build && bun scripts/build-site.mts",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.node.json --noEmit",
+    "lint:modules": "bun run typecheck && bun run build",
+    "lint:i18n": "bun scripts/check-i18n.mts && bun scripts/check-mirror-parity.mts",
+    "sync:i18n": "bun scripts/sync-embedded.mts",
+    "check:deps": "bun scripts/check-audit.mts && (bun outdated || true)",
+    "test:journey": "bun scripts/real-user-journey.mts",
+    "check:local": "bash scripts/check-local.sh",
+    "check:public": "bun scripts/check-public-tree.mts",
+    "test:unit": "bun test tests/unit/",
+    "format:check": "npx --yes @biomejs/biome@1.9.4 format .",
+    "prepare": "git config core.hooksPath .husky",
+    "probe:post-deploy": "node scripts/post-deploy-probe.mjs",
+    "test:extensions": "node scripts/extension-harness.mjs"
+  },
+  "homepage": "https://ithmb-codec.dev",
+  "keywords": [],
+  "author": "Nami",
+  "license": "MIT",
+  "devDependencies": {
+    "@axe-core/playwright": "^4.12.1",
+    "@playwright/test": "^1.62.1",
+    "@types/bun": "^1.4.1",
+    "@types/node": "^26.2.0",
+    "esbuild": "^0.28.2",
+    "fflate": "^0.8.3",
+    "http-server": "^14.1.1",
+    "playwright": "^1.62.1",
+    "typescript": "^7.0.2"
+  },
+  "overrides": {
+    "undici": "^7.29.0",
+    "sharp": "0.35.4"
+  }
+}

@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ITHMB Codec | 免费 .ithmb / .ipm 看图工具</title>
+    <script src="/assets/js/theme.js?v=b4c2664f"></script>
+    <meta name="google-site-verification" content="6TGpFnLw-D-nzVIF6TVc4ayVt5PQMWhtoV-yEIsY_NQ" />
+    <link rel="canonical" href="https://ithmb-codec.dev/zh/" />
+    <link rel="alternate" hreflang="en" href="https://ithmb-codec.dev/" />
+    <link rel="alternate" hreflang="zh" href="https://ithmb-codec.dev/zh/" />
+    <link rel="alternate" hreflang="x-default" href="https://ithmb-codec.dev/" />
+    <meta
+      name="description"
+      content="把旧 iPod、iPhone 里的 .ithmb 和 .ipm 缩略图拖进浏览器，存成 JPEG、PNG、BMP 或 WebP。免费、开源，文件不离开设备。"
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=40336c8c" />
+    <link rel="icon" href="/favicon.ico?v=583331b9" sizes="any" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png?v=c0bb3e54" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=84d0272f" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png?v=c081a0cd" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png?v=50db22a9" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png?v=31e1b44a" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=303bc3e5" />
+    <meta property="og:title" content="ITHMB Codec | 在浏览器里看 .ithmb 缩略图" />
+    <meta
+      property="og:description"
+      content="把旧 iPod、iPhone 上的 .ithmb 和 .ipm 缩略图拖进浏览器，存成 JPEG、PNG、BMP 或 WebP。免费、开源，文件留在你的设备上。"
+    />
+    <meta property="og:image" content="https://ithmb-codec.dev/thumb-decoder-preview.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://ithmb-codec.dev/zh/" />
+    <meta property="og:site_name" content="ITHMB Codec" />
+    <meta property="og:locale" content="zh_CN" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <link rel="stylesheet" href="/ithmb-decoder/styles.css?v=3968aba6" />
+    <link
+      rel="preload"
+      as="image"
+      type="image/avif"
+      href="/guide/mock-hero-uyvy-1200.avif?v=37cbe4f8"
+      imagesrcset="/guide/mock-hero-uyvy-900.avif?v=47cc4879 900w, /guide/mock-hero-uyvy-1200.avif?v=37cbe4f8 1200w, /guide/mock-hero-uyvy.avif?v=e13d0d1a 1800w"
+      imagesizes="(max-width: 560px) 362px, 900px"
+    />
+    <link rel="stylesheet" href="/home-mock.css?v=70e50365" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "ITHMB Codec",
+        "url": "https://ithmb-codec.dev/zh/",
+        "description": "把旧 iPod、iPhone 里的 .ithmb 和 .ipm 缩略图拖进浏览器，存成 JPEG、PNG、BMP 或 WebP。免费、开源，文件不离开设备。",
+        "inLanguage": "zh-CN",
+        "applicationCategory": "Multimedia",
+        "operatingSystem": "All",
+        "browserRequirements": "Requires JavaScript",
+        "author": { "@type": "Organization", "name": "ITHMB Codec" }
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [{ "@type": "ListItem", "position": 1, "name": "首页", "item": "https://ithmb-codec.dev/zh/" }]
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "ITHMB Codec",
+        "url": "https://ithmb-codec.dev",
+        "logo": "https://ithmb-codec.dev/icon-512.png",
+        "sameAs": [
+          "https://github.com/B67687/ithmb-codec",
+          "https://github.com/B67687/ithmb-codec-web",
+          "https://github.com/B67687/ImageGlass-Ithmb-Plugin"
+        ]
+      }
+    </script>
+  </head>
+  <body class="home-page">
+    <!-- shell:nav:start -->
+<a class="skip-link" href="#main">跳到正文</a><nav class="top-nav" aria-label="主导航"><div class="top-nav__inner"><a href="/zh/" class="top-nav__brand"><span class="brand-mark" aria-hidden="true">iT</span>ITHMB Codec</a><div class="top-nav-links" id="topNavPanel"><a href="/zh/" class="top-nav-link active" aria-current="page" data-nav-id="home" data-i18n="nav.home">首页</a><a href="/zh/ithmb-decoder/" class="top-nav-link" data-nav-id="decoder" data-i18n="nav.decoder">解码器</a><a href="/zh/guide/how-to-open-ithmb-files" class="top-nav-link" data-nav-id="guide" data-i18n="nav.guide">指南</a><a href="/" class="top-nav-link nav-lang" aria-label="EN / 中，切换语言"><span class="lang-opt" data-lang="en">EN</span> / <span class="lang-opt" data-lang="zh">中</span></a></div><div class="top-nav-icons"><a href="/" id="langToggle" class="lang-toggle" data-i18n-title="nav.toggleLabel" aria-label="EN/中，切换语言" title="切换语言"><span class="lang-opt" data-lang="en">EN</span><span>/</span><span class="lang-opt" data-lang="zh">中</span></a><a href="https://github.com/B67687/Ithmb-Codec" class="github-corner" target="_blank" rel="noopener noreferrer" aria-label="在 GitHub 上查看源码（在新标签页打开）" data-i18n-aria-label="nav.viewSource"><svg viewBox="0 0 16 16" fill="currentColor" width="17" height="17" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a><button id="themeToggle" class="theme-toggle" type="button" data-i18n-aria-label="nav.themeToggle" data-i18n-title="nav.themeToggle" aria-label="切换主题" title="切换主题"><svg class="moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z"/></svg><svg class="sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"/></svg></button><button id="navToggle" class="nav-toggle" type="button" aria-expanded="false" aria-controls="topNavPanel" aria-label="菜单"><span></span><span></span><span></span></button></div></div></nav>
+<!-- shell:nav:end -->
+    <script src="/assets/js/nav.js?v=5d15b81c" defer></script>
+
+    <main id="main" tabindex="-1">
+      <!-- ═══ 主视觉 ═══ -->
+      <section class="home-hero">
+        <div class="container">
+          <svg class="home-hero__icon rv" viewBox="0 0 64 64" aria-hidden="true">
+            <defs>
+              <linearGradient id="homeHeroGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#4aa8ff" />
+                <stop offset="1" stop-color="#0071e3" />
+              </linearGradient>
+            </defs>
+            <rect width="64" height="64" rx="15" fill="url(#homeHeroGrad)" />
+            <text x="32" y="43" text-anchor="middle" font-family="Inter, sans-serif" font-size="27" font-weight="700" fill="#fff">iT</text>
+          </svg>
+          <h1 class="t-hero rv" style="--d: 0.06s">ITHMB Codec</h1>
+          <p class="subtitle rv" style="--d: 0.12s">把旧 iPod、iPhone 里的 .ithmb 文件拖进来，<br class="display-break" />直接在浏览器里看缩略图。</p>
+          <p class="home-hero__note rv" style="--d: 0.15s">
+            网页版只支持文件里直接带图像数据的 .ithmb 和 .ipm。PhotoData 文件夹里的文件，有些还要靠同目录下的 PhotoDB 或 ArtworkDB 数据库解析，网页版读不了，得用桌面工具。
+          </p>
+          <div class="btn-row home-hero__cta rv" style="--d: 0.18s">
+            <a class="btn btn-primary" href="/zh/ithmb-decoder/">打开解码器</a>
+            <a class="link-arrow link-arrow--lg" href="/zh/guide/how-to-open-ithmb-files">
+              阅读指南
+              <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 1.5 7 5 3.5 8.5" /></svg>
+            </a>
+          </div>
+          <p class="home-hero__trust rv" style="--d: 0.24s">
+            <span>免费</span><i></i><span>本地解码</span><i></i><span>不跟踪</span><i></i><span>开源</span>
+          </p>
+        </div>
+
+        <div class="home-hero__visual rv" style="--d: 0.3s">
+          <div
+            class="app-mock"
+            role="img"
+            aria-label="载入三个文件后的 ITHMB Codec 解码器。工具栏显示当前文件名，以及整批 3 个文件、3 张图，JPEG、PNG、BMP、WebP 输出，打包下载和清空按钮。大图区显示当前这张图，带文件名、编码和尺寸，下面有缩略图栏和第 1 张、共 3 张的位置提示。再下面是每张图一条的解码结果网格。"
+          >
+            <div class="app-mock__bar">
+              <div class="app-mock__dots"><i></i><i></i><i></i></div>
+              <div class="app-mock__url">ithmb-codec.dev/zh/ithmb-decoder</div>
+            </div>
+            <div class="app-mock__nav" aria-hidden="true">
+              <span class="app-mock__brand"><span class="brand-mark">iT</span>ITHMB Codec</span>
+              <span class="app-mock__navlinks"><b>首页</b><b class="is-on">解码器</b><b>指南</b></span>
+              <span class="app-mock__navtools"><span class="app-mock__lang">EN / 中</span><span class="app-mock__moon"></span></span>
+            </div>
+            <div class="app-mock__toolbar">
+              <div class="app-mock__file">
+                <b>uyvy.ithmb</b>
+                <span class="app-mock__filemeta"><span>3 张图 · 2 种编码</span><span class="app-mock__add">添加文件</span></span>
+              </div>
+              <div class="app-mock__actions">
+                <span class="app-mock__seg"><i class="is-on">JPEG</i><i>PNG</i><i>BMP</i><i>WebP</i></span>
+                <span class="app-mock__btn app-mock__btn--primary">打包下载（ZIP）</span>
+                <span class="app-mock__btn app-mock__btn--ghost">清空</span>
+              </div>
+            </div>
+            <div class="app-mock__stage">
+              <picture class="app-mock__frame is-on">
+                <source type="image/avif" srcset="/guide/mock-hero-uyvy-900.avif?v=47cc4879 900w, /guide/mock-hero-uyvy-1200.avif?v=37cbe4f8 1200w, /guide/mock-hero-uyvy.avif?v=e13d0d1a 1800w" sizes="(max-width: 560px) 362px, 900px" />
+                <source type="image/webp" srcset="/guide/mock-hero-uyvy-900.webp?v=b4c9436b 900w, /guide/mock-hero-uyvy-1200.webp?v=ccee0f84 1200w, /guide/mock-hero-uyvy.webp?v=ffc12e5a 1800w" sizes="(max-width: 560px) 362px, 900px" />
+                <img src="/guide/mock-hero-uyvy-900.webp?v=b4c9436b" alt="" width="900" height="600" fetchpriority="high" decoding="async" />
+              </picture>
+              <div class="app-mock__meta"><span>uyvy.ithmb</span><span class="dot"></span><span>UYVY 4:2:2</span><span class="dot"></span><span>720 × 480</span></div>
+              <span class="app-mock__arrow app-mock__arrow--l" aria-hidden="true">
+                <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 1.5 3 5l3.5 3.5" /></svg>
+              </span>
+              <span class="app-mock__arrow app-mock__arrow--r" aria-hidden="true">
+                <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 1.5 7 5 3.5 8.5" /></svg>
+              </span>
+            </div>
+            <div class="app-mock__film" aria-hidden="true">
+              <span class="app-mock__thumb is-on" style="background-position: 34% 42%"></span>
+              <span class="app-mock__thumb" style="filter: hue-rotate(38deg) saturate(1.15); background-position: 62% 48%"></span>
+              <span class="app-mock__thumb" style="filter: hue-rotate(-46deg) saturate(0.95); background-position: 18% 60%"></span>
+              <span class="app-mock__count">1 / 3</span>
+            </div>
+            <div class="app-mock__results" aria-hidden="true">
+              <div class="app-mock__results-head"><b>解码结果</b><span>3 张图 · 3 个文件</span></div>
+              <div class="app-mock__grid">
+                <span class="app-mock__card"><picture><source type="image/avif" srcset="/guide/mock-card-uyvy-211.avif?v=bec8216b 211w, /guide/mock-card-uyvy.avif?v=f3d5a9f3 422w" sizes="211px" /><source type="image/webp" srcset="/guide/mock-card-uyvy-211.webp?v=2b136207 211w, /guide/mock-card-uyvy.webp?v=c4a50ba4 422w" sizes="211px" /><img src="/guide/mock-card-uyvy-211.webp?v=2b136207" alt="" width="422" height="317" decoding="async" /></picture></span>
+                <span class="app-mock__card"><picture><source type="image/avif" srcset="/guide/mock-card-ycbcr-211.avif?v=419bae4d 211w, /guide/mock-card-ycbcr.avif?v=4a394e22 422w" sizes="211px" /><source type="image/webp" srcset="/guide/mock-card-ycbcr-211.webp?v=f90028f9 211w, /guide/mock-card-ycbcr.webp?v=b98af24c 422w" sizes="211px" /><img src="/guide/mock-card-ycbcr-211.webp?v=f90028f9" alt="" width="422" height="317" decoding="async" /></picture></span>
+                <span class="app-mock__card"><picture><source type="image/avif" srcset="/guide/mock-card-rgb555-211.avif?v=541f9c78 211w, /guide/mock-card-rgb555.avif?v=9b6ad085 422w" sizes="211px" /><source type="image/webp" srcset="/guide/mock-card-rgb555-211.webp?v=4a84e7c5 211w, /guide/mock-card-rgb555.webp?v=299377b6 422w" sizes="211px" /><img src="/guide/mock-card-rgb555-211.webp?v=4a84e7c5" alt="" width="422" height="317" decoding="async" /></picture></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 功能 ═══ -->
+      <section class="site-section site-section--fog">
+        <div class="container">
+          <div class="section-head">
+            <p class="t-eyebrow rv">它能做什么</p>
+            <h2 class="t-h2 rv" style="--d: 0.06s">拖入文件，导出图片</h2>
+            <p class="t-lede rv" style="--d: 0.1s">每个文件都在你自己的设备上解码，解好就能存。一个文件一张图。</p>
+          </div>
+          <div class="feature-grid">
+            <div class="feature rv">
+              <svg class="feature__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 3 7.5 12 12l9-4.5L12 3Z" /><path d="m3 12 9 4.5 9-4.5" /><path d="m3 16.5 9 4.5 9-4.5" /></svg>
+              <h3>iPod 用过的格式</h3>
+              <p>支持 RGB555、RGB565、YCbCr 4:2:0、UYVY 4:2:2 等旧 iPod 格式。有些缩略图本身是 JPEG，也能解。</p>
+            </div>
+            <div class="feature rv" style="--d: 0.08s">
+              <svg class="feature__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12" /><path d="m7 10 5 5 5-5" /><path d="M4 21h16" /></svg>
+              <h3>四种格式，还能打包成 ZIP</h3>
+              <p>每张图都能存成 JPEG、PNG、BMP 或 WebP，整批图也能打包成一个 ZIP。</p>
+            </div>
+            <div class="feature rv" style="--d: 0.16s">
+              <svg class="feature__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M3.6 9h16.8M3.6 15h16.8" /><path d="M12 3c2.5 2.5 3.8 5.5 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.5-3.8-9S9.5 5.5 12 3Z" /></svg>
+              <h3>在浏览器里用</h3>
+              <p>Chrome、Firefox、Safari、Edge 都能用，其他现代浏览器多半也行。Windows、macOS、Linux 和手机上都能用，不用安装。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 隐私 ═══ -->
+      <section class="privacy-band">
+        <div class="container-wide">
+          <div class="privacy-band__grid">
+            <div>
+              <h2 class="rv">默认只在本地处理</h2>
+              <p class="rv" style="--d: 0.06s">
+                解码器在浏览器里跑。文件不离开你的设备。
+              </p>
+              <ul class="rv" style="--d: 0.12s">
+                <li>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg>
+                  文件在浏览器里解码
+                </li>
+                <li>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg>
+                  文件只留在设备上
+                </li>
+                <li>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg>
+                  不用账号，不用安装
+                </li>
+              </ul>
+              <a class="link-arrow rv" style="--d: 0.18s" href="/zh/privacy/">
+                隐私是怎么处理的
+                <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 1.5 7 5 3.5 8.5" /></svg>
+              </a>
+            </div>
+            <div class="privacy-visual rv" style="--d: 0.1s">
+              <div class="app-mock__stage">
+                <picture>
+                  <source type="image/avif" srcset="/guide/mock-hero-uyvy-900.avif?v=47cc4879 900w, /guide/mock-hero-uyvy-1200.avif?v=37cbe4f8 1200w, /guide/mock-hero-uyvy.avif?v=e13d0d1a 1800w" sizes="(max-width: 560px) 241px, 366px" />
+                  <source type="image/webp" srcset="/guide/mock-hero-uyvy-900.webp?v=b4c9436b 900w, /guide/mock-hero-uyvy-1200.webp?v=ccee0f84 1200w, /guide/mock-hero-uyvy.webp?v=ffc12e5a 1800w" sizes="(max-width: 560px) 241px, 366px" />
+                  <img src="/guide/mock-hero-uyvy-900.webp?v=b4c9436b" alt="" width="900" height="600" loading="lazy" decoding="async" />
+                </picture>
+                <div class="app-mock__meta"><span>uyvy.ithmb</span><span class="dot"></span><span>UYVY 4:2:2</span><span class="dot"></span><span>720 × 480</span></div>
+                <span class="app-mock__arrow app-mock__arrow--l" aria-hidden="true">
+                  <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 1.5 3 5l3.5 3.5" /></svg>
+                </span>
+                <span class="app-mock__arrow app-mock__arrow--r" aria-hidden="true">
+                  <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 1.5 7 5 3.5 8.5" /></svg>
+                </span>
+              </div>
+              <span class="privacy-visual__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="10" rx="2.5" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
+                文件不会上传
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      
+
+      <!-- ═══ 入口卡片 ═══ -->
+      <section class="site-section site-section--fog">
+        <div class="container">
+          <div class="section-head">
+            <p class="t-eyebrow rv">从这里开始</p>
+            <h2 class="t-h2 rv" style="--d: 0.06s">先解码，还是先了解？</h2>
+          </div>
+          <div class="home-cards">
+            <a class="card card-decoder rv" href="/zh/ithmb-decoder/">
+              <span class="card__eyebrow">免费</span>
+              <h2>ITHMB 解码器 <span class="arrow">&rarr;</span></h2>
+              <p>拖入 .ithmb 或 .ipm 文件，把图存成 JPEG、PNG、BMP 或 WebP，全程在本机完成。</p>
+            </a>
+            <a class="card card-guide rv" href="/zh/guide/how-to-open-ithmb-files" style="--d: 0.08s">
+              <span class="card__eyebrow">指南</span>
+              <h2>关于 ITHMB 文件 <span class="arrow">&rarr;</span></h2>
+              <p>看看 .ithmb 是什么、怎么解码，以及这个工具是怎么来的。</p>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 结尾 CTA ═══ -->
+      <section class="home-cta">
+        <div class="container">
+          <h2 class="t-h1 rv">拖入文件<br />导出图片</h2>
+          <p class="t-lede rv" style="--d: 0.06s">不用安装，不用账号。文件留在你的设备上。</p>
+          <div class="rv" style="--d: 0.12s">
+            <a class="btn btn-primary" href="/zh/ithmb-decoder/">打开解码器</a>
+          </div>
+          <p class="home-cta__fine rv" style="--d: 0.18s">支持 .ithmb 和 .ipm · JPEG、PNG、BMP、WebP</p>
+        </div>
+      </section>
+
+      <!-- ═══ 支持 ═══ -->
+      <section class="home-support">
+        <div class="container">
+          <div class="home-support__inner rv">
+            <p class="home-support__text">
+              免费、没广告、不用账号。要是帮你省了时间，可以请作者喝杯咖啡。Buy Me a Coffee 是海外平台，付款要用国际支付方式。
+            </p>
+            <a class="home-support__cta" href="https://buymeacoffee.com/ThumbNami" target="_blank" rel="noopener noreferrer"><svg class="home-support__cup" viewBox="0 0 35 50" fill="currentColor" aria-hidden="true"><path d="M18.3715 23.0976C16.5857 23.8665 14.5591 24.7382 11.9326 24.7382C10.8339 24.736 9.74049 24.5844 8.68213 24.2875L10.4987 43.0444C10.563 43.8284 10.9181 44.5594 11.4935 45.0923C12.0689 45.6251 12.8225 45.9208 13.6047 45.9207C13.6047 45.9207 16.1804 46.0552 17.0398 46.0552C17.9648 46.0552 20.7385 45.9207 20.7385 45.9207C21.5205 45.9207 22.274 45.6249 22.8493 45.092C23.4245 44.5592 23.7795 43.8283 23.8438 43.0444L25.7895 22.3173C24.92 22.0187 24.0425 21.8203 23.0533 21.8203C21.3424 21.8196 19.964 22.4122 18.3715 23.0976Z"/><path d="M34.1896 13.3639L33.916 11.9762C33.6706 10.7312 33.1134 9.55468 31.8426 9.10468C31.4353 8.96073 30.9732 8.89885 30.6608 8.60086C30.3485 8.30288 30.2562 7.84009 30.1839 7.41094C30.0502 6.62326 29.9244 5.83492 29.7873 5.04859C29.6689 4.37257 29.5753 3.61315 29.267 2.99296C28.8657 2.16022 28.033 1.67322 27.205 1.35102C26.7807 1.19173 26.3477 1.05698 25.9081 0.947426C23.8394 0.398542 21.6644 0.196746 19.5362 0.0817228C16.9817-0.0600379 14.4204-0.0173274 11.872 0.209526C9.97525 0.383071 7.97745 0.592939 6.17495 1.25281C5.51616 1.49429 4.8373 1.7842 4.33634 2.29609C3.72169 2.92502 3.52104 3.89768 3.96982 4.68199C4.28886 5.23895 4.82927 5.63245 5.40246 5.89276C6.14906 6.22818 6.92877 6.48341 7.72865 6.65421C9.95585 7.14928 12.2626 7.34368 14.538 7.42641C17.0599 7.52878 19.5859 7.44582 22.0958 7.1782C22.7165 7.10959 23.336 7.0273 23.9545 6.93134C24.6828 6.81901 25.1503 5.86115 24.9356 5.19388C24.6788 4.39611 23.9886 4.08669 23.208 4.2071C23.093 4.22526 22.9786 4.24208 22.8636 4.25889L22.7807 4.271C22.5163 4.30463 22.2518 4.33602 21.9874 4.36517C21.4412 4.42437 20.8937 4.4728 20.3448 4.51046C19.1155 4.59656 17.8828 4.63625 16.6508 4.63827C15.4403 4.63827 14.229 4.60396 13.0211 4.52392C12.47 4.48759 11.9202 4.4414 11.3718 4.38535C11.1223 4.35912 10.8735 4.33154 10.6247 4.3006L10.3879 4.27033L10.3364 4.26293L10.091 4.22728C9.58933 4.15127 9.08771 4.06382 8.59144 3.95822C8.54136 3.94704 8.49657 3.91902 8.46446 3.87879C8.43236 3.83855 8.41486 3.7885 8.41486 3.73691C8.41486 3.68533 8.43236 3.63528 8.46446 3.59504C8.49657 3.55481 8.54136 3.52679 8.59144 3.51561H8.6008C9.03086 3.42346 9.46426 3.34476 9.899 3.27615C10.0439 3.25328 10.1893 3.23086 10.3351 3.20888H10.3391C10.6113 3.19072 10.8849 3.14162 11.1557 3.10933C13.5125 2.86279 15.8832 2.77874 18.2513 2.85776C19.4011 2.89139 20.5501 2.95933 21.6945 3.07637C21.9406 3.10193 22.1854 3.12884 22.4302 3.15911C22.5238 3.17054 22.6181 3.18399 22.7124 3.19543L22.9024 3.22301C23.4562 3.30597 24.0071 3.40664 24.5551 3.52503C25.367 3.70261 26.4097 3.76046 26.7709 4.65508C26.8859 4.93894 26.9381 5.25442 27.0016 5.5524L27.0826 5.93245C27.0847 5.93927 27.0863 5.94624 27.0873 5.9533C27.2785 6.85017 27.4701 7.74704 27.6618 8.64391C27.6758 8.71017 27.6762 8.77862 27.6628 8.84501C27.6493 8.9114 27.6225 8.97429 27.5838 9.02977C27.5451 9.08525 27.4955 9.13212 27.4381 9.16746C27.3806 9.2028 27.3165 9.22585 27.2498 9.23517H27.2444L27.1274 9.25132L27.0117 9.26679C26.6452 9.31477 26.2782 9.35961 25.9108 9.40132C25.1871 9.48428 24.4623 9.55603 23.7364 9.61657C22.294 9.7372 20.8486 9.81635 19.4004 9.85401C18.6625 9.87374 17.9247 9.88294 17.1872 9.88159C14.2517 9.87926 11.3188 9.70768 8.40283 9.36769C8.08714 9.33002 7.77145 9.28966 7.45577 9.24863C7.70056 9.28024 7.27786 9.22441 7.19225 9.2123C6.9916 9.18405 6.79095 9.15468 6.5903 9.12419C5.91679 9.02262 5.24729 8.8975 4.57511 8.78786C3.76249 8.65333 2.98531 8.72059 2.25026 9.12419C1.6469 9.45624 1.15857 9.96544 0.850401 10.5838C0.533376 11.243 0.439071 11.9608 0.297279 12.6691C0.155487 13.3774-0.0652275 14.1395 0.0183763 14.8666C0.198292 16.4359 1.28915 17.7113 2.85823 17.9965C4.33434 18.2655 5.81847 18.4835 7.30662 18.6691C13.1524 19.3892 19.0582 19.4753 24.9223 18.9261C25.3998 18.8812 25.8767 18.8324 26.3529 18.7794C26.5016 18.763 26.6521 18.7802 26.7934 18.8299C26.9347 18.8795 27.0631 18.9603 27.1693 19.0663C27.2755 19.1724 27.3567 19.3009 27.4071 19.4426C27.4575 19.5843 27.4757 19.7356 27.4605 19.8853L27.312 21.3369C27.0128 24.2701 26.7136 27.2031 26.4144 30.1358C26.1023 33.2157 25.7882 36.2953 25.472 39.3747C25.3829 40.242 25.2937 41.109 25.2045 41.9758C25.1189 42.8294 25.1069 43.7099 24.9457 44.5534C24.6915 45.8799 23.7986 46.6945 22.4957 46.9925C21.3021 47.2657 20.0827 47.4091 18.8586 47.4203C17.5016 47.4277 16.1452 47.3672 14.7881 47.3746C13.3395 47.3826 11.5651 47.2481 10.4468 46.1638C9.46426 45.2113 9.32849 43.72 9.19472 42.4306C9.01637 40.7234 8.83957 39.0164 8.66434 37.3097L7.68116 27.8192L7.0451 21.6786C7.0344 21.577 7.0237 21.4768 7.01367 21.3745C6.93742 20.642 6.42176 19.925 5.60913 19.962C4.91354 19.9929 4.12299 20.5875 4.20458 21.3745L4.67611 25.927L5.65126 35.3442C5.92905 38.0191 6.20617 40.6944 6.48262 43.3703C6.53613 43.8828 6.58628 44.3967 6.64247 44.9093C6.94812 47.7102 9.075 49.2196 11.7089 49.6448C13.2472 49.8936 14.8229 49.9448 16.384 49.9703C18.3851 50.0026 20.4063 50.08 22.3747 49.7154C25.2915 49.1773 27.4799 47.2185 27.7922 44.1801C27.8814 43.303 27.9706 42.4256 28.0597 41.548C28.3563 38.6458 28.6523 35.7433 28.9479 32.8406L29.9151 23.3562L30.3585 19.0095C30.3806 18.794 30.4711 18.5913 30.6166 18.4315C30.7621 18.2717 30.9549 18.1633 31.1665 18.1223C32.0005 17.9588 32.7977 17.6796 33.391 17.0413C34.3354 16.0249 34.5233 14.6998 34.1896 13.3639Z"/></svg>请作者喝杯咖啡<span class="sr-only">（在新标签页打开）</span></a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="/assets/js/footer.js?v=da8275c3" defer></script>
+      <!-- shell:footer:start -->
+<footer class="site-footer"><div class="site-footer__inner"><div class="site-footer__grid"><div><h2 class="site-footer__col-title">产品</h2><a href="/zh/ithmb-decoder/">解码器</a><a href="/zh/guide/how-to-open-ithmb-files">指南</a><a href="/zh/privacy/">隐私</a></div><div><h2 class="site-footer__col-title">项目</h2><a href="https://github.com/B67687/Ithmb-Codec" target="_blank" rel="noopener noreferrer">GitHub<span class="sr-only">（在新标签页打开）</span></a><a href="https://github.com/B67687/ImageGlass-Ithmb-Plugin" target="_blank" rel="noopener noreferrer">ImageGlass 插件<span class="sr-only">（在新标签页打开）</span></a><a href="https://github.com/B67687/ithmb-codec-web" target="_blank" rel="noopener noreferrer">网站源码<span class="sr-only">（在新标签页打开）</span></a><a href="/zh/third-party-notices">第三方声明</a></div><div><h2 class="site-footer__col-title">支持这个项目</h2><a href="https://buymeacoffee.com/ThumbNami" target="_blank" rel="noopener noreferrer"><svg class="site-footer__cup" viewBox="0 0 35 50" width="10" height="14" fill="currentColor" aria-hidden="true" style="vertical-align:-2px;margin-right:6px"><path d="M18.3715 23.0976C16.5857 23.8665 14.5591 24.7382 11.9326 24.7382C10.8339 24.736 9.74049 24.5844 8.68213 24.2875L10.4987 43.0444C10.563 43.8284 10.9181 44.5594 11.4935 45.0923C12.0689 45.6251 12.8225 45.9208 13.6047 45.9207C13.6047 45.9207 16.1804 46.0552 17.0398 46.0552C17.9648 46.0552 20.7385 45.9207 20.7385 45.9207C21.5205 45.9207 22.274 45.6249 22.8493 45.092C23.4245 44.5592 23.7795 43.8283 23.8438 43.0444L25.7895 22.3173C24.92 22.0187 24.0425 21.8203 23.0533 21.8203C21.3424 21.8196 19.964 22.4122 18.3715 23.0976Z"/><path d="M34.1896 13.3639L33.916 11.9762C33.6706 10.7312 33.1134 9.55468 31.8426 9.10468C31.4353 8.96073 30.9732 8.89885 30.6608 8.60086C30.3485 8.30288 30.2562 7.84009 30.1839 7.41094C30.0502 6.62326 29.9244 5.83492 29.7873 5.04859C29.6689 4.37257 29.5753 3.61315 29.267 2.99296C28.8657 2.16022 28.033 1.67322 27.205 1.35102C26.7807 1.19173 26.3477 1.05698 25.9081 0.947426C23.8394 0.398542 21.6644 0.196746 19.5362 0.0817228C16.9817-0.0600379 14.4204-0.0173274 11.872 0.209526C9.97525 0.383071 7.97745 0.592939 6.17495 1.25281C5.51616 1.49429 4.8373 1.7842 4.33634 2.29609C3.72169 2.92502 3.52104 3.89768 3.96982 4.68199C4.28886 5.23895 4.82927 5.63245 5.40246 5.89276C6.14906 6.22818 6.92877 6.48341 7.72865 6.65421C9.95585 7.14928 12.2626 7.34368 14.538 7.42641C17.0599 7.52878 19.5859 7.44582 22.0958 7.1782C22.7165 7.10959 23.336 7.0273 23.9545 6.93134C24.6828 6.81901 25.1503 5.86115 24.9356 5.19388C24.6788 4.39611 23.9886 4.08669 23.208 4.2071C23.093 4.22526 22.9786 4.24208 22.8636 4.25889L22.7807 4.271C22.5163 4.30463 22.2518 4.33602 21.9874 4.36517C21.4412 4.42437 20.8937 4.4728 20.3448 4.51046C19.1155 4.59656 17.8828 4.63625 16.6508 4.63827C15.4403 4.63827 14.229 4.60396 13.0211 4.52392C12.47 4.48759 11.9202 4.4414 11.3718 4.38535C11.1223 4.35912 10.8735 4.33154 10.6247 4.3006L10.3879 4.27033L10.3364 4.26293L10.091 4.22728C9.58933 4.15127 9.08771 4.06382 8.59144 3.95822C8.54136 3.94704 8.49657 3.91902 8.46446 3.87879C8.43236 3.83855 8.41486 3.7885 8.41486 3.73691C8.41486 3.68533 8.43236 3.63528 8.46446 3.59504C8.49657 3.55481 8.54136 3.52679 8.59144 3.51561H8.6008C9.03086 3.42346 9.46426 3.34476 9.899 3.27615C10.0439 3.25328 10.1893 3.23086 10.3351 3.20888H10.3391C10.6113 3.19072 10.8849 3.14162 11.1557 3.10933C13.5125 2.86279 15.8832 2.77874 18.2513 2.85776C19.4011 2.89139 20.5501 2.95933 21.6945 3.07637C21.9406 3.10193 22.1854 3.12884 22.4302 3.15911C22.5238 3.17054 22.6181 3.18399 22.7124 3.19543L22.9024 3.22301C23.4562 3.30597 24.0071 3.40664 24.5551 3.52503C25.367 3.70261 26.4097 3.76046 26.7709 4.65508C26.8859 4.93894 26.9381 5.25442 27.0016 5.5524L27.0826 5.93245C27.0847 5.93927 27.0863 5.94624 27.0873 5.9533C27.2785 6.85017 27.4701 7.74704 27.6618 8.64391C27.6758 8.71017 27.6762 8.77862 27.6628 8.84501C27.6493 8.9114 27.6225 8.97429 27.5838 9.02977C27.5451 9.08525 27.4955 9.13212 27.4381 9.16746C27.3806 9.2028 27.3165 9.22585 27.2498 9.23517H27.2444L27.1274 9.25132L27.0117 9.26679C26.6452 9.31477 26.2782 9.35961 25.9108 9.40132C25.1871 9.48428 24.4623 9.55603 23.7364 9.61657C22.294 9.7372 20.8486 9.81635 19.4004 9.85401C18.6625 9.87374 17.9247 9.88294 17.1872 9.88159C14.2517 9.87926 11.3188 9.70768 8.40283 9.36769C8.08714 9.33002 7.77145 9.28966 7.45577 9.24863C7.70056 9.28024 7.27786 9.22441 7.19225 9.2123C6.9916 9.18405 6.79095 9.15468 6.5903 9.12419C5.91679 9.02262 5.24729 8.8975 4.57511 8.78786C3.76249 8.65333 2.98531 8.72059 2.25026 9.12419C1.6469 9.45624 1.15857 9.96544 0.850401 10.5838C0.533376 11.243 0.439071 11.9608 0.297279 12.6691C0.155487 13.3774-0.0652275 14.1395 0.0183763 14.8666C0.198292 16.4359 1.28915 17.7113 2.85823 17.9965C4.33434 18.2655 5.81847 18.4835 7.30662 18.6691C13.1524 19.3892 19.0582 19.4753 24.9223 18.9261C25.3998 18.8812 25.8767 18.8324 26.3529 18.7794C26.5016 18.763 26.6521 18.7802 26.7934 18.8299C26.9347 18.8795 27.0631 18.9603 27.1693 19.0663C27.2755 19.1724 27.3567 19.3009 27.4071 19.4426C27.4575 19.5843 27.4757 19.7356 27.4605 19.8853L27.312 21.3369C27.0128 24.2701 26.7136 27.2031 26.4144 30.1358C26.1023 33.2157 25.7882 36.2953 25.472 39.3747C25.3829 40.242 25.2937 41.109 25.2045 41.9758C25.1189 42.8294 25.1069 43.7099 24.9457 44.5534C24.6915 45.8799 23.7986 46.6945 22.4957 46.9925C21.3021 47.2657 20.0827 47.4091 18.8586 47.4203C17.5016 47.4277 16.1452 47.3672 14.7881 47.3746C13.3395 47.3826 11.5651 47.2481 10.4468 46.1638C9.46426 45.2113 9.32849 43.72 9.19472 42.4306C9.01637 40.7234 8.83957 39.0164 8.66434 37.3097L7.68116 27.8192L7.0451 21.6786C7.0344 21.577 7.0237 21.4768 7.01367 21.3745C6.93742 20.642 6.42176 19.925 5.60913 19.962C4.91354 19.9929 4.12299 20.5875 4.20458 21.3745L4.67611 25.927L5.65126 35.3442C5.92905 38.0191 6.20617 40.6944 6.48262 43.3703C6.53613 43.8828 6.58628 44.3967 6.64247 44.9093C6.94812 47.7102 9.075 49.2196 11.7089 49.6448C13.2472 49.8936 14.8229 49.9448 16.384 49.9703C18.3851 50.0026 20.4063 50.08 22.3747 49.7154C25.2915 49.1773 27.4799 47.2185 27.7922 44.1801C27.8814 43.303 27.9706 42.4256 28.0597 41.548C28.3563 38.6458 28.6523 35.7433 28.9479 32.8406L29.9151 23.3562L30.3585 19.0095C30.3806 18.794 30.4711 18.5913 30.6166 18.4315C30.7621 18.2717 30.9549 18.1633 31.1665 18.1223C32.0005 17.9588 32.7977 17.6796 33.391 17.0413C34.3354 16.0249 34.5233 14.6998 34.1896 13.3639Z"/></svg>请作者喝杯咖啡<span class="sr-only">（在新标签页打开）</span></a><a href="https://github.com/B67687/Ithmb-Codec/issues" target="_blank" rel="noopener noreferrer">报告问题<span class="sr-only">（在新标签页打开）</span></a></div><div><h2 class="site-footer__col-title">格式</h2><a href="/zh/ithmb-decoder/">.ithmb</a><a href="/zh/ithmb-decoder/">.ipm</a><a href="/zh/ithmb-decoder/">JPEG · PNG · BMP · WebP</a></div></div><div class="site-footer__legal"><p>版权所有 © 2026 Nami。网站代码采用 MIT 许可证，内置组件遵循各自的许可证。与 Apple 无关。</p><a class="site-footer__lang" href="/" aria-label="English · 中文，切换语言">English · 中文</a></div></div></footer>
+<!-- shell:footer:end -->
+  </body>
+</html>

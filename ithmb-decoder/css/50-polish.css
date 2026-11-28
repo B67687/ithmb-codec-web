@@ -1,0 +1,552 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   LAYER 5 · POLISH / FIX PASSES
+   Late-round layout and accessibility passes. Behavioural and visual parity is asserted by the test suite; this is the remaining override layer scheduled for flattening in B1b.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+body.decoder-page #viewer-stage > .viewer-stage-content > .viewer-placeholder {
+  width: min(520px, calc(100% - 96px));
+}
+body.decoder-page .viewer-placeholder {
+  border: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  gap: 10px;
+  padding: 0;
+  min-height: 0;
+}
+body.decoder-page .viewer-placeholder.failed {
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+body.decoder-page .viewer-placeholder.failed .placeholder-title {
+  margin: 0;
+  color: #f5f5f7;
+  font-family: var(--font-text);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  line-height: 1.3;
+}
+body.decoder-page .viewer-placeholder.failed .placeholder-msg {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+body.decoder-page .viewer-placeholder.plain {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: min(440px, calc(100% - 120px));
+  padding: 20px 24px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12);
+  text-align: center;
+}
+
+/* Loading / decoding: spinner + one quiet line, no box. */
+body.decoder-page .viewer-placeholder .placeholder-spinner {
+  width: 22px;
+  height: 22px;
+  border: 2px solid rgba(255, 255, 255, 0.18);
+  border-top-color: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+body.decoder-page .viewer-placeholder .placeholder-msg {
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 12.5px;
+  letter-spacing: -0.005em;
+}
+
+@media (max-width: 560px) {
+  body.decoder-page #viewer-stage > .viewer-stage-content > .viewer-placeholder {
+    width: calc(100% - 120px);
+  }
+}
+
+/* ---------- 2. Failed result cards: decoded-card rhythm ---------- */
+
+body.decoder-page #file-list .file-card.is-failure,
+body.decoder-page #file-list .file-card.is-error {
+  flex-direction: column;
+}
+body.decoder-page #file-list .file-card.is-failure .preview,
+body.decoder-page #file-list .file-card.is-error .preview {
+  order: 0;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  padding: 0;
+  background: #0d0d0f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+body.decoder-page #file-list .file-card.is-failure .result__body,
+body.decoder-page #file-list .file-card.is-error .result__body {
+  order: 1;
+  width: 100%;
+  padding: 12px 14px 14px;
+  gap: 3px;
+}
+body.decoder-page #file-list .file-card.is-failure .name,
+body.decoder-page #file-list .file-card.is-error .name {
+  max-width: 100%;
+}
+body.decoder-page #file-list .file-card.is-failure .status,
+body.decoder-page #file-list .file-card.is-error .status {
+  margin: 0 0 9px;
+  min-height: 0;
+}
+body.decoder-page #file-list .file-card.is-error .err-msg {
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+/* Failed thumbnail tile (card preview) — sibling of the filmstrip thumb.
+   Final owner decision: v3-C quiet material (soft gradient + very faint
+   neutral dot pattern), current centred broken-image glyph kept, no badge or
+   corner dot, no tile text, no warning colour. Geometry unchanged. */
+.fail-thumb {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-color: #141416;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.028) 1px, transparent 1.3px),
+    radial-gradient(55% 58% at 28% 22%, rgba(255, 255, 255, 0.08), transparent 68%),
+    radial-gradient(55% 60% at 74% 78%, rgba(150, 170, 205, 0.1), transparent 70%),
+    linear-gradient(145deg, #26262b 0%, #111114 72%);
+  background-size: 10px 10px, auto, auto, auto;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2), inset 0 0 34px rgba(0, 0, 0, 0.32);
+}
+.fail-thumb__glyph {
+  width: 30px;
+  height: 30px;
+  color: rgba(255, 255, 255, 0.22);
+}
+
+/* ---------- 3. Filmstrip failed thumbnails ---------- */
+
+body.decoder-page .filmstrip-thumb.failed {
+  border: 0;
+  background: #141416;
+  opacity: 0.9;
+}
+body.decoder-page .filmstrip-thumb.failed:hover {
+  opacity: 1;
+}
+body.decoder-page .filmstrip-thumb.failed.active {
+  box-shadow: 0 0 0 1.5px #fff;
+  outline: none;
+}
+:root[data-theme="dark"] body.decoder-page .filmstrip-thumb.failed {
+  background: #141416;
+}
+.film-thumb-fail {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-color: #141416;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.028) 1px, transparent 1.3px),
+    radial-gradient(55% 58% at 28% 22%, rgba(255, 255, 255, 0.08), transparent 68%),
+    radial-gradient(55% 60% at 74% 78%, rgba(150, 170, 205, 0.1), transparent 70%),
+    linear-gradient(145deg, #26262b 0%, #111114 72%);
+  background-size: 10px 10px, auto, auto, auto;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+.film-thumb-fail__glyph {
+  width: 15px;
+  height: 15px;
+  color: rgba(255, 255, 255, 0.25);
+}
+body.decoder-page #file-list .file-card .name {
+  max-width: 100%;
+}
+
+/* ---------- 5. 404 footer: page-level .notfound-page p styles leaked in ---------- */
+
+body.notfound-page .site-footer__legal p {
+  margin: 0;
+  max-width: none;
+  font-size: 12px;
+  line-height: 1.55;
+  letter-spacing: 0;
+  color: var(--faint);
+  text-align: left;
+}
+
+/* ── mobile toolbar: stable height + logical control order ── */
+@media (max-width: 560px) {
+  body.decoder-page #toolbar {
+    min-height: 148px;
+  }
+  body.decoder-page .toolbar__actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  body.decoder-page .toolbar__actions .segmented {
+    order: 1;
+  }
+  body.decoder-page #downloadAllBtn {
+    order: 2;
+  }
+  body.decoder-page #downloadFormatSelect {
+    order: 3;
+  }
+  body.decoder-page #clearBtn {
+    order: 4;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Pre-launch fix pass (a11y + honesty + format controls + safe perf)
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ---------- 1. Contrast tokens + dark primary fills (A11Y-08/09/26) ---------- */
+
+/* Light helper text was 3.3–3.6:1 (--faint #86868b). #6e6e73 is 4.9:1 on
+   white and 4.6:1 on the fog surface, so helper text now passes AA. */
+
+/* Text-bearing accent fills: dark-theme #0a84ff gives white text 3.65:1, so
+   use the light-theme accent (#0071e3, 4.70:1) for fills in dark mode. */
+:root[data-theme="dark"]
+  :is(.btn--primary, .btn-primary, #downloadAllBtn, .error-section a, .app-mock__btn--primary) {
+  background: #0071e3;
+  color: #fff;
+}
+:root[data-theme="dark"]
+  :is(
+    .btn--primary,
+    .btn-primary,
+    #downloadAllBtn,
+    .error-section a,
+    .app-mock__btn--primary
+  ):hover {
+  background: #0077ed;
+}
+
+/* Dark primary buttons driven by the generic .btn rule (host of selectors). */
+:root[data-theme="dark"] .btn-primary,
+:root[data-theme="dark"] .btn--primary {
+  background: #0071e3;
+}
+body.modal-open {
+  overflow: hidden;
+}
+.modal-overlay {
+  padding: 16px;
+  box-sizing: border-box;
+}
+.modal-dialog {
+  max-width: 460px;
+  outline: none;
+}
+.modal-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--text);
+  margin: 0 0 6px;
+  padding-right: 28px;
+}
+.modal-title:focus {
+  outline: none;
+}
+.modal-desc {
+  margin: 0 0 16px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.confirm-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+/* ---------- 3. Skip link + filmstrip focus + tap targets ---------- */
+
+.skip-link {
+  position: absolute;
+  top: -60px;
+  left: 12px;
+  z-index: 10000000;
+  padding: 10px 16px;
+  border-radius: 0 0 10px 10px;
+  background: var(--accent);
+  color: #fff;
+  font-family: var(--font-text);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: top 0.15s ease;
+}
+.skip-link:focus,
+.skip-link:focus-visible {
+  top: 0;
+  outline: 2px solid #fff;
+  outline-offset: -4px;
+}
+body.decoder-page .filmstrip-thumb:focus-visible,
+body.decoder-page .filmstrip-thumb:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+/* Expand hit areas without changing the visual layout (2.5.8 / 2.5.5). */
+#addFilesBtn,
+#helpBtn,
+#themeToggle,
+#navToggle,
+#backToTopLink,
+#backToPositionLink {
+  position: relative;
+}
+#addFilesBtn::after {
+  content: "";
+  position: absolute;
+  inset: -11px;
+}
+body.decoder-page .theme-toggle::after,
+body.decoder-page .nav-toggle::after {
+  content: "";
+  position: absolute;
+  inset: -9px;
+}
+#backToTop button,
+#backToPosition button {
+  border: 0;
+  cursor: pointer;
+}
+#backToTopLink::after,
+#backToPositionLink::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+}
+
+/* Sample/guide links and footer links: comfortable tap height. */
+body.decoder-page .sample-row a,
+.home-hero__cta .link-arrow,
+.site-footer a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.site-footer a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  /* The 44px row is the touch target. Do not add the base 8px margin on
+     top of it; that made mobile footer rows 52px apart while desktop was
+     tightened to 34px. */
+  margin-bottom: 0;
+  padding-block: 2px;
+}
+.site-footer__lang {
+  color: var(--faint);
+  text-decoration: none;
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+}
+.site-footer__lang:hover {
+  text-decoration: underline;
+}
+.site-footer h2,
+.site-footer .site-footer__col-title {
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0;
+}
+
+/* Drawer language control (desktop pill stays hidden ≤834px). */
+.nav-lang {
+  display: none;
+}
+
+@media (max-width: 834px) {
+  body.nav-open .top-nav-links {
+    display: flex;
+  }
+  .nav-lang {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 600;
+    color: var(--text);
+  }
+}
+
+/* ---------- 4. Decoder copy + format-control labels ---------- */
+
+body.decoder-page .decoder-scope {
+  max-width: 620px;
+  margin: 18px auto 0;
+  font-size: 12.5px;
+  line-height: 1.55;
+  letter-spacing: -0.004em;
+  color: var(--muted);
+  text-align: center;
+}
+body.decoder-page .decoder-scope strong {
+  color: var(--text);
+  font-weight: 600;
+}
+body.decoder-page .decoder-scope a {
+  color: var(--link);
+  text-decoration: underline;
+}
+body.decoder-page .decoder-scope code {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.92em;
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: var(--fog);
+}
+body.decoder-page .toolbar__fmt-label {
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--faint);
+  white-space: nowrap;
+}
+
+@media (max-width: 560px) {
+  body.decoder-page .toolbar__fmt-label {
+    display: none;
+  }
+}
+body.decoder-page #file-list .file-card .actions-label {
+  font-size: 10px;
+  letter-spacing: 0.02em;
+  color: var(--faint);
+  margin-left: auto;
+}
+
+/* Results head: allow the meta row to wrap at 320px (A11Y-10). */
+body.decoder-page .results-head {
+  flex-wrap: wrap;
+  row-gap: 6px;
+}
+body.decoder-page .results-head__meta {
+  min-width: 0;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+@media (max-width: 560px) {
+  body.decoder-page .results-head h2 {
+    white-space: normal;
+  }
+}
+
+/* ---------- 6. Perf: above-the-fold reveal must not hide the LCP image ---------- */
+
+.home-hero .rv,
+.home-hero .rv.rv-in {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rv,
+  .rv.rv-in {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .spinner,
+  .placeholder-spinner {
+    animation: none !important;
+  }
+}
+
+/* ---------- 7. Real 44px hit boxes for the icon toggles ---------- */
+/* The pseudo-element expansions are invisible to target-size tooling and some
+   assistive technology; give the controls a genuine 44x44 box instead. */
+.theme-toggle,
+.nav-toggle {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* ---------- 8. 404: system-font variant (cheap payload win) ---------- */
+/* The 404 is a terminal page: it does not need the 352 KB variable Inter
+   download. Remapping the font variables keeps every layout/font-size rule
+   intact while the browser skips the webfont entirely. */
+body.notfound-page {
+  --font-text: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  font-family: var(--font-text);
+}
+
+/* ═══ Mobile failure card fit (fix clipping; ONE fixed stage in all states) ═══
+   The 34vh stage was 287px at 390×844 and only 193px at 320×568, while the
+   failure card is 300–435px tall. Use one fixed 360px stage on phones in
+   EVERY state (success, loading, failure, generic error) so the arrows and
+   filmstrip never move, and compact the failure card so it fits without
+   clipping or internal scrolling. */
+@media (max-width: 560px) {
+  body.decoder-page #viewer-main,
+  body.decoder-page #viewer-stage {
+    height: 360px;
+  }
+
+  /* Keep the decoded image undistorted inside the taller fixed stage. */
+  body.decoder-page #viewer-stage canvas {
+    height: auto !important;
+    max-height: 100% !important;
+    width: auto !important;
+    max-width: 100% !important;
+  }
+}
+
+/* ---------- Footer row rhythm: desktop compact, touch widths unchanged ---------- */
+/* The 44px touch-target rule (needed at <=834px) made desktop footer rows
+   feel airy. On pointer/desktop widths tighten rows to a ~34px rhythm; the
+   >=44px targets stay in force at tablet/mobile breakpoints. */
+@media (min-width: 835px) {
+  .site-footer a {
+    min-height: 34px;
+    margin-bottom: 0;
+    padding-block: 0;
+  }
+  .site-footer__lang {
+    min-height: 34px;
+  }
+  .site-footer h2,
+  .site-footer .site-footer__col-title {
+    margin-bottom: 7px;
+  }
+  .site-footer__grid {
+    gap: 24px;
+  }
+  .site-footer__legal {
+    margin-top: 26px;
+  }
+}

@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-i18n="decoder.title">
+      Free .ITHMB File Viewer | ITHMB Codec
+    </title>
+    <script src="/assets/js/theme.js?v=b4c2664f"></script>
+    <meta
+      name="description"
+      data-i18n-content="decoder.description"
+      content="Open Apple .ithmb and .ipm thumbnail files from old iPods and iPhones in your browser. Save the image as JPEG, PNG, BMP or WebP. Free, private and open source."
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=40336c8c" />
+    <link rel="icon" href="/favicon.ico?v=583331b9" sizes="any" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png?v=c0bb3e54" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=84d0272f" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png?v=c081a0cd" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png?v=50db22a9" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png?v=31e1b44a" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=303bc3e5" />
+    <meta
+      property="og:title"
+      content="ITHMB Decoder: free .ithmb file viewer"
+    />
+    <meta
+      property="og:description"
+      content="Open Apple .ithmb and .ipm thumbnail files in your browser. Free and private."
+    />
+    <meta
+      property="og:image"
+      content="https://ithmb-codec.dev/thumb-decoder-preview.png"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://ithmb-codec.dev/ithmb-decoder/" />
+    <meta property="og:site_name" content="ITHMB Codec" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="canonical" href="https://ithmb-codec.dev/ithmb-decoder/" />
+    <link
+      rel="alternate"
+      hreflang="en"
+      href="https://ithmb-codec.dev/ithmb-decoder/"
+    />
+    <link
+      rel="alternate"
+      hreflang="zh"
+      href="https://ithmb-codec.dev/zh/ithmb-decoder/"
+    />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://ithmb-codec.dev/ithmb-decoder/"
+    />
+    <link rel="stylesheet" href="styles.css?v=3968aba6" />
+    <!-- B6 perf hints (build regenerates the modulepreload block from the real
+         import graph; the wasm preload starts the decoder download at
+         navigation instead of after the 29-request module waterfall). -->
+    <!-- perf:modulepreload:start -->
+    <link rel="modulepreload" href="/ithmb-decoder/app.js?v=c8ecbbce" />
+    <link rel="modulepreload" href="/ithmb-decoder/card-failure-ui.js?v=6551f588" />
+    <link rel="modulepreload" href="/ithmb-decoder/card-success-ui.js?v=4ba87f2b" />
+    <link rel="modulepreload" href="/ithmb-decoder/cards.js?v=66780773" />
+    <link rel="modulepreload" href="/ithmb-decoder/decode-pipeline.js?v=b90bbbc1" />
+    <link rel="modulepreload" href="/ithmb-decoder/decoder.js?v=268c72b2" />
+    <link rel="modulepreload" href="/ithmb-decoder/download.js?v=ffb66dd8" />
+    <link rel="modulepreload" href="/ithmb-decoder/failure-info.js?v=20064eb0" />
+    <link rel="modulepreload" href="/ithmb-decoder/file-digest.js?v=8176495c" />
+    <link rel="modulepreload" href="/ithmb-decoder/filmstrip.js?v=34ba8d38" />
+    <link rel="modulepreload" href="/ithmb-decoder/i18n.js?v=9c8a87b4" />
+    <link rel="modulepreload" href="/ithmb-decoder/input.js?v=b1b04c57" />
+    <link rel="modulepreload" href="/ithmb-decoder/ithmb_wasm.js?v=abf293e7" />
+    <link rel="modulepreload" href="/ithmb-decoder/limits.js?v=fdb2405c" />
+    <link rel="modulepreload" href="/ithmb-decoder/profiles.js?v=99178101" />
+    <link rel="modulepreload" href="/ithmb-decoder/state.js?v=0c3d4bf9" />
+    <link rel="modulepreload" href="/ithmb-decoder/ui.js?v=c40d36c5" />
+    <link rel="modulepreload" href="/ithmb-decoder/utils.js?v=e60679ed" />
+    <link rel="modulepreload" href="/ithmb-decoder/viewer.js?v=829a4831" />
+    <link rel="modulepreload" href="/ithmb-decoder/zip-names.js?v=9d10b763" />
+    <!-- perf:modulepreload:end -->
+    <link rel="alternate" href="/ithmb-decoder/ithmb_wasm_bg.wasm?v=d97d45a2" type="application/wasm" data-ithmb-wasm />
+    <script src="/assets/js/decoder-boot.js?v=2decd70a" async></script>
+    <script src="/assets/js/decoder-watchdog.js?v=d97d5164" async></script>
+    <link
+      rel="preload"
+      href="/ithmb-decoder/fonts/InterVariable-subset.woff2?v=61aa4c74"
+      as="font"
+      type="font/woff2"
+      crossorigin="anonymous"
+    />
+    <script type="module" src="i18n.js?v=9c8a87b4"></script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "ITHMB Decoder",
+        "url": "https://ithmb-codec.dev/ithmb-decoder/",
+        "description": "Open Apple .ithmb and .ipm thumbnail files from old iPods and iPhones in your browser. Save the image as JPEG, PNG, BMP or WebP. Free, private and open source.",
+        "applicationCategory": "Multimedia",
+        "operatingSystem": "All",
+        "browserRequirements": "Requires JavaScript",
+        "author": {
+          "@type": "Organization",
+          "name": "ITHMB Codec"
+        }
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://ithmb-codec.dev/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Decoder",
+            "item": "https://ithmb-codec.dev/ithmb-decoder/"
+          }
+        ]
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "ITHMB Codec",
+        "url": "https://ithmb-codec.dev",
+        "logo": "https://ithmb-codec.dev/icon-512.png",
+        "sameAs": [
+          "https://github.com/B67687/ithmb-codec",
+          "https://github.com/B67687/ithmb-codec-web",
+          "https://github.com/B67687/ImageGlass-Ithmb-Plugin"
+        ]
+      }
+    </script>
+  </head>
+  <body class="decoder-page">
+    <!-- shell:nav:start -->
+<a class="skip-link" href="#main">Skip to content</a><nav class="top-nav" aria-label="Main"><div class="top-nav__inner"><a href="/" class="top-nav__brand"><span class="brand-mark" aria-hidden="true">iT</span>ITHMB Codec</a><div class="top-nav-links" id="topNavPanel"><a href="/" class="top-nav-link" data-nav-id="home" data-i18n="nav.home">Home</a><a href="/ithmb-decoder/" class="top-nav-link active" aria-current="page" data-nav-id="decoder" data-i18n="nav.decoder">Decoder</a><a href="/guide/how-to-open-ithmb-files" class="top-nav-link" data-nav-id="guide" data-i18n="nav.guide">Guide</a><a href="/zh/ithmb-decoder/" class="top-nav-link nav-lang" aria-label="EN / 中, switch language"><span class="lang-opt" data-lang="en">EN</span> / <span class="lang-opt" data-lang="zh">中</span></a></div><div class="top-nav-icons"><a href="/zh/ithmb-decoder/" id="langToggle" class="lang-toggle" data-i18n-title="nav.toggleLabel" aria-label="EN/中, switch language" title="Switch language"><span class="lang-opt" data-lang="en">EN</span><span>/</span><span class="lang-opt" data-lang="zh">中</span></a><a href="https://github.com/B67687/Ithmb-Codec" class="github-corner" target="_blank" rel="noopener noreferrer" aria-label="View source on GitHub (opens in a new tab)" data-i18n-aria-label="nav.viewSource"><svg viewBox="0 0 16 16" fill="currentColor" width="17" height="17" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a><button id="themeToggle" class="theme-toggle" type="button" data-i18n-aria-label="nav.themeToggle" data-i18n-title="nav.themeToggle" aria-label="Toggle theme" title="Toggle theme"><svg class="moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z"/></svg><svg class="sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"/></svg></button><button id="navToggle" class="nav-toggle" type="button" aria-expanded="false" aria-controls="topNavPanel" aria-label="Menu"><span></span><span></span><span></span></button></div></div></nav>
+<!-- shell:nav:end -->
+    <script src="/assets/js/nav.js?v=5d15b81c" defer></script>
+    <!-- Full-page drop overlay -->
+    <div class="drop-overlay" id="dropOverlay">
+      <div style="text-align: center">
+        <svg viewBox="0 0 24 24">
+          <path
+            d="M12 2a1 1 0 011 1v6.5l2.5-2.5a1 1 0 111.414 1.414L12 12.828 7.086 7.914A1 1 0 118.5 6.5L11 9V3a1 1 0 011-1zM3 12a1 1 0 011 1v5a2 2 0 002 2h12a2 2 0 002-2v-5a1 1 0 112 0v5a4 4 0 01-4 4H6a4 4 0 01-4-4v-5a1 1 0 011-1z"
+          />
+        </svg>
+        <p data-i18n="decoder.dropAnywhere">
+          Drop .ithmb or .ipm file anywhere
+        </p>
+      </div>
+    </div>
+
+    <!-- The one file input: the drop card and the "Add files" control both
+         forward to it. Kept outside the visible layout. -->
+    <input
+      type="file"
+      id="fileInput"
+      accept=".ithmb,.ipm,.ITHMB,.IPM"
+      multiple
+      hidden
+      aria-label="Choose .ithmb or .ipm files"
+    />
+
+    <main id="main" tabindex="-1">
+      <div id="batchNotice" class="batch-notice" hidden>
+        <div class="container batch-notice__inner">
+          <!-- The batch summary is visible text; the single polite announcer
+               (#liveStatus at the end of <body>) reads it out, so this node is
+               deliberately not a second live region. -->
+          <p class="batch-notice__text"></p>
+          <button type="button" class="batch-notice__dismiss" data-dismiss-batch data-i18n="ui.dismiss">Dismiss</button>
+        </div>
+      </div>
+      <!-- ===== Intro ===== -->
+      <section class="decoder-hero">
+        <div class="container">
+          <p class="t-eyebrow rv">ITHMB Decoder</p>
+          <h1 class="t-h1 rv" style="--d: 0.04s">Free .ithmb viewer</h1>
+          <p class="t-lede rv" style="--d: 0.08s">
+            Open a .ithmb or .ipm file and get the image inside, <br class="display-break" />decoded on your device.
+          </p>
+          <div
+            class="drop rv"
+            id="dropzone"
+            role="button"
+            tabindex="0"
+            aria-label="Drop .ithmb or .ipm files or choose files"
+            style="--d: 0.12s"
+          >
+            <span class="drop__icon icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v11" /><path d="m7.5 9.5 4.5 4.5 4.5-4.5" /><path d="M4 20h16" /></svg>
+            </span>
+            <b class="drop__title">Drop .ithmb or .ipm files</b>
+            <span class="drop__hint hint">or click to browse. Decoding happens on your device.</span>
+            <span class="drop__fine">RGB555 · RGB565 · YCbCr 4:2:0 · UYVY 4:2:2<span class="drop__limits"> · Up to 8 MB per file · 200 files and 256 MB per session · ZIPs over 100 MB ask first</span></span>
+          </div>
+          <div class="sample-row rv" style="--d: 0.18s">
+            <a href="#" id="sampleBtn">Try a sample file</a>
+            <i></i>
+            <a href="/guide/how-to-open-ithmb-files" id="guideLink" target="_blank" rel="noopener noreferrer">Read the guide<span class="sr-only">(opens in a new tab)</span></a>
+          </div>
+          <p class="decoder-scope rv" style="--d: 0.2s">
+            <strong>What opens here:</strong> .ithmb and .ipm files that carry their own image data. The first frame is shown if a file holds several. <br class="display-break" />PhotoData slots and PhotoDB or ArtworkDB database files need the desktop
+            <a href="https://github.com/B67687/ithmb-codec" target="_blank" rel="noopener noreferrer">Ithmb-Codec tool<span class="sr-only">(opens in a new tab)</span></a>.
+          </p>
+          <div class="decoding" id="decoding" role="status" aria-live="polite" aria-atomic="true" hidden>
+            <span class="spinner" aria-hidden="true"></span>
+            Decoding files…
+          </div>
+        </div>
+        <noscript>
+          <style>#dropzone{pointer-events:none;opacity:.55}</style>
+          <p class="nojs-notice" role="note">JavaScript is required to decode files. Files always stay on your device.</p>
+        </noscript>
+      </section>
+
+      <!-- ===== Loaded ===== -->
+      <section class="loaded" id="loaded" hidden aria-labelledby="loadedTitle">
+        <div class="container">
+          <a class="skip-link skip-link--results" href="#file-list">Skip to results</a>
+          <h2 class="sr-only" id="loadedTitle" tabindex="-1">Decoded images</h2>
+          <div class="toolbar" id="toolbar">
+            <div class="toolbar__file">
+              <div class="toolbar__name-row"><b id="tbFile"></b></div>
+              <div class="toolbar__sub-row">
+                <span id="tbMeta"></span>
+                <button class="add-files-btn" type="button" id="addFilesBtn" aria-label="Add files" title="Add files"><span>Add files</span></button>
+              </div>
+            </div>
+            <div class="toolbar__actions">
+              <span class="toolbar__fmt-label" data-i18n="app.zipFormat">ZIP format</span>
+              <div class="segmented" id="fmtSeg" role="group" aria-label="ZIP download format" data-i18n-aria-label="app.zipFormatAria">
+                <button type="button" class="is-on" data-format="image/jpeg" aria-pressed="true">JPEG</button>
+                <button type="button" data-format="image/png" aria-pressed="false">PNG</button>
+                <button type="button" data-format="image/bmp" aria-pressed="false">BMP</button>
+                <button type="button" data-format="image/webp" aria-pressed="false">WebP</button>
+              </div>
+              <select id="downloadFormatSelect" class="visually-hidden" aria-label="Output format" tabindex="-1">
+                <option value="image/jpeg" selected>JPEG</option>
+                <option value="image/png">PNG</option>
+                <option value="image/bmp">BMP</option>
+                <option value="image/webp">WebP</option>
+              </select>
+              <button class="btn btn--primary btn--sm" type="button" id="downloadAllBtn">
+                Download all (.zip)
+              </button>
+              <button class="btn btn--ghost btn--sm" type="button" id="clearBtn">Clear</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="big-stage" id="viewer-container" style="display: none">
+          <div class="big-stage__frame">
+            <div class="big-stage__view" id="viewer-main" role="region" aria-label="Decoded image viewer" data-i18n-aria-label="viewer.regionLabel">
+              <div id="viewer-stage"></div>
+              <div class="big-stage__meta" id="viewer-header">
+                <span class="vh-file" id="vhFile"></span><i></i><span class="vh-enc" id="vhEnc"></span><i></i><span class="vh-dims" id="vhDims"></span>
+              </div>
+              <button class="big-stage__arrow big-stage__arrow--l" id="prevBtn" type="button" aria-label="Previous image">
+                <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 1.5 3 5l3.5 3.5" /></svg>
+              </button>
+              <button class="big-stage__arrow big-stage__arrow--r" id="nextBtn" type="button" aria-label="Next image">
+                <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 1.5 7 5 3.5 8.5" /></svg>
+              </button>
+            </div>
+          </div>
+          <div class="big-stage__film" id="viewer-filmstrip">
+            <div class="filmstrip-track" id="filmstripTrack"></div>
+            <span class="big-stage__count" id="viewerPos">0 / 0</span>
+          </div>
+        </div>
+
+        <div class="container results-block">
+          <div class="results-head">
+            <h2 class="t-h2">Decoded images</h2>
+            <div class="results-head__meta">
+              <span id="resultsMeta"></span>
+              <button class="icon-btn" type="button" id="helpBtn" aria-label="Keyboard shortcuts" title="Keyboard shortcuts">?</button>
+            </div>
+          </div>
+          <div id="file-list" class="results" tabindex="-1" role="region" aria-label="Decoded images"></div>
+        </div>
+      </section>
+
+      <!-- ===== Info ===== -->
+      <section class="info-block">
+        <div class="container">
+          <div class="info-grid">
+            <div>
+              <p class="t-eyebrow rv">How it works</p>
+              <h2 class="t-h2 rv" style="--d: 0.06s">A local viewer.</h2>
+              <p class="rv" style="--d: 0.1s">
+                Drop a .ithmb or .ipm file that carries its own image data and the image inside is decoded locally. Nothing leaves your device, nothing is installed, and no account is needed.
+              </p>
+              <p class="rv" style="--d: 0.14s">
+                Choose a download format or save each image as JPEG, PNG, BMP or WebP. If a file holds several frames, the first one is shown. Raw PhotoData slots that depend on a PhotoDB or ArtworkDB database need the desktop command-line tool.
+              </p>
+            </div>
+            <ul class="info-tips rv" style="--d: 0.18s">
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg>
+                Opens .ithmb and .ipm files, one image at a time (the first frame if a file holds several), individually or in batches.
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg>
+                Images keep the dimensions stored in the file. The result is the device thumbnail, not the original photo.
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg>
+                Tested in current Chrome and Firefox. Other current browsers may work.
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg>
+                Files never leave your device.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div id="backToTop">
+      <button type="button" id="backToTopLink" aria-label="Back to top" title="Back to top"><span aria-hidden="true">↑</span></button>
+    </div>
+    <div id="backToPosition">
+      <button type="button" id="backToPositionLink" aria-label="Back to last position" title="Back to last position"><span aria-hidden="true">↓</span></button>
+    </div>
+
+    <script src="/assets/js/footer.js?v=da8275c3" defer></script>
+
+    <div id="liveStatus" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+
+    <div id="toast" class="toast"></div>
+
+    <script type="module" src="app.js?v=c8ecbbce"></script>
+      <!-- shell:footer:start -->
+<footer class="site-footer"><div class="site-footer__inner"><div class="site-footer__grid"><div><h2 class="site-footer__col-title">Product</h2><a href="/ithmb-decoder/">Decoder</a><a href="/guide/how-to-open-ithmb-files">Guide</a><a href="/privacy/">Privacy</a></div><div><h2 class="site-footer__col-title">Project</h2><a href="https://github.com/B67687/Ithmb-Codec" target="_blank" rel="noopener noreferrer">GitHub<span class="sr-only">(opens in a new tab)</span></a><a href="https://github.com/B67687/ImageGlass-Ithmb-Plugin" target="_blank" rel="noopener noreferrer">ImageGlass plugin<span class="sr-only">(opens in a new tab)</span></a><a href="https://github.com/B67687/ithmb-codec-web" target="_blank" rel="noopener noreferrer">Website source<span class="sr-only">(opens in a new tab)</span></a><a href="/third-party-notices">Third-party notices</a></div><div><h2 class="site-footer__col-title">Support the project</h2><a href="https://buymeacoffee.com/ThumbNami" target="_blank" rel="noopener noreferrer"><svg class="site-footer__cup" viewBox="0 0 35 50" width="10" height="14" fill="currentColor" aria-hidden="true" style="vertical-align:-2px;margin-right:6px"><path d="M18.3715 23.0976C16.5857 23.8665 14.5591 24.7382 11.9326 24.7382C10.8339 24.736 9.74049 24.5844 8.68213 24.2875L10.4987 43.0444C10.563 43.8284 10.9181 44.5594 11.4935 45.0923C12.0689 45.6251 12.8225 45.9208 13.6047 45.9207C13.6047 45.9207 16.1804 46.0552 17.0398 46.0552C17.9648 46.0552 20.7385 45.9207 20.7385 45.9207C21.5205 45.9207 22.274 45.6249 22.8493 45.092C23.4245 44.5592 23.7795 43.8283 23.8438 43.0444L25.7895 22.3173C24.92 22.0187 24.0425 21.8203 23.0533 21.8203C21.3424 21.8196 19.964 22.4122 18.3715 23.0976Z"/><path d="M34.1896 13.3639L33.916 11.9762C33.6706 10.7312 33.1134 9.55468 31.8426 9.10468C31.4353 8.96073 30.9732 8.89885 30.6608 8.60086C30.3485 8.30288 30.2562 7.84009 30.1839 7.41094C30.0502 6.62326 29.9244 5.83492 29.7873 5.04859C29.6689 4.37257 29.5753 3.61315 29.267 2.99296C28.8657 2.16022 28.033 1.67322 27.205 1.35102C26.7807 1.19173 26.3477 1.05698 25.9081 0.947426C23.8394 0.398542 21.6644 0.196746 19.5362 0.0817228C16.9817-0.0600379 14.4204-0.0173274 11.872 0.209526C9.97525 0.383071 7.97745 0.592939 6.17495 1.25281C5.51616 1.49429 4.8373 1.7842 4.33634 2.29609C3.72169 2.92502 3.52104 3.89768 3.96982 4.68199C4.28886 5.23895 4.82927 5.63245 5.40246 5.89276C6.14906 6.22818 6.92877 6.48341 7.72865 6.65421C9.95585 7.14928 12.2626 7.34368 14.538 7.42641C17.0599 7.52878 19.5859 7.44582 22.0958 7.1782C22.7165 7.10959 23.336 7.0273 23.9545 6.93134C24.6828 6.81901 25.1503 5.86115 24.9356 5.19388C24.6788 4.39611 23.9886 4.08669 23.208 4.2071C23.093 4.22526 22.9786 4.24208 22.8636 4.25889L22.7807 4.271C22.5163 4.30463 22.2518 4.33602 21.9874 4.36517C21.4412 4.42437 20.8937 4.4728 20.3448 4.51046C19.1155 4.59656 17.8828 4.63625 16.6508 4.63827C15.4403 4.63827 14.229 4.60396 13.0211 4.52392C12.47 4.48759 11.9202 4.4414 11.3718 4.38535C11.1223 4.35912 10.8735 4.33154 10.6247 4.3006L10.3879 4.27033L10.3364 4.26293L10.091 4.22728C9.58933 4.15127 9.08771 4.06382 8.59144 3.95822C8.54136 3.94704 8.49657 3.91902 8.46446 3.87879C8.43236 3.83855 8.41486 3.7885 8.41486 3.73691C8.41486 3.68533 8.43236 3.63528 8.46446 3.59504C8.49657 3.55481 8.54136 3.52679 8.59144 3.51561H8.6008C9.03086 3.42346 9.46426 3.34476 9.899 3.27615C10.0439 3.25328 10.1893 3.23086 10.3351 3.20888H10.3391C10.6113 3.19072 10.8849 3.14162 11.1557 3.10933C13.5125 2.86279 15.8832 2.77874 18.2513 2.85776C19.4011 2.89139 20.5501 2.95933 21.6945 3.07637C21.9406 3.10193 22.1854 3.12884 22.4302 3.15911C22.5238 3.17054 22.6181 3.18399 22.7124 3.19543L22.9024 3.22301C23.4562 3.30597 24.0071 3.40664 24.5551 3.52503C25.367 3.70261 26.4097 3.76046 26.7709 4.65508C26.8859 4.93894 26.9381 5.25442 27.0016 5.5524L27.0826 5.93245C27.0847 5.93927 27.0863 5.94624 27.0873 5.9533C27.2785 6.85017 27.4701 7.74704 27.6618 8.64391C27.6758 8.71017 27.6762 8.77862 27.6628 8.84501C27.6493 8.9114 27.6225 8.97429 27.5838 9.02977C27.5451 9.08525 27.4955 9.13212 27.4381 9.16746C27.3806 9.2028 27.3165 9.22585 27.2498 9.23517H27.2444L27.1274 9.25132L27.0117 9.26679C26.6452 9.31477 26.2782 9.35961 25.9108 9.40132C25.1871 9.48428 24.4623 9.55603 23.7364 9.61657C22.294 9.7372 20.8486 9.81635 19.4004 9.85401C18.6625 9.87374 17.9247 9.88294 17.1872 9.88159C14.2517 9.87926 11.3188 9.70768 8.40283 9.36769C8.08714 9.33002 7.77145 9.28966 7.45577 9.24863C7.70056 9.28024 7.27786 9.22441 7.19225 9.2123C6.9916 9.18405 6.79095 9.15468 6.5903 9.12419C5.91679 9.02262 5.24729 8.8975 4.57511 8.78786C3.76249 8.65333 2.98531 8.72059 2.25026 9.12419C1.6469 9.45624 1.15857 9.96544 0.850401 10.5838C0.533376 11.243 0.439071 11.9608 0.297279 12.6691C0.155487 13.3774-0.0652275 14.1395 0.0183763 14.8666C0.198292 16.4359 1.28915 17.7113 2.85823 17.9965C4.33434 18.2655 5.81847 18.4835 7.30662 18.6691C13.1524 19.3892 19.0582 19.4753 24.9223 18.9261C25.3998 18.8812 25.8767 18.8324 26.3529 18.7794C26.5016 18.763 26.6521 18.7802 26.7934 18.8299C26.9347 18.8795 27.0631 18.9603 27.1693 19.0663C27.2755 19.1724 27.3567 19.3009 27.4071 19.4426C27.4575 19.5843 27.4757 19.7356 27.4605 19.8853L27.312 21.3369C27.0128 24.2701 26.7136 27.2031 26.4144 30.1358C26.1023 33.2157 25.7882 36.2953 25.472 39.3747C25.3829 40.242 25.2937 41.109 25.2045 41.9758C25.1189 42.8294 25.1069 43.7099 24.9457 44.5534C24.6915 45.8799 23.7986 46.6945 22.4957 46.9925C21.3021 47.2657 20.0827 47.4091 18.8586 47.4203C17.5016 47.4277 16.1452 47.3672 14.7881 47.3746C13.3395 47.3826 11.5651 47.2481 10.4468 46.1638C9.46426 45.2113 9.32849 43.72 9.19472 42.4306C9.01637 40.7234 8.83957 39.0164 8.66434 37.3097L7.68116 27.8192L7.0451 21.6786C7.0344 21.577 7.0237 21.4768 7.01367 21.3745C6.93742 20.642 6.42176 19.925 5.60913 19.962C4.91354 19.9929 4.12299 20.5875 4.20458 21.3745L4.67611 25.927L5.65126 35.3442C5.92905 38.0191 6.20617 40.6944 6.48262 43.3703C6.53613 43.8828 6.58628 44.3967 6.64247 44.9093C6.94812 47.7102 9.075 49.2196 11.7089 49.6448C13.2472 49.8936 14.8229 49.9448 16.384 49.9703C18.3851 50.0026 20.4063 50.08 22.3747 49.7154C25.2915 49.1773 27.4799 47.2185 27.7922 44.1801C27.8814 43.303 27.9706 42.4256 28.0597 41.548C28.3563 38.6458 28.6523 35.7433 28.9479 32.8406L29.9151 23.3562L30.3585 19.0095C30.3806 18.794 30.4711 18.5913 30.6166 18.4315C30.7621 18.2717 30.9549 18.1633 31.1665 18.1223C32.0005 17.9588 32.7977 17.6796 33.391 17.0413C34.3354 16.0249 34.5233 14.6998 34.1896 13.3639Z"/></svg>Buy me a coffee<span class="sr-only">(opens in a new tab)</span></a><a href="https://github.com/B67687/Ithmb-Codec/issues" target="_blank" rel="noopener noreferrer">Report a bug<span class="sr-only">(opens in a new tab)</span></a></div><div><h2 class="site-footer__col-title">Formats</h2><a href="/ithmb-decoder/">.ithmb</a><a href="/ithmb-decoder/">.ipm</a><a href="/ithmb-decoder/">JPEG · PNG · BMP · WebP</a></div></div><div class="site-footer__legal"><p>Copyright © 2026 Nami. Website code is MIT licensed. Bundled components keep their own licences. Not affiliated with Apple.</p><a class="site-footer__lang" href="/zh/ithmb-decoder/" aria-label="English · 中文, switch language">English · 中文</a></div></div></footer>
+<!-- shell:footer:end -->
+    <noscript>
+    <div class="container load-failed">
+      <strong>JavaScript is required</strong>
+      This decoder runs entirely in your browser. Enable JavaScript and reload.
+    </div>
+  </noscript>
+
+</body>
+</html>

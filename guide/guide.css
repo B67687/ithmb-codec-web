@@ -1,0 +1,1194 @@
+/* ============================================================
+   Guide page — illustrated walkthrough + device/OS paths
+   Loaded only by /guide/ and /zh/guide/. Uses the design tokens
+   from ithmb-decoder/styles.css so light/dark stay in sync.
+   ============================================================ */
+
+body.guide-page {
+  --guide-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 20px 44px -28px rgba(0, 0, 0, 0.24);
+  background: var(--bg);
+  color: var(--text);
+}
+:root[data-theme="dark"] body.guide-page {
+  --guide-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06), 0 24px 48px -28px rgba(0, 0, 0, 0.9);
+}
+.guide-main {
+  display: block;
+}
+
+/* styles.css gives every <header> centered text and a bottom margin; the guide
+   section/step heads are left-aligned (their own margins live on the classes). */
+.guide-page header {
+  text-align: left;
+  margin-bottom: 0;
+}
+.guide-page .guide-section__head {
+  margin: 0 0 24px;
+}
+.guide-page .guide-step__head {
+  margin: 0 0 24px;
+}
+.guide-wrap {
+  width: 100%;
+  max-width: var(--max-wide);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+.guide-wrap--narrow {
+  max-width: 1040px;
+}
+.guide-section,
+.guide-step {
+  scroll-margin-top: calc(var(--nav-h) + 64px);
+}
+.guide-eyebrow {
+  margin: 0;
+  font-family: var(--font-text);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.075em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.guide-kicker {
+  margin: 0;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.guide-lede {
+  max-width: 640px;
+  margin: 0 0 22px;
+  font-size: 15.5px;
+  line-height: 1.6;
+  letter-spacing: -0.006em;
+  color: var(--muted);
+}
+.guide-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.guide-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  font-size: 12px;
+  letter-spacing: -0.002em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.guide-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--border);
+}
+
+/* ── hero ───────────────────────────────────────────────── */
+
+.guide-hero {
+  padding: 64px 0 40px;
+}
+.guide-hero__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 72px;
+  align-items: center;
+}
+.guide-title {
+  margin: 16px 0 18px;
+  font-family: var(--font-display);
+  font-size: clamp(40px, 5vw, 64px);
+  line-height: 1.04;
+  letter-spacing: -0.043em;
+  font-weight: 600;
+  text-wrap: balance;
+}
+.guide-deck {
+  max-width: 640px;
+  margin: 0 0 22px;
+  font-size: clamp(17px, 1.5vw, 20px);
+  line-height: 1.5;
+  letter-spacing: -0.015em;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+.guide-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.guide-updated {
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+.guide-hero__actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+.guide-pathcard {
+  padding: 24px;
+  border-radius: 20px;
+  background: var(--fog);
+  border: 1px solid var(--border);
+}
+.guide-pathcard__list {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+}
+.guide-pathcard__list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid var(--border);
+}
+.guide-pathcard__list li:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+.guide-pathcard__num {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--border);
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-2);
+}
+.guide-pathcard__list b {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+.guide-pathcard__list span span {
+  display: block;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+.guide-pathcard__note {
+  margin: 14px 0 0;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+/* ── scope callout ──────────────────────────────────────── */
+
+.guide-scope-section {
+  padding: 0 0 12px;
+}
+.guide-callout {
+  padding: 20px 22px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 14px 14px 0;
+  background: var(--surface);
+}
+.guide-callout__label {
+  margin: 0 0 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.guide-callout p {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.65;
+  letter-spacing: -0.005em;
+  color: var(--ink-2);
+}
+.guide-callout p + p {
+  margin-top: 10px;
+}
+.guide-callout strong {
+  color: var(--text);
+  font-weight: 600;
+}
+.guide-callout a {
+  color: var(--link);
+  text-decoration: none;
+}
+.guide-callout a:hover {
+  text-decoration: underline;
+}
+.guide-callout code {
+  font-family: "SF Mono", ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+  font-size: 0.86em;
+  padding: 0.1em 0.36em;
+  border-radius: 5px;
+  background: var(--fog);
+  color: var(--text);
+  white-space: nowrap;
+}
+
+/* ── sticky progress rail ───────────────────────────────── */
+
+.guide-rail {
+  position: sticky;
+  top: var(--nav-h);
+  z-index: 90;
+  background: rgba(251, 251, 253, 0.84);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+:root[data-theme="dark"] .guide-rail {
+  background: rgba(22, 22, 23, 0.84);
+}
+.guide-rail__inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 46px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.guide-rail__inner::-webkit-scrollbar {
+  display: none;
+}
+.guide-rail__step {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  letter-spacing: -0.004em;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s, background 0.2s;
+}
+.guide-rail__step:hover {
+  color: var(--text);
+}
+.guide-rail__step:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.guide-rail__step.is-active {
+  color: var(--text);
+  background: var(--fog);
+  font-weight: 600;
+}
+.guide-rail__step.is-done .guide-rail__num {
+  background: var(--accent);
+  color: #fff;
+}
+.guide-rail__num {
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--border);
+  color: var(--ink-2);
+  font-size: 10.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.guide-rail__aux {
+  margin-left: auto;
+  flex: none;
+  padding: 6px 8px;
+  font-size: 12.5px;
+  color: var(--link);
+  text-decoration: none;
+}
+.guide-rail__aux:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.guide-rail__progress {
+  position: relative;
+  height: 2px;
+  background: var(--border);
+}
+.guide-rail__progress span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--accent);
+  color: transparent;
+  transition: width 0.25s var(--ease);
+}
+
+/* ── sections and cards ─────────────────────────────────── */
+
+.guide-section {
+  padding: 60px 0 0;
+}
+.guide-section__head {
+  margin: 0 0 24px;
+}
+.guide-section__head h2,
+.guide-step__head h2 {
+  margin: 8px 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(26px, 2.6vw, 36px);
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  font-weight: 600;
+  color: var(--text);
+  text-wrap: balance;
+}
+.guide-before {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.guide-card {
+  min-width: 0;
+  padding: 24px 24px 26px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--guide-shadow);
+}
+.guide-card h3 {
+  margin: 0 0 12px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.018em;
+  color: var(--text);
+}
+.guide-card p {
+  margin: 0 0 12px;
+  font-size: 14.5px;
+  line-height: 1.6;
+  letter-spacing: -0.006em;
+  color: var(--ink-2);
+}
+.guide-card p:last-child {
+  margin-bottom: 0;
+}
+.guide-list {
+  margin: 0 0 12px;
+  padding-left: 18px;
+}
+.guide-list li {
+  margin-bottom: 6px;
+  font-size: 14.5px;
+  line-height: 1.6;
+  letter-spacing: -0.006em;
+  color: var(--ink-2);
+}
+.guide-list li:last-child {
+  margin-bottom: 0;
+}
+.guide-list li::marker {
+  color: var(--faint);
+}
+.guide-card code,
+.guide-list code,
+.guide-mini code,
+.guide-prose code {
+  font-family: "SF Mono", ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+  font-size: 0.86em;
+  padding: 0.1em 0.36em;
+  border-radius: 5px;
+  background: var(--fog);
+  color: var(--text);
+  white-space: nowrap;
+}
+
+/* ── device / computer path switcher ────────────────────── */
+
+.guide-switcher {
+  margin: 0 0 14px;
+}
+
+/* Without JS every panel is visible; the tabs are only revealed by guide.js */
+.guide-switcher__tabs {
+  display: none;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 14px;
+}
+html.js .guide-switcher__tabs {
+  display: flex;
+}
+.guide-switcher__tab {
+  padding: 7px 13px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--ink-2);
+  font: inherit;
+  font-size: 12.5px;
+  letter-spacing: -0.004em;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+.guide-switcher__tab:hover {
+  border-color: var(--muted);
+}
+.guide-switcher__tab:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.guide-switcher__tab[aria-selected="true"] {
+  border-color: var(--accent);
+  background: rgba(0, 113, 227, 0.08);
+  color: var(--text);
+  font-weight: 600;
+}
+:root[data-theme="dark"] .guide-switcher__tab[aria-selected="true"] {
+  background: rgba(10, 132, 255, 0.18);
+}
+.guide-switcher__panels {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.guide-switcher__panel {
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg);
+}
+.guide-switcher__panel[hidden] {
+  display: none;
+}
+.guide-path {
+  margin: 0 0 8px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.guide-copyrow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 8px;
+}
+.guide-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  max-width: 100%;
+  padding: 7px 11px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.2s;
+}
+.guide-copy:hover {
+  border-color: var(--muted);
+}
+.guide-copy:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.guide-copy code {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin: 0;
+  padding: 0;
+  background: none;
+  font-family: "SF Mono", ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+  font-size: 11.5px;
+  color: var(--text);
+}
+.guide-copy__hint {
+  flex: none;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.guide-copy__hint.is-done {
+  color: var(--accent);
+}
+.guide-switcher__note {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+.guide-switcher__note code {
+  font-family: "SF Mono", ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+  font-size: 0.9em;
+  padding: 0.08em 0.3em;
+  border-radius: 4px;
+  background: var(--fog);
+  color: var(--text);
+  white-space: nowrap;
+}
+.guide-switcher__foot {
+  margin: 12px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+.guide-switcher__foot code {
+  font-family: "SF Mono", ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+  font-size: 0.9em;
+  padding: 0.08em 0.3em;
+  border-radius: 4px;
+  background: var(--fog);
+  color: var(--text);
+  white-space: nowrap;
+}
+
+/* ── steps ──────────────────────────────────────────────── */
+
+.guide-step {
+  padding: 60px 0 0;
+}
+.guide-step__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  margin: 0 0 24px;
+}
+.guide-step__num {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border-radius: 14px;
+  background: var(--accent);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.guide-step__lede {
+  max-width: 62ch;
+  margin: 8px 0 0;
+  font-size: 15.5px;
+  line-height: 1.6;
+  letter-spacing: -0.006em;
+  color: var(--muted);
+}
+.guide-step__body {
+  max-width: 780px;
+}
+.guide-step__body > p {
+  margin: 0 0 16px;
+  font-size: 17px;
+  line-height: 1.65;
+  letter-spacing: -0.012em;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+.guide-step__body > p:last-of-type {
+  margin-bottom: 0;
+}
+.guide-step__body a {
+  color: var(--link);
+  text-decoration: none;
+}
+.guide-step__body a:hover {
+  text-decoration: underline;
+}
+.guide-step__body code {
+  font-family: "SF Mono", ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+  font-size: 0.85em;
+  padding: 0.12em 0.4em;
+  border-radius: 6px;
+  background: var(--fog);
+  color: var(--text);
+  white-space: nowrap;
+}
+.guide-mini-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 22px 0 0;
+}
+.guide-mini {
+  min-width: 0;
+  padding: 16px 16px 17px;
+  border-radius: 14px;
+  background: var(--fog);
+}
+.guide-mini__label {
+  margin: 0 0 6px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.guide-mini p:last-child {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  letter-spacing: -0.004em;
+  color: var(--ink-2);
+}
+
+/* ── figures + lightbox ─────────────────────────────────── */
+
+.guide-figure {
+  margin: 28px 0 0;
+}
+.guide-figure__link {
+  position: relative;
+  display: block;
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  background: #000;
+  cursor: zoom-in;
+  box-shadow: 0 24px 48px -32px rgba(0, 0, 0, 0.4);
+}
+.guide-figure__link picture {
+  display: block;
+}
+.guide-figure__link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+.guide-figure__link img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.guide-figure__link:hover img {
+  opacity: 0.95;
+}
+.guide-figure__zoom {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(20, 20, 22, 0.72);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: #fff;
+  font-size: 11.5px;
+  letter-spacing: -0.002em;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.16);
+}
+.guide-figure__zoom svg {
+  width: 12px;
+  height: 12px;
+}
+.guide-figure figcaption {
+  margin-top: 12px;
+  padding: 0 2px;
+  font-size: 13px;
+  line-height: 1.55;
+  letter-spacing: -0.004em;
+  color: var(--muted);
+}
+.guide-figure figcaption b {
+  color: var(--text);
+  font-weight: 600;
+}
+.guide-chips--center {
+  justify-content: center;
+  margin: 16px 0 0;
+}
+.guide-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  background: rgba(0, 0, 0, 0.82);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+.guide-lightbox[hidden] {
+  display: none;
+}
+.guide-lightbox__inner {
+  max-width: min(1200px, 94vw);
+}
+.guide-lightbox img {
+  max-width: 100%;
+  max-height: 84vh;
+  border-radius: 10px;
+  box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.8);
+}
+.guide-lightbox__caption {
+  margin: 14px auto 0;
+  max-width: min(900px, 90vw);
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.78);
+  text-align: center;
+}
+.guide-lightbox__close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+.guide-lightbox__close:hover {
+  background: rgba(255, 255, 255, 0.26);
+}
+.guide-lightbox__close:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+body.guide-lightbox-open {
+  overflow: hidden;
+}
+
+/* ── quality band ───────────────────────────────────────── */
+
+.guide-quality {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.guide-quality__item {
+  min-width: 0;
+  padding: 20px 20px 22px;
+  border-radius: 14px;
+  background: var(--fog);
+}
+.guide-quality__item h3 {
+  margin: 0 0 8px;
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  color: var(--text);
+}
+.guide-quality__item p {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  letter-spacing: -0.004em;
+  color: var(--ink-2);
+}
+
+/* ── troubleshooting + FAQ accordions ───────────────────── */
+
+.guide-trouble {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  align-items: start;
+}
+.guide-faq {
+  max-width: 860px;
+}
+.guide-acc {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  box-shadow: var(--guide-shadow);
+  overflow: hidden;
+}
+.guide-acc summary {
+  /* Block flow: inline text and <code> must not become separate flex items
+     (that produced huge gaps like "The file starts with        mhfd").
+     The +/- affordance is absolutely positioned out of the text flow. */
+  display: block;
+  position: relative;
+  padding: 16px 58px 16px 18px;
+  cursor: pointer;
+  list-style: none;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.014em;
+  line-height: 1.35;
+  color: var(--text);
+}
+.guide-acc summary::-webkit-details-marker {
+  display: none;
+}
+.guide-acc summary::after {
+  content: "+";
+  position: absolute;
+  top: 50%;
+  right: 18px;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1;
+}
+.guide-acc[open] summary::after {
+  content: "−";
+}
+.guide-acc summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+.guide-acc__body {
+  padding: 0 18px 18px;
+}
+.guide-acc__body p {
+  margin: 0 0 10px;
+  font-size: 14.5px;
+  line-height: 1.65;
+  letter-spacing: -0.005em;
+  color: var(--ink-2);
+}
+.guide-acc__body p:last-child {
+  margin-bottom: 0;
+}
+.guide-acc__body a {
+  color: var(--link);
+  text-decoration: none;
+}
+.guide-acc__body a:hover {
+  text-decoration: underline;
+}
+.guide-acc__body code {
+  font-family: "SF Mono", ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+  font-size: 0.85em;
+  padding: 0.12em 0.4em;
+  border-radius: 6px;
+  background: var(--fog);
+  color: var(--text);
+  white-space: nowrap;
+}
+.guide-faq .guide-acc {
+  margin-bottom: 10px;
+}
+.guide-faq .guide-acc:last-child {
+  margin-bottom: 0;
+}
+.guide-tools {
+  margin-top: 20px;
+  padding: 20px 22px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+}
+.guide-tools p {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.65;
+  letter-spacing: -0.005em;
+  color: var(--ink-2);
+}
+.guide-tools a {
+  color: var(--link);
+  text-decoration: none;
+}
+.guide-tools a:hover {
+  text-decoration: underline;
+}
+.guide-tools code {
+  font-family: "SF Mono", ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+  font-size: 0.85em;
+  padding: 0.12em 0.4em;
+  border-radius: 6px;
+  background: var(--fog);
+  color: var(--text);
+  white-space: nowrap;
+}
+
+/* ── prose ──────────────────────────────────────────────── */
+
+.guide-prose {
+  max-width: 780px;
+}
+.guide-prose p {
+  margin: 0 0 16px;
+  font-size: 17px;
+  line-height: 1.65;
+  letter-spacing: -0.012em;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+.guide-prose > :last-child {
+  margin-bottom: 0;
+}
+.guide-prose ul {
+  margin: 0 0 16px;
+  padding-left: 22px;
+}
+.guide-prose li {
+  margin-bottom: 8px;
+  font-size: 17px;
+  line-height: 1.65;
+  letter-spacing: -0.012em;
+  color: var(--ink-2);
+}
+.guide-prose li:last-child {
+  margin-bottom: 0;
+}
+.guide-prose strong {
+  font-weight: 600;
+  color: var(--text);
+}
+.guide-prose a {
+  color: var(--link);
+  text-decoration: none;
+}
+.guide-prose a:hover {
+  text-decoration: underline;
+}
+.guide-prose--narrow {
+  max-width: 700px;
+}
+
+/* ── CTA ────────────────────────────────────────────────── */
+
+.guide-cta {
+  margin: 56px 0 0;
+  padding: 40px 0 96px;
+  border-top: 1px solid var(--border);
+}
+.guide-cta h2 {
+  margin: 0 0 10px;
+  font-family: var(--font-display);
+  font-size: clamp(26px, 2.6vw, 34px);
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  font-weight: 600;
+}
+.guide-cta p {
+  margin: 0 0 20px;
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+.guide-cta__actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+
+/* Inline links get an underline so they are distinguishable from body copy
+   without relying on colour alone (axe link-in-text-block / WCAG 1.4.1). */
+.guide-callout a,
+.guide-step__body a,
+.guide-acc__body a,
+.guide-tools a,
+.guide-prose a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+/* ── responsive ─────────────────────────────────────────── */
+
+@media (max-width: 1068px) {
+  .guide-hero__grid {
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 40px;
+  }
+}
+
+@media (max-width: 900px) {
+  .guide-hero {
+    padding: 48px 0 32px;
+  }
+  .guide-hero__grid {
+    grid-template-columns: 1fr;
+    gap: 26px;
+  }
+  .guide-pathcard {
+    max-width: 520px;
+  }
+  .guide-before,
+  .guide-trouble,
+  .guide-quality {
+    grid-template-columns: 1fr;
+  }
+  .guide-mini-grid {
+    grid-template-columns: 1fr;
+  }
+  .guide-rail__aux {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .guide-wrap {
+    padding: 0 20px;
+  }
+  .guide-title {
+    font-size: 36px;
+  }
+  .guide-deck {
+    font-size: 17px;
+  }
+  .guide-section,
+  .guide-step {
+    padding-top: 44px;
+  }
+  .guide-step__head {
+    gap: 14px;
+  }
+  .guide-step__num {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    font-size: 14px;
+  }
+  .guide-step__head h2 {
+    font-size: 23px;
+  }
+  .guide-card {
+    padding: 20px 18px 22px;
+  }
+  .guide-rail__inner {
+    gap: 2px;
+  }
+  .guide-rail__step {
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+  .guide-rail__aux {
+    display: none;
+  }
+  .guide-prose code,
+  .guide-step__body code {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .guide-cta {
+    padding-bottom: 76px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .guide-rail__progress span {
+    transition: none;
+  }
+  .guide-figure__link img,
+  .guide-copy,
+  .guide-switcher__tab {
+    transition: none;
+  }
+}
+
+/* Active rail step: the current step should read blue, not just bolder grey.
+   Done steps are blue-filled; the active step gets a blue number + tint. */
+.guide-rail__step.is-active {
+  background: var(--fog);
+  background: color-mix(in srgb, var(--accent) 9%, var(--surface));
+  color: var(--text);
+  font-weight: 600;
+}
+.guide-rail__step.is-active .guide-rail__num {
+  background: var(--accent);
+  color: #fff;
+}
+/* Dark theme: the system-blue fill (--accent #0a84ff) leaves the white 10.5 px
+   step number at 3.64:1. Deepen only the badge fill in dark mode so the number
+   keeps its white-on-blue look while clearing WCAG AA for small text (>=4.5:1). */
+:root[data-theme="dark"] .guide-rail__step.is-done .guide-rail__num,
+:root[data-theme="dark"] .guide-rail__step.is-active .guide-rail__num {
+  background: color-mix(in srgb, var(--accent) 68%, #000);
+}
+.guide-rail {
+  background: var(--glass-rail);
+  -webkit-backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
+  backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+:root[data-theme="dark"] .guide-rail {
+  background: var(--glass-rail);
+}
+.guide-copy {
+  background: var(--glass-chip);
+  -webkit-backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
+  backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
+  box-shadow: inset 0 0 0 1px var(--glass-ring-ink);
+}
+:root[data-theme="dark"] .guide-copy {
+  background: var(--glass-chip);
+  box-shadow: inset 0 0 0 1px var(--glass-ring);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .guide-rail,
+  .guide-copy {
+    transition: none !important;
+  }
+}
+
+/* Fallback: no backdrop-filter → current opaque surfaces. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .guide-rail {
+    background: rgba(251, 251, 253, 0.96);
+  }
+  :root[data-theme="dark"] .guide-rail {
+    background: rgba(22, 22, 23, 0.96);
+  }
+  .guide-copy {
+    background: var(--surface);
+    box-shadow: none;
+  }
+  :root[data-theme="dark"] .guide-copy {
+    background: var(--surface);
+  }
+}
+body.guide-page {
+  background-image: var(--wash-page-top);
+  background-repeat: no-repeat;
+  background-size: 100% 720px;
+}
+
+/* Accessible copy confirmation (visually hidden live region). */
+.guide-copy__live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
